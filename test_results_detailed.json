@@ -1,0 +1,60 @@
+[
+  {
+    "test": "Health Check",
+    "success": true,
+    "details": "Health endpoint working correctly",
+    "timestamp": "2026-04-06T17:06:21.350297",
+    "response_data": {
+      "status": "healthy",
+      "timestamp": "2026-04-06T17:06:20.926236"
+    }
+  },
+  {
+    "test": "Categories List",
+    "success": true,
+    "details": "Found 11 categories with correct multilingual structure",
+    "timestamp": "2026-04-06T17:06:22.004240"
+  },
+  {
+    "test": "Single Category (Keb)",
+    "success": true,
+    "details": "Kibbeh category found with multilingual names",
+    "timestamp": "2026-04-06T17:06:22.658650"
+  },
+  {
+    "test": "Recipes by Category",
+    "success": true,
+    "details": "Found 10 Kibbeh recipes with multilingual content",
+    "timestamp": "2026-04-06T17:06:23.608718"
+  },
+  {
+    "test": "All Recipes",
+    "success": true,
+    "details": "Found all 75 recipes with multilingual content",
+    "timestamp": "2026-04-06T17:06:24.836995"
+  },
+  {
+    "test": "About Info",
+    "success": true,
+    "details": "About information with complete multilingual content",
+    "timestamp": "2026-04-06T17:06:25.984029"
+  },
+  {
+    "test": "Contact Info",
+    "success": true,
+    "details": "Contact info correct with email: askmalmo@gmail.com",
+    "timestamp": "2026-04-06T17:06:26.640074"
+  },
+  {
+    "test": "Feedback Submission",
+    "success": true,
+    "details": "Feedback submitted successfully with ID: 2af74923-e46b-4862-a7b9-54de32621090",
+    "timestamp": "2026-04-06T17:06:27.317029"
+  },
+  {
+    "test": "JSON Validation",
+    "success": true,
+    "details": "All endpoints return valid JSON",
+    "timestamp": "2026-04-06T17:06:32.867517"
+  }
+]
