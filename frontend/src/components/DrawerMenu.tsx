@@ -87,7 +87,7 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
         </ScrollView>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>© 2024 ASK</Text>
+          <Text style={styles.footerText}>© 2026 ASK</Text>
         </View>
       </View>
     </View>
