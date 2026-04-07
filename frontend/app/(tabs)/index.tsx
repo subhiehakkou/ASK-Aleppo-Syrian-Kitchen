@@ -60,31 +60,33 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header with Gold Gradient */}
+    <View style={styles.container}>
+      {/* Header with Gold Gradient - Full width to top */}
       <LinearGradient
         colors={['#FFD700', '#DAA520', '#B8860B']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        <View style={styles.headerContent}>
-          {/* Menu Button */}
-          <TouchableOpacity 
-            style={styles.menuButton} 
-            onPress={() => setDrawerVisible(true)}
-          >
-            <Ionicons name="menu" size={28} color="#3A3A3A" />
-          </TouchableOpacity>
+        <SafeAreaView edges={['top']}>
+          <View style={styles.headerContent}>
+            {/* Menu Button */}
+            <TouchableOpacity 
+              style={styles.menuButton} 
+              onPress={() => setDrawerVisible(true)}
+            >
+              <Ionicons name="menu" size={28} color="#3A3A3A" />
+            </TouchableOpacity>
 
-          <View style={styles.titleTextContainer}>
-            <Text style={styles.headerTitleAr}>المطبخ الحلبي السوري</Text>
-            <Text style={styles.headerTitleEn}>Aleppo Syrian Kitchen</Text>
-            <Text style={styles.headerSubtitle}>ASK</Text>
+            <View style={styles.titleTextContainer}>
+              <Text style={styles.headerTitleAr}>المطبخ الحلبي السوري</Text>
+              <Text style={styles.headerTitleEn}>Aleppo Syrian Kitchen</Text>
+              <Text style={styles.headerSubtitle}>ASK</Text>
+            </View>
+            
+            <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
           </View>
-          
-          <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
-        </View>
+        </SafeAreaView>
       </LinearGradient>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -150,7 +152,7 @@ export default function HomeScreen() {
 
       {/* Drawer Menu */}
       <DrawerMenu isVisible={drawerVisible} onClose={() => setDrawerVisible(false)} />
-    </SafeAreaView>
+    </View>
   );
 }
 

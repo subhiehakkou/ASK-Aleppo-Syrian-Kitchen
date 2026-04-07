@@ -18,8 +18,8 @@ export default function TabLayout() {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           elevation: 0,
-          height: 75,
-          paddingBottom: 15,
+          height: 85,
+          paddingBottom: 25,
           paddingTop: 10,
         },
         tabBarBackground: () => (
