@@ -167,7 +167,7 @@ export default function AboutScreen() {
           <Text style={styles.footerText}>
             {isRTL ? 'أم سامر - المطبخ الحلبي السوري' : 'Umm Samer - Aleppo Syrian Kitchen'}
           </Text>
-          <Text style={styles.copyrightText}>© 2024</Text>
+          <Text style={styles.copyrightText}>© 2026 ASK</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
