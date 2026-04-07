@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LanguageProvider } from '../src/context/LanguageContext';
 import { FavoritesProvider } from '../src/context/FavoritesContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Cairo_400Regular, Cairo_600SemiBold, Cairo_700Bold } from '@expo-google-fonts/cairo';
 
@@ -14,11 +14,19 @@ export default function RootLayout() {
     Cairo_600SemiBold,
     Cairo_700Bold,
   });
+  const [timedOut, setTimedOut] = useState(false);
 
-  if (!fontsLoaded) {
+  useEffect(() => {
+    const timer = setTimeout(() => setTimedOut(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const ready = fontsLoaded || timedOut;
+
+  if (!ready) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FFE566" />
+        <ActivityIndicator size="large" color="#FFDA47" />
       </View>
     );
   }
