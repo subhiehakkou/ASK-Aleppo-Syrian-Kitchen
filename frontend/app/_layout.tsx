@@ -2,13 +2,13 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LanguageProvider } from '../src/context/LanguageContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <LanguageProvider>
-        <StatusBar style="dark" />
+        <StatusBar style="light" />
         <Stack
           screenOptions={{
             headerShown: false,
@@ -16,10 +16,11 @@ export default function RootLayout() {
             animation: 'slide_from_right',
           }}
         >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="category/[id]" />
           <Stack.Screen name="recipe/[id]" />
+          <Stack.Screen name="contact" />
+          <Stack.Screen name="about" />
         </Stack>
       </LanguageProvider>
     </GestureHandlerRootView>
