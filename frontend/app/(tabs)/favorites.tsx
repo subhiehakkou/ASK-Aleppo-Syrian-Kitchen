@@ -45,7 +45,7 @@ export default function FavoritesScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <LinearGradient
-        colors={['#FFE566', '#FFD700', '#FFCC00']}
+        colors={['#FFDA47', '#FFD700', '#E0B000']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}

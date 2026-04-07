@@ -8,9 +8,9 @@ export const COLORS = {
   goldDeep: '#DAA520',
   
   // Gradient colors for header/footer (24K gold bar sheen)
-  goldGradientStart: '#FFE566',
+  goldGradientStart: '#FFDA47',
   goldGradientMiddle: '#FFD700',
-  goldGradientEnd: '#FFCC00',
+  goldGradientEnd: '#E0B000',
   
   // Text colors
   textPrimary: '#1A1A1A',

@@ -27,7 +27,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.container}>
       <LanguageProvider>
         <FavoritesProvider>
-          <StatusBar style="dark" backgroundColor="#FFE566" />
+          <StatusBar style="dark" backgroundColor="#FFDA47" />
           <Stack
             screenOptions={{
               headerShown: false,

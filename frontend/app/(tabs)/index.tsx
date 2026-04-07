@@ -63,7 +63,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* Header with Gold Gradient - Full width to top */}
       <LinearGradient
-        colors={['#FFE566', '#FFD700', '#FFCC00']}
+        colors={['#FFDA47', '#FFD700', '#E0B000']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -129,7 +129,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/contact')}
           >
             <LinearGradient
-              colors={['#FFE566', '#FFD700', '#FFCC00']}
+              colors={['#FFDA47', '#FFD700', '#E0B000']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.askKitchenGradient}
