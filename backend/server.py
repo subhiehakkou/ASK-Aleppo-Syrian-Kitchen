@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -400,6 +401,13 @@ async def get_stats():
 
 # Include the router in the main app
 app.include_router(api_router)
+
+# Mount static files for recipe images
+STATIC_DIR = ROOT_DIR / 'static'
+IMAGES_DIR = STATIC_DIR / 'images'
+if IMAGES_DIR.exists():
+    app.mount("/api/images", StaticFiles(directory=str(IMAGES_DIR)), name="recipe_images")
+    logger.info(f"Static images mounted from {IMAGES_DIR}")
 
 app.add_middleware(
     CORSMiddleware,
