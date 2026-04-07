@@ -240,7 +240,7 @@ In this app, I will present authentic Aleppo Syrian recipes and some Gulf recipe
 
 Umm Samer - Aleppo Syrian Kitchen""",
             title_sv="Aleppo Syriskt Kök",
-            slogan_sv="Långsamt tillagad mat som passar kungar, som våra mormödrar sa",
+            slogan_sv="Slow cooked food fit for kings, as our grandmothers said",
             about_sv="""Om skaparen av rätterna och appen:
 Jag är Umm Samer, en äkta syrisk dam från Aleppo. Mina rötter går 300 år tillbaka i Aleppo, där jag växte upp i en miljö som älskar utsökt, kärleksfullt tillagad mat att dela med familj och vänner.
 
@@ -344,23 +344,35 @@ async def seed_database():
         # Seed about info
         about = AboutInfo(
             title_ar="المطبخ الحلبي السوري",
-            slogan_ar="الأكل المهدا للملوك يتودا هكذا قالت جداتنا",
+            slogan_ar="أصالة الطعم من التراث الحلبي تحت شعار الأكل المهدا للملوك يتودا هكذا قالت جداتنا",
             about_ar="""نبذة عن صانعة الأطباق والتطبيق: 
-أنا أم سامر سيدة حلبية سورية أصيلة، أصولي تعود الى 300 سنة في حلب حيث نشأت في بيئة تحب اللقمة الذكية الطيبة المطبوخة بحب وعناية لكي يوزع هذا الحب على العائلة والمحيطين بها.
+أنا أم سامر سيدة حلبية سورية أصيلة، أصولي تعود الى 300 سنة في حلب حيث نشأت في بيئة تحب اللقمة الذكية الطيبة المطبوخة بحب وعناية لكي يوزع هذا الحب على العائلة والمحيطين بها. 
 
-أنا من مواليد 1960 وقضيت 50 عاما في حب الطبخ ولم يكن مهنتي ولكنني عاشقة لتحضير الطعام للعائلة بكل أصنافة.""",
+أنا من مواليد 1960 وقضيت 50 عاما في حب الطبخ ولم يكن مهنتي ولكنني عاشقة لتحضير الطعام للعائلة بكل أصنافة، وبما أنني في سنوات آخر العمر خطر ببالي أن أنقل كل ماأملك من معلومات تجعل المجتمع باسره عربي أو يتحدث الإنجليزية أو السويدية بحكم اقامتي في السويد يتلذذ بكل لقمة يعدها من وصفاتي التي أعتبرها ساحرة بحكم من حولي ومن تذوق الطعام على مائدتي المتواضعة.
+
+سأقدم لكم في هذا التطبيق الوصفات الحلبية السورية الأصيلة وبعض الوصفات الخليجية بحكم اقامتي الطويلة في الخليج العربي أيضا فلا تستغربوا وجود وصفات خليجية لأنها أيضا أسرتني عندما كنت في الامارات وشعرت كم الثقافات تنتج طعاما يغير وجه العالم ويبعدنا عن الملل من تكرار مانأكل.
+
+أم سامر – المطبخ الحلبي السوري""",
             title_en="Aleppo Syrian Kitchen",
             slogan_en="Slow cooked food fit for kings, as our grandmothers said",
             about_en="""About the dish and app creator:
 I am Umm Samer, an authentic Syrian lady from Aleppo. My roots go back 300 years in Aleppo, where I grew up in an environment that loves delicious, lovingly prepared food to share with family and friends.
 
-Born in 1960, I have spent 50 years loving cooking. It was never my profession, but I am passionate about preparing food for my family in all its varieties.""",
+Born in 1960, I have spent 50 years loving cooking. It was never my profession, but I am passionate about preparing food for my family in all its varieties. In my later years, I decided to share all my knowledge with the community - whether Arabic, English, or Swedish speaking - so they can enjoy every bite prepared from my recipes that I consider magical.
+
+In this app, I will present authentic Aleppo Syrian recipes and some Gulf recipes from my long stay in the Arabian Gulf. Don't be surprised to find Gulf recipes - they also captivated me when I was in the Emirates, and I realized how cultures produce food that changes the world.
+
+Umm Samer - Aleppo Syrian Kitchen""",
             title_sv="Aleppo Syriskt Kök",
-            slogan_sv="Långsamt tillagad mat passande för kungar, som våra mormödrar sa",
+            slogan_sv="Slow cooked food fit for kings, as our grandmothers said",
             about_sv="""Om skaparen av rätterna och appen:
 Jag är Umm Samer, en äkta syrisk dam från Aleppo. Mina rötter går 300 år tillbaka i Aleppo, där jag växte upp i en miljö som älskar utsökt, kärleksfullt tillagad mat att dela med familj och vänner.
 
-Född 1960, har jag spenderat 50 år med att älska matlagning. Det var aldrig mitt yrke, men jag brinner för att förbereda mat åt min familj i alla dess varianter."""
+Född 1960, har jag spenderat 50 år med att älska matlagning. Det var aldrig mitt yrke, men jag brinner för att förbereda mat åt min familj i alla dess varianter. På mina äldre dagar bestämde jag mig för att dela all min kunskap med samhället - oavsett om de talar arabiska, engelska eller svenska.
+
+I denna app presenterar jag autentiska syriska recept från Aleppo och några gulfrecept från min långa vistelse i Arabiska Gulfen.
+
+Umm Samer - Aleppo Syriskt Kök"""
         )
         await db.about.insert_one(about.dict())
         
