@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Platform, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -33,59 +33,81 @@ export default function RecipeDetailScreen() {
   const recipeDeepLink = `ask-kitchen://recipe/${id}`;
 
   const generatePDF = async () => {
-    if (!recipe) return;
-    const name = getName();
-    const ingredients = getIngredients();
-    const instructions = getInstructions();
-    const tips = getProTips();
-    const secrets = getSecrets();
+    if (!recipe) {
+      console.log('generatePDF: No recipe data available');
+      Alert.alert('خطأ', 'لا توجد بيانات وصفة للطباعة');
+      return;
+    }
+    
+    const name = getName() || '';
+    const ingredients = getIngredients() || '';
+    const instructions = getInstructions() || '';
+    const tips = getProTips() || '';
+    const secrets = getSecrets() || '';
+    const decoration = getDecoration() || '';
+    const time = getTime() || '';
+    const servings = getServings() || '';
+    const dir = isRTL ? 'rtl' : 'ltr';
 
-    const html = `
-      <!DOCTYPE html>
-      <html dir="${isRTL ? 'rtl' : 'ltr'}">
-      <head>
-        <meta charset="utf-8">
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&display=swap');
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Noto Naskh Arabic', serif; color: #333; padding: 30px; direction: ${isRTL ? 'rtl' : 'ltr'}; }
-          .header { text-align: center; border-bottom: 3px solid #FFD700; padding-bottom: 15px; margin-bottom: 20px; }
-          .header h1 { color: #FFD700; font-size: 24px; margin-bottom: 5px; }
-          .header h2 { color: #333; font-size: 14px; letter-spacing: 3px; }
-          .header h3 { color: #666; font-size: 12px; }
-          .recipe-title { font-size: 22px; font-weight: 700; color: #333; text-align: center; margin: 15px 0; padding: 10px; background: #FFF8DC; border-radius: 8px; border: 2px solid #FFD700; }
-          .section { margin: 15px 0; }
-          .section-title { font-size: 16px; font-weight: 700; color: #FFD700; border-bottom: 2px solid #FFD700; padding-bottom: 5px; margin-bottom: 10px; }
-          .section-content { font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
-          .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #FFD700; color: #999; font-size: 11px; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1>المطبخ الحلبي السوري</h1>
-          <h2>A S K</h2>
-          <h3>Aleppo Syrian Kitchen</h3>
-        </div>
-        <div class="recipe-title">${name}</div>
-        ${ingredients ? `<div class="section"><div class="section-title">${isRTL ? 'المكونات' : 'Ingredients'}</div><div class="section-content">${ingredients.replace(/\n/g, '<br>')}</div></div>` : ''}
-        ${instructions ? `<div class="section"><div class="section-title">${isRTL ? 'طريقة التحضير' : 'Instructions'}</div><div class="section-content">${instructions.replace(/\n/g, '<br>')}</div></div>` : ''}
-        ${tips ? `<div class="section"><div class="section-title">${isRTL ? 'نصائح' : 'Tips'}</div><div class="section-content">${tips.replace(/\n/g, '<br>')}</div></div>` : ''}
-        ${secrets ? `<div class="section"><div class="section-title">${isRTL ? 'أسرار الوصفة' : 'Secrets'}</div><div class="section-content">${secrets.replace(/\n/g, '<br>')}</div></div>` : ''}
-        <div class="footer">© 2026 ASK - المطبخ الحلبي السوري | Aleppo Syrian Kitchen</div>
-      </body>
-      </html>
-    `;
+    console.log('generatePDF: Generating PDF for recipe:', name);
+
+    const html = `<!DOCTYPE html>
+<html dir="${dir}" lang="${isRTL ? 'ar' : 'en'}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Naskh Arabic', serif; color: #333; padding: 30px; direction: ${dir}; }
+  .header { text-align: center; border-bottom: 3px solid #DAA520; padding-bottom: 15px; margin-bottom: 20px; }
+  .header h1 { color: #DAA520; font-size: 24px; margin-bottom: 5px; }
+  .header h2 { color: #333; font-size: 14px; letter-spacing: 3px; }
+  .header h3 { color: #666; font-size: 12px; }
+  .recipe-title { font-size: 22px; font-weight: 700; color: #333; text-align: center; margin: 15px 0; padding: 10px; background: #FFF8DC; border-radius: 8px; border: 2px solid #DAA520; }
+  .meta { text-align: center; color: #666; font-size: 13px; margin-bottom: 15px; }
+  .section { margin: 15px 0; }
+  .section-title { font-size: 16px; font-weight: 700; color: #DAA520; border-bottom: 2px solid #DAA520; padding-bottom: 5px; margin-bottom: 10px; }
+  .section-content { font-size: 14px; line-height: 2; white-space: pre-wrap; }
+  .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #DAA520; color: #999; font-size: 11px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>المطبخ الحلبي السوري</h1>
+    <h2>A S K</h2>
+    <h3>Aleppo Syrian Kitchen</h3>
+  </div>
+  <div class="recipe-title">${name}</div>
+  ${time || servings ? `<div class="meta">${time ? (isRTL ? 'الوقت: ' : 'Time: ') + time : ''}${time && servings ? ' | ' : ''}${servings ? (isRTL ? 'الحصص: ' : 'Servings: ') + servings : ''}</div>` : ''}
+  ${ingredients ? `<div class="section"><div class="section-title">${isRTL ? 'المكونات' : 'Ingredients'}</div><div class="section-content">${ingredients.replace(/\n/g, '<br>')}</div></div>` : ''}
+  ${instructions ? `<div class="section"><div class="section-title">${isRTL ? 'طريقة التحضير' : 'Instructions'}</div><div class="section-content">${instructions.replace(/\n/g, '<br>')}</div></div>` : ''}
+  ${decoration ? `<div class="section"><div class="section-title">${isRTL ? 'التزيين' : 'Decoration'}</div><div class="section-content">${decoration.replace(/\n/g, '<br>')}</div></div>` : ''}
+  ${tips ? `<div class="section"><div class="section-title">${isRTL ? 'نصائح' : 'Tips'}</div><div class="section-content">${tips.replace(/\n/g, '<br>')}</div></div>` : ''}
+  ${secrets ? `<div class="section"><div class="section-title">${isRTL ? 'أسرار الوصفة' : 'Secrets'}</div><div class="section-content">${secrets.replace(/\n/g, '<br>')}</div></div>` : ''}
+  <div class="footer">© 2026 ASK - المطبخ الحلبي السوري | Aleppo Syrian Kitchen</div>
+</body>
+</html>`;
 
     try {
+      console.log('generatePDF: Calling Print.printAsync...');
       await Print.printAsync({ html });
-    } catch (e) {
+      console.log('generatePDF: Print completed');
+    } catch (e: any) {
+      console.log('generatePDF: printAsync failed:', e?.message || e);
+      // Fallback: save as PDF file and share
       try {
+        console.log('generatePDF: Trying printToFileAsync fallback...');
         const { uri } = await Print.printToFileAsync({ html });
+        console.log('generatePDF: File created at:', uri);
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+        } else {
+          Alert.alert('تم الحفظ', `تم حفظ الملف: ${uri}`);
         }
-      } catch (err) {
-        console.log('PDF error:', err);
+      } catch (err: any) {
+        console.log('generatePDF: All print methods failed:', err?.message || err);
+        Alert.alert('خطأ في الطباعة', 'لم نتمكن من طباعة الوصفة. يرجى المحاولة مرة أخرى.');
       }
     }
   };

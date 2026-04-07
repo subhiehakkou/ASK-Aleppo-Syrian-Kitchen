@@ -1,12 +1,10 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Platform, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SPACING } from '../constants/theme';
 import { shareApp } from '../utils/shareHelper';
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
 
 const APP_LOGO = require('../../assets/images/logo.png');
 
@@ -22,54 +20,16 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
   const router = useRouter();
 
   const handlePrint = async () => {
-    if (onPrint) {
-      onPrint();
-      return;
-    }
-    // Default: print kitchen info
-    const html = getDefaultPrintHTML();
+    if (!onPrint) return;
     try {
-      if (Platform.OS === 'web') {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-          printWindow.document.write(html);
-          printWindow.document.close();
-          printWindow.print();
-        }
-      } else {
-        await Print.printAsync({ html });
-      }
-    } catch (e) {
-      try {
-        const { uri } = await Print.printToFileAsync({ html });
-        if (await Sharing.isAvailableAsync()) {
-          await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
-        }
-      } catch (err) {
-        console.log('Print error:', err);
-      }
+      console.log('AppHeader: calling onPrint...');
+      await onPrint();
+      console.log('AppHeader: onPrint completed successfully');
+    } catch (err) {
+      console.log('AppHeader: print error:', err);
+      Alert.alert('خطأ في الطباعة', 'حدث خطأ أثناء محاولة الطباعة');
     }
   };
-
-  const getDefaultPrintHTML = () => `
-    <!DOCTYPE html>
-    <html dir="rtl">
-    <head><meta charset="utf-8">
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap');
-      body { font-family: 'Noto Naskh Arabic', serif; text-align: center; padding: 40px; color: #333; }
-      h1 { color: #FFD700; font-size: 28px; } h2 { letter-spacing: 5px; font-size: 20px; }
-      h3 { color: #666; font-size: 16px; } hr { border: 2px solid #FFD700; margin: 20px 0; }
-      .footer { margin-top: 40px; color: #999; font-size: 12px; }
-    </style></head>
-    <body>
-      <h1>المطبخ الحلبي السوري</h1><h2>A S K</h2><h3>Aleppo Syrian Kitchen</h3>
-      <hr/>
-      <p style="font-size:18px;line-height:2;">هذا التطبيق سيفتح لك أبواب أسرار تراث الطهي الحلبي الأصيل، بوصفات دقيقة ونكهات مميزة لن تنساها.</p>
-      <p style="font-size:14px;line-height:1.8;">This app will unlock the secrets of authentic Aleppo culinary heritage, with precise recipes and distinctive flavours you will never forget.</p>
-      <div class="footer">© 2026 ASK - مطبخ حلب السوري</div>
-    </body></html>
-  `;
 
   return (
     <LinearGradient
@@ -97,9 +57,11 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/search')}>
           <Ionicons name="search-outline" size={20} color="#3A3A3A" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBtn} onPress={handlePrint}>
-          <Ionicons name="print-outline" size={20} color="#3A3A3A" />
-        </TouchableOpacity>
+        {onPrint ? (
+          <TouchableOpacity style={styles.iconBtn} onPress={handlePrint}>
+            <Ionicons name="print-outline" size={20} color="#3A3A3A" />
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity style={styles.iconBtn} onPress={shareApp}>
           <Ionicons name="share-social-outline" size={20} color="#3A3A3A" />
         </TouchableOpacity>
