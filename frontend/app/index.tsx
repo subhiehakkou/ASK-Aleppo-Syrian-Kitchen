@@ -82,6 +82,10 @@ export default function HomeScreen() {
         <View style={styles.headerContent}>
           <View style={[styles.titleContainer, isRTL && styles.rtlRow]}>
             <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
+            <View style={styles.titleTextContainer}>
+              <Text style={styles.headerTitle}>المطبخ الحلبي السوري</Text>
+              <Text style={styles.headerSubtitle}>ASK</Text>
+            </View>
           </View>
           
           {/* Language Selector */}
@@ -228,6 +232,20 @@ const styles = StyleSheet.create({
   headerLogo: {
     width: 50,
     height: 50,
+  },
+  titleTextContainer: {
+    flexDirection: 'column',
+  },
+  headerTitle: {
+    fontSize: FONTS.sizes.md,
+    fontWeight: FONTS.weights.bold,
+    color: COLORS.textWhite,
+  },
+  headerSubtitle: {
+    fontSize: FONTS.sizes.lg,
+    fontWeight: FONTS.weights.bold,
+    color: COLORS.textWhite,
+    letterSpacing: 2,
   },
   rtlRow: {
     flexDirection: 'row-reverse',
