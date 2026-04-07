@@ -436,21 +436,26 @@ async def search_recipes(q: str = ""):
     # Build search patterns for Arabic fuzzy matching
     patterns = build_arabic_search_patterns(query)
     
-    # Create regex pattern that matches any of the patterns
-    regex_parts = [re.escape(p) for p in patterns]
+    # Create regex pattern - use word-like boundaries for precision
+    # Match search term only as a standalone word or with Arabic prefixes (ال، بال، وال)
+    regex_parts = []
+    for p in patterns:
+        escaped = re.escape(p)
+        # Match: start/space + optional Arabic prefix + word + end/space/suffix
+        regex_parts.append(r'(?:^|\s|ال|بال|وال)' + escaped + r'(?:\s|$|ة|ي|ية|ات|ين|ون|ها|هم)')
+        # Also match the exact word with ال prefix
+        regex_parts.append(r'(?:^|\s)ال' + escaped)
+        # Also match as part of compound name (باللبن، واللبن)
+        regex_parts.append(r'(?:بال|وال)' + escaped)
+        # Direct name match
+        regex_parts.append(r'(?:^|\s)' + escaped + r'(?:\s|$)')
+    
     combined_regex = '|'.join(regex_parts)
     
-    # Also add the raw query for English/Swedish
-    if query not in patterns:
-        combined_regex += '|' + re.escape(query)
-    
-    # Fields to search in
+    # Fields to search in - ONLY names and ingredients (not instructions/tips)
     search_fields = [
         'name_ar', 'name_en', 'name_sv',
         'ingredients_ar', 'ingredients_en', 'ingredients_sv',
-        'instructions_ar', 'instructions_en', 'instructions_sv',
-        'secrets_ar', 'secrets_en', 'secrets_sv',
-        'decoration_ar', 'decoration_en', 'decoration_sv',
     ]
     
     # Build MongoDB $or query
