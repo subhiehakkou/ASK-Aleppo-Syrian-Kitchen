@@ -11,34 +11,35 @@ const FLAG_SE = { uri: 'https://flagcdn.com/w80/se.png' };
 
 export default function TabLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: 'transparent',
-          borderTopWidth: 0,
-          elevation: 0,
-          height: 85,
-          paddingBottom: 25,
-          paddingTop: 10,
-        },
-        tabBarBackground: () => (
-          <LinearGradient
-            colors={['#FFD700', '#DAA520', '#B8860B']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFill}
-          />
-        ),
-        tabBarActiveTintColor: '#3A3A3A',
-        tabBarInactiveTintColor: 'rgba(58, 58, 58, 0.6)',
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
-          marginTop: 4,
-        },
-      }}
-    >
+    <View style={{ flex: 1, backgroundColor: '#FFD700' }}>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: {
+            backgroundColor: 'transparent',
+            borderTopWidth: 0,
+            elevation: 0,
+            height: 90,
+            paddingBottom: 30,
+            paddingTop: 10,
+          },
+          tabBarBackground: () => (
+            <LinearGradient
+              colors={['#FFD700', '#DAA520', '#B8860B']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          ),
+          tabBarActiveTintColor: '#3A3A3A',
+          tabBarInactiveTintColor: 'rgba(58, 58, 58, 0.6)',
+          tabBarLabelStyle: {
+            fontSize: 11,
+            fontWeight: '600',
+            marginTop: 4,
+          },
+        }}
+      >
       <Tabs.Screen
         name="index"
         options={{
@@ -92,6 +93,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </View>
   );
 }
 

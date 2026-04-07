@@ -78,7 +78,7 @@ export default function EnglishScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.mottoSection}>
-          <Text style={styles.mottoText}>{about?.slogan_en || 'Food fit for kings, as our grandmothers said'}</Text>
+          <Text style={styles.mottoText}>{about?.slogan_en || 'Slow cooked food fit for kings, as our grandmothers said'}</Text>
         </View>
 
         <View style={styles.categoriesSection}>

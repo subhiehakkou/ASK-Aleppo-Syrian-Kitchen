@@ -78,7 +78,7 @@ export default function SvenskaScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.mottoSection}>
-          <Text style={styles.mottoText}>{about?.slogan_sv || 'Mat som passar kungar, som våra mormödrar sa'}</Text>
+          <Text style={styles.mottoText}>{about?.slogan_sv || 'Långsamt tillagad mat passande för kungar, som våra mormödrar sa'}</Text>
         </View>
 
         <View style={styles.categoriesSection}>

@@ -8,7 +8,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <LanguageProvider>
-        <StatusBar style="light" />
+        <StatusBar style="dark" backgroundColor="#FFD700" />
         <Stack
           screenOptions={{
             headerShown: false,

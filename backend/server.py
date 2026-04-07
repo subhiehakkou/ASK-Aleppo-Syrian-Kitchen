@@ -350,13 +350,13 @@ async def seed_database():
 
 أنا من مواليد 1960 وقضيت 50 عاما في حب الطبخ ولم يكن مهنتي ولكنني عاشقة لتحضير الطعام للعائلة بكل أصنافة.""",
             title_en="Aleppo Syrian Kitchen",
-            slogan_en="Food fit for kings, as our grandmothers said",
+            slogan_en="Slow cooked food fit for kings, as our grandmothers said",
             about_en="""About the dish and app creator:
 I am Umm Samer, an authentic Syrian lady from Aleppo. My roots go back 300 years in Aleppo, where I grew up in an environment that loves delicious, lovingly prepared food to share with family and friends.
 
 Born in 1960, I have spent 50 years loving cooking. It was never my profession, but I am passionate about preparing food for my family in all its varieties.""",
             title_sv="Aleppo Syriskt Kök",
-            slogan_sv="Mat som passar kungar, som våra mormödrar sa",
+            slogan_sv="Långsamt tillagad mat passande för kungar, som våra mormödrar sa",
             about_sv="""Om skaparen av rätterna och appen:
 Jag är Umm Samer, en äkta syrisk dam från Aleppo. Mina rötter går 300 år tillbaka i Aleppo, där jag växte upp i en miljö som älskar utsökt, kärleksfullt tillagad mat att dela med familj och vänner.
 
