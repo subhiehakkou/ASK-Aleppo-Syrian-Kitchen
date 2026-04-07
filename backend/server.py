@@ -182,16 +182,18 @@ async def get_category(cat_id: str):
 @api_router.get("/recipes", response_model=List[Recipe])
 async def get_recipes(category_id: Optional[str] = None):
     """Get all recipes, optionally filtered by category.
-    Special: Yog category returns all recipes containing yogurt (لبن) in ingredients."""
+    Special: Yog category returns all recipes containing yogurt (لبن) as ingredient."""
     query = {}
     if category_id:
         if category_id == "Yog":
-            # Yogurt category: return recipes assigned to Yog OR containing لبن in ingredients
-            import re
+            # Yogurt category: return recipes assigned to Yog OR containing لبن as actual ingredient
+            # Use negative lookahead to avoid matching لبن inside other words like اللبنية or البندورة
+            # Match لبن only when NOT followed by another Arabic letter (ي,ة,د etc.)
+            yogurt_regex = "لبن(?![ا-ي])"
             query = {
                 "$or": [
                     {"category_id": "Yog"},
-                    {"ingredients_ar": {"$regex": "لبن", "$options": "i"}}
+                    {"ingredients_ar": {"$regex": yogurt_regex}}
                 ]
             }
         else:
