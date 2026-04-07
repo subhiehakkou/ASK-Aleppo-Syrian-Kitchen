@@ -10,7 +10,7 @@ import { getCategories, Category, getAbout, AboutInfo } from '../../src/services
 import { getCategoryImage } from '../../src/utils/imageHelper';
 import DrawerMenu from '../../src/components/DrawerMenu';
 
-const APP_LOGO = require('../../assets/images/Logo1.png');
+const APP_LOGO = require('../../assets/images/logo.png');
 
 export default function SvenskaScreen() {
   const { setLanguage } = useLanguage();
