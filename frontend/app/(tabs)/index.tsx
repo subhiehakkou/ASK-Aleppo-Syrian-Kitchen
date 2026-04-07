@@ -114,16 +114,9 @@ export default function HomeScreen() {
                     resizeMode="cover"
                   />
                 </View>
-                <LinearGradient
-                  colors={['#FFD700', '#DAA520', '#B8860B']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.categoryInfo}
-                >
-                  <Text style={styles.categoryName} numberOfLines={2}>
-                    {getCategoryName(category)}
-                  </Text>
-                </LinearGradient>
+                <Text style={styles.categoryName} numberOfLines={2}>
+                  {getCategoryName(category)}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -246,14 +239,18 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     width: '48%',
-    marginBottom: SPACING.lg,
-    borderRadius: BORDER_RADIUS.lg,
-    overflow: 'hidden',
-    backgroundColor: '#F5F5DC',
+    marginBottom: SPACING.xl,
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
   },
   categoryImageContainer: {
-    height: 100,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    overflow: 'hidden',
     backgroundColor: '#F5F5DC',
+    borderWidth: 3,
+    borderColor: '#DAA520',
   },
   categoryImage: {
     width: '100%',
@@ -267,6 +264,7 @@ const styles = StyleSheet.create({
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     textAlign: 'center',
+    marginTop: SPACING.sm,
   },
   contactSection: {
     padding: SPACING.lg,

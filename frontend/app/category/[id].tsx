@@ -262,12 +262,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.cardBackground,
     borderRadius: BORDER_RADIUS.lg,
     marginBottom: SPACING.md,
-    overflow: 'hidden',
+    padding: SPACING.md,
     ...SHADOWS.medium,
   },
   recipeImage: {
-    width: 90,
-    height: 90,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 2,
+    borderColor: COLORS.gold,
   },
   recipeContent: {
     flex: 1,
