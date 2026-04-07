@@ -192,7 +192,7 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
             },
           ]}
         >
-          <Text style={styles.titleTextAr}>مطبخ حلب السوري</Text>
+          <Text style={styles.titleTextAr}>المطبخ الحلبي السوري</Text>
           <View style={styles.logoRow}>
             <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
             <Text style={styles.titleTextEn}>ASK</Text>
