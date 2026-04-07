@@ -8,6 +8,9 @@ import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../src/constants
 import { getCategories, Category, getAbout, AboutInfo } from '../src/services/api';
 import { getCategoryImage } from '../src/utils/imageHelper';
 
+// App Logo
+const APP_LOGO = require('../assets/images/logo.png');
+
 export default function HomeScreen() {
   const { language, setLanguage, t, isRTL } = useLanguage();
   const router = useRouter();
@@ -72,8 +75,7 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={[styles.titleContainer, isRTL && styles.rtlRow]}>
-            <Ionicons name="restaurant" size={28} color={COLORS.gold} />
-            <Text style={[styles.appTitle, isRTL && styles.rtlText]}>{t('app_name')}</Text>
+            <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
           </View>
           
           {/* Language Selector */}
@@ -117,9 +119,7 @@ export default function HomeScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Hero Section */}
         <View style={styles.heroSection}>
-          <Text style={[styles.welcomeText, isRTL && styles.rtlText]}>{t('welcome')}</Text>
-          <Text style={[styles.heroTitle, isRTL && styles.rtlText]}>{t('app_name')}</Text>
-          <View style={styles.divider} />
+          <Image source={APP_LOGO} style={styles.heroLogo} resizeMode="contain" />
           <Text style={[styles.sloganText, isRTL && styles.rtlText]}>{getSlogan()}</Text>
         </View>
 
@@ -205,6 +205,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.sm,
   },
+  headerLogo: {
+    width: 45,
+    height: 45,
+  },
   rtlRow: {
     flexDirection: 'row-reverse',
   },
@@ -264,9 +268,14 @@ const styles = StyleSheet.create({
   },
   heroSection: {
     alignItems: 'center',
-    paddingVertical: SPACING.xxxl,
+    paddingVertical: SPACING.xl,
     paddingHorizontal: SPACING.lg,
     backgroundColor: COLORS.goldLight,
+  },
+  heroLogo: {
+    width: 150,
+    height: 150,
+    marginBottom: SPACING.md,
   },
   welcomeText: {
     fontSize: FONTS.sizes.lg,
