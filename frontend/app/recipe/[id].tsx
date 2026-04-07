@@ -9,6 +9,7 @@ import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../../src/consta
 import { getRecipe, Recipe } from '../../src/services/api';
 import { getRecipeImage } from '../../src/utils/imageHelper';
 import AppHeader from '../../src/components/AppHeader';
+import BottomTabBar from '../../src/components/BottomTabBar';
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -253,6 +254,7 @@ export default function RecipeDetailScreen() {
         
         <View style={styles.bottomPadding} />
       </ScrollView>
+      <BottomTabBar />
     </SafeAreaView>
   );
 }

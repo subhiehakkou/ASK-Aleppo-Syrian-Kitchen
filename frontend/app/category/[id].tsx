@@ -8,6 +8,7 @@ import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../../src/consta
 import { getRecipes, getCategory, Recipe, Category } from '../../src/services/api';
 import { getRecipeImage } from '../../src/utils/imageHelper';
 import AppHeader from '../../src/components/AppHeader';
+import BottomTabBar from '../../src/components/BottomTabBar';
 
 export default function CategoryScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -150,6 +151,7 @@ export default function CategoryScreen() {
           </View>
         )}
       </ScrollView>
+      <BottomTabBar />
     </SafeAreaView>
   );
 }
