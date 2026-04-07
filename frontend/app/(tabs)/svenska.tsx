@@ -11,6 +11,7 @@ import { getCategories, Category, getAbout, AboutInfo } from '../../src/services
 import { getCategoryImage } from '../../src/utils/imageHelper';
 import { shareApp } from '../../src/utils/shareHelper';
 import DrawerMenu from '../../src/components/DrawerMenu';
+import AppHeader from '../../src/components/AppHeader';
 
 const APP_LOGO = require('../../assets/images/logo.png');
 
@@ -60,47 +61,9 @@ export default function SvenskaScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#FFDA47', '#FFD700', '#E0B000']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.header}
-      >
-        <SafeAreaView edges={['top']}>
-          {/* Top Row: Action Icons */}
-          <View style={styles.iconsRow}>
-            <TouchableOpacity 
-              style={styles.iconBtn} 
-              onPress={() => setDrawerVisible(true)}
-            >
-              <Ionicons name="menu" size={26} color="#3A3A3A" />
-            </TouchableOpacity>
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity 
-              style={styles.iconBtn} 
-              onPress={() => router.push('/search')}
-            >
-              <Ionicons name="search-outline" size={22} color="#3A3A3A" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.iconBtn} 
-              onPress={shareApp}
-            >
-              <Ionicons name="share-social-outline" size={22} color="#3A3A3A" />
-            </TouchableOpacity>
-          </View>
-          {/* Name Block: Logo | Name | Logo */}
-          <View style={styles.nameBlock}>
-            <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
-            <View style={styles.nameCenter}>
-              <Text style={styles.headerTitleAr}>المطبخ الحلبي السوري</Text>
-              <Text style={styles.headerSubtitle}>A S K</Text>
-              <Text style={styles.headerTitleEn}>Aleppo Syrian Kitchen</Text>
-            </View>
-            <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
-          </View>
-        </SafeAreaView>
-      </LinearGradient>
+      <SafeAreaView edges={['top']} style={{ backgroundColor: '#FFDA47' }}>
+        <AppHeader showMenu onMenuPress={() => setDrawerVisible(true)} />
+      </SafeAreaView>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.mottoSection}>
