@@ -308,7 +308,13 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.scrollView} 
+        showsVerticalScrollIndicator={false}
+        maximumZoomScale={3}
+        minimumZoomScale={1}
+        bouncesZoom={true}
+      >
         {/* Recipe Image */}
         <View style={styles.imageContainer}>
           <Image

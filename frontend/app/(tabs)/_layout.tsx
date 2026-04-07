@@ -1,8 +1,9 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Flag images
 const FLAG_SY = { uri: 'https://flagcdn.com/w80/sy.png' };
@@ -10,6 +11,10 @@ const FLAG_GB = { uri: 'https://flagcdn.com/w80/gb.png' };
 const FLAG_SE = { uri: 'https://flagcdn.com/w80/se.png' };
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, 10);
+  const tabBarHeight = 60 + bottomPadding;
+
   return (
     <View style={{ flex: 1, backgroundColor: '#FFDA47' }}>
       <Tabs
@@ -19,9 +24,9 @@ export default function TabLayout() {
             backgroundColor: 'transparent',
             borderTopWidth: 0,
             elevation: 0,
-            height: 90,
-            paddingBottom: 30,
-            paddingTop: 10,
+            height: tabBarHeight,
+            paddingBottom: bottomPadding,
+            paddingTop: 8,
           },
           tabBarBackground: () => (
             <LinearGradient

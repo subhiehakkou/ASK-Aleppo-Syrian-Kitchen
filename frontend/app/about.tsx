@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../src/context/LanguageContext';
 import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../src/constants/theme';
 import { getAbout, AboutInfo } from '../src/services/api';
+import AppHeader from '../src/components/AppHeader';
 
 // App Logo
 const APP_LOGO = require('../assets/images/logo.png');
@@ -70,28 +71,17 @@ export default function AboutScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons 
-            name={isRTL ? "arrow-forward" : "arrow-back"} 
-            size={24} 
-            color={COLORS.textPrimary} 
-          />
-        </TouchableOpacity>
-        
-        <Text style={[styles.headerTitle, isRTL && styles.rtlText]}>
-          {t('about')}
-        </Text>
-        
-        <View style={styles.placeholder} />
-      </View>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      {/* Unified AppHeader */}
+      <AppHeader showBack={true} title={isRTL ? 'حول المطبخ' : language === 'sv' ? 'Om köket' : 'About'} />
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.scrollView} 
+        showsVerticalScrollIndicator={false}
+        maximumZoomScale={3}
+        minimumZoomScale={1}
+        bouncesZoom={true}
+      >
         {/* Hero Section */}
         <View style={styles.heroSection}>
           <Image source={APP_LOGO} style={styles.heroLogo} resizeMode="contain" />
@@ -189,39 +179,14 @@ const styles = StyleSheet.create({
     fontSize: FONTS.sizes.lg,
     color: COLORS.textSecondary,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    backgroundColor: COLORS.cardBackground,
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.gold,
-    ...SHADOWS.small,
-  },
-  backButton: {
-    padding: SPACING.sm,
-  },
-  headerTitle: {
+  scrollView: {
     flex: 1,
-    fontSize: FONTS.sizes.xl,
-    fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
-    textAlign: 'center',
-    marginHorizontal: SPACING.md,
-  },
-  placeholder: {
-    width: 40,
   },
   rtlText: {
     textAlign: 'right',
   },
   rtlRow: {
     flexDirection: 'row-reverse',
-  },
-  scrollView: {
-    flex: 1,
   },
   heroSection: {
     alignItems: 'center',

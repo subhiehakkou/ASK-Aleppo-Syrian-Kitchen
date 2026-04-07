@@ -1,5 +1,5 @@
 // Backend image serving configuration
-const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL;
+const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 const IMAGE_BASE_URL = `${API_BASE}/api/images`;
 
 // Placeholder SVG data URI for when no image is available
