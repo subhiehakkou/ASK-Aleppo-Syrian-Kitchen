@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: FONTS.sizes.lg,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
   },
@@ -151,6 +152,7 @@ const styles = StyleSheet.create({
   },
   headerAbbr: {
     fontSize: FONTS.sizes.sm,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     letterSpacing: 2,

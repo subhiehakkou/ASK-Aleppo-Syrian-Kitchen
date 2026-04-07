@@ -170,16 +170,19 @@ const styles = StyleSheet.create({
   },
   headerTitleAr: {
     fontSize: FONTS.sizes.md,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
   },
   headerTitleEn: {
     fontSize: FONTS.sizes.sm,
+    fontFamily: 'Cairo_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: '#3A3A3A',
   },
   headerSubtitle: {
     fontSize: FONTS.sizes.sm,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     letterSpacing: 3,
@@ -198,6 +201,7 @@ const styles = StyleSheet.create({
   },
   mottoText: {
     fontSize: FONTS.sizes.xl,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     textAlign: 'center',
@@ -209,6 +213,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: FONTS.sizes.xxl,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     marginBottom: SPACING.lg,
@@ -242,6 +247,7 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     fontSize: FONTS.sizes.md,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     textAlign: 'center',
@@ -265,6 +271,7 @@ const styles = StyleSheet.create({
   },
   askKitchenText: {
     fontSize: FONTS.sizes.lg,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
   },

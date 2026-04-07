@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: FONTS.sizes.xl,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#FFFFFF',
   },
@@ -167,12 +168,14 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: FONTS.sizes.xxl,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     marginBottom: SPACING.md,
     textAlign: 'center',
   },
   emptyText: {
+    fontFamily: 'Cairo_400Regular',
     fontSize: FONTS.sizes.md,
     color: '#6A6A6A',
     textAlign: 'center',
@@ -180,6 +183,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   emptyTextEn: {
+    fontFamily: 'Cairo_400Regular',
     fontSize: FONTS.sizes.sm,
     color: '#8A8A8A',
     textAlign: 'center',
@@ -198,6 +202,7 @@ const styles = StyleSheet.create({
   },
   countText: {
     fontSize: FONTS.sizes.md,
+    fontFamily: 'Cairo_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: '#DAA520',
   },
@@ -223,6 +228,7 @@ const styles = StyleSheet.create({
   },
   recipeName: {
     fontSize: FONTS.sizes.lg,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     textAlign: 'right',
@@ -236,6 +242,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   timeText: {
+    fontFamily: 'Cairo_400Regular',
     fontSize: FONTS.sizes.sm,
     color: '#6A6A6A',
   },

@@ -42,6 +42,11 @@ export const COLORS = {
 };
 
 export const FONTS = {
+  families: {
+    regular: 'Cairo_400Regular',
+    semibold: 'Cairo_600SemiBold',
+    bold: 'Cairo_700Bold',
+  },
   sizes: {
     xs: 10,
     sm: 12,

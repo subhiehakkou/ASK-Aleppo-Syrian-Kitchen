@@ -8,6 +8,7 @@ import { useFavorites } from '../../src/context/FavoritesContext';
 import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../../src/constants/theme';
 import { getRecipe, Recipe } from '../../src/services/api';
 import { getRecipeImage } from '../../src/utils/imageHelper';
+import AppHeader from '../../src/components/AppHeader';
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -156,24 +157,15 @@ export default function RecipeDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons 
-            name={isRTL ? "arrow-forward" : "arrow-back"} 
-            size={24} 
-            color={COLORS.textPrimary} 
-          />
-        </TouchableOpacity>
-        
-        <Text style={[styles.headerTitle, isRTL && styles.rtlText]} numberOfLines={1}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      {/* App Header with Logo */}
+      <AppHeader showBack={true} />
+      
+      {/* Recipe Name & Favorite */}
+      <View style={styles.recipeNameRow}>
+        <Text style={[styles.headerTitle, isRTL && styles.rtlText]} numberOfLines={2}>
           {getName()}
         </Text>
-        
         <TouchableOpacity
           style={styles.favoriteButton}
           onPress={() => {
@@ -184,7 +176,7 @@ export default function RecipeDetailScreen() {
         >
           <Ionicons 
             name={isFavorite(recipe?.id || recipe?._id || id as string) ? "heart" : "heart-outline"} 
-            size={26} 
+            size={28} 
             color={isFavorite(recipe?.id || recipe?._id || id as string) ? "#E74C3C" : COLORS.textPrimary} 
           />
         </TouchableOpacity>
@@ -300,6 +292,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     color: COLORS.textWhite,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
   },
   header: {
@@ -319,6 +312,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     fontSize: FONTS.sizes.lg,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
     textAlign: 'center',
@@ -338,6 +332,14 @@ const styles = StyleSheet.create({
   },
   rtlRow: {
     flexDirection: 'row-reverse',
+  },
+  recipeNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    backgroundColor: '#FFFFF0',
   },
   scrollView: {
     flex: 1,
@@ -364,6 +366,7 @@ const styles = StyleSheet.create({
   },
   recipeName: {
     fontSize: FONTS.sizes.xxl,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.md,
@@ -385,11 +388,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   metaLabel: {
+    fontFamily: 'Cairo_400Regular',
     fontSize: FONTS.sizes.sm,
     color: COLORS.textLight,
   },
   metaValue: {
     fontSize: FONTS.sizes.md,
+    fontFamily: 'Cairo_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: COLORS.textPrimary,
   },
@@ -420,6 +425,7 @@ const styles = StyleSheet.create({
   },
   activeTabText: {
     color: COLORS.goldDark,
+    fontFamily: 'Cairo_600SemiBold',
     fontWeight: FONTS.weights.semibold,
   },
   tabContent: {
@@ -430,6 +436,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.small,
   },
   contentText: {
+    fontFamily: 'Cairo_400Regular',
     fontSize: FONTS.sizes.md,
     color: COLORS.textPrimary,
     lineHeight: 24,
@@ -448,10 +455,12 @@ const styles = StyleSheet.create({
   },
   subSectionTitle: {
     fontSize: FONTS.sizes.lg,
+    fontFamily: 'Cairo_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: COLORS.goldDark,
   },
   noContent: {
+    fontFamily: 'Cairo_400Regular',
     textAlign: 'center',
     color: COLORS.textLight,
     fontSize: FONTS.sizes.lg,

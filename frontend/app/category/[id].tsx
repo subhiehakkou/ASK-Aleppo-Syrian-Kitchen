@@ -7,6 +7,7 @@ import { useLanguage } from '../../src/context/LanguageContext';
 import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../../src/constants/theme';
 import { getRecipes, getCategory, Recipe, Category } from '../../src/services/api';
 import { getRecipeImage } from '../../src/utils/imageHelper';
+import AppHeader from '../../src/components/AppHeader';
 
 export default function CategoryScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -83,26 +84,8 @@ export default function CategoryScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons 
-            name={isRTL ? "arrow-forward" : "arrow-back"} 
-            size={24} 
-            color={COLORS.textPrimary} 
-          />
-        </TouchableOpacity>
-        
-        <Text style={[styles.headerTitle, isRTL && styles.rtlText]} numberOfLines={1}>
-          {getCategoryName()}
-        </Text>
-        
-        <View style={styles.placeholder} />
-      </View>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <AppHeader showBack={true} title={getCategoryName()} />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Category Info */}
@@ -203,6 +186,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     fontSize: FONTS.sizes.xl,
+    fontFamily: 'Cairo_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
     textAlign: 'center',
@@ -238,6 +222,7 @@ const styles = StyleSheet.create({
   },
   recipeCount: {
     fontSize: FONTS.sizes.md,
+    fontFamily: 'Cairo_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: COLORS.goldDark,
   },
@@ -248,6 +233,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xxxl * 2,
   },
   emptyText: {
+    fontFamily: 'Cairo_400Regular',
     marginTop: SPACING.lg,
     fontSize: FONTS.sizes.lg,
     color: COLORS.textLight,
@@ -278,6 +264,7 @@ const styles = StyleSheet.create({
   },
   recipeName: {
     fontSize: FONTS.sizes.lg,
+    fontFamily: 'Cairo_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.sm,
