@@ -8,6 +8,7 @@ import { useLanguage } from '../../src/context/LanguageContext';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
 import { getCategories, Category, getAbout, AboutInfo } from '../../src/services/api';
 import { getCategoryImage } from '../../src/utils/imageHelper';
+import DrawerMenu from '../../src/components/DrawerMenu';
 
 // App Logo
 const APP_LOGO = require('../../assets/images/logo.png');
@@ -18,6 +19,7 @@ export default function HomeScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [about, setAbout] = useState<AboutInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
   useEffect(() => {
     // Set language to Arabic for this tab
@@ -67,13 +69,21 @@ export default function HomeScreen() {
         style={styles.header}
       >
         <View style={styles.headerContent}>
-          <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
+          {/* Menu Button */}
+          <TouchableOpacity 
+            style={styles.menuButton} 
+            onPress={() => setDrawerVisible(true)}
+          >
+            <Ionicons name="menu" size={28} color="#3A3A3A" />
+          </TouchableOpacity>
+
           <View style={styles.titleTextContainer}>
             <Text style={styles.headerTitleAr}>المطبخ الحلبي السوري</Text>
             <Text style={styles.headerTitleEn}>Aleppo Syrian Kitchen</Text>
             <Text style={styles.headerSubtitle}>ASK</Text>
           </View>
-          <View style={styles.headerPlaceholder} />
+          
+          <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
         </View>
       </LinearGradient>
 
@@ -137,6 +147,9 @@ export default function HomeScreen() {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
+
+      {/* Drawer Menu */}
+      <DrawerMenu isVisible={drawerVisible} onClose={() => setDrawerVisible(false)} />
     </SafeAreaView>
   );
 }
@@ -165,6 +178,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  menuButton: {
+    padding: SPACING.xs,
   },
   headerLogo: {
     width: 50,
@@ -208,6 +224,7 @@ const styles = StyleSheet.create({
     color: '#3A3A3A',
     textAlign: 'center',
     lineHeight: 32,
+    writingDirection: 'rtl',
   },
   categoriesSection: {
     padding: SPACING.lg,
