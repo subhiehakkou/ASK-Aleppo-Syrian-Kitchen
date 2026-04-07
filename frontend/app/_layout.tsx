@@ -7,6 +7,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Cairo_400Regular, Cairo_600SemiBold, Cairo_700Bold } from '@expo-google-fonts/cairo';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import WelcomeScreen from '../src/components/WelcomeScreen';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -15,6 +17,7 @@ export default function RootLayout() {
     Cairo_700Bold,
   });
   const [timedOut, setTimedOut] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setTimedOut(true), 5000);
@@ -28,6 +31,15 @@ export default function RootLayout() {
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FFDA47" />
       </View>
+    );
+  }
+
+  if (showWelcome) {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" backgroundColor="#1A1A2E" />
+        <WelcomeScreen onContinue={() => setShowWelcome(false)} />
+      </SafeAreaProvider>
     );
   }
 
