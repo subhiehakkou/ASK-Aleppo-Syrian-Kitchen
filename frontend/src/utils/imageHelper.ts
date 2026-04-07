@@ -1,55 +1,51 @@
-// Google Drive folder ID
-const GDRIVE_FOLDER_ID = '1s45Hum24BsF1OdQxCbeGugI8sNxTeR_D';
+// Cloudinary configuration
+const CLOUDINARY_CLOUD_NAME = 'dwiaupvek';
+const CLOUDINARY_BASE_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
-// Map of known image filenames to their Google Drive file IDs
-// This will be populated with actual file IDs
-const IMAGE_MAP: Record<string, string> = {};
-
-// Placeholder image URL
-const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/300x200/FFD700/1A1A1A?text=Recipe';
-
-// Category placeholder with food icon
-const CATEGORY_PLACEHOLDER = 'https://via.placeholder.com/300x200/FFFFF0/FFD700?text=Category';
+// Placeholder images for fallback
+const PLACEHOLDER_RECIPE = 'https://via.placeholder.com/300x200/FFD700/3A3A3A?text=Recipe';
+const PLACEHOLDER_CATEGORY = 'https://via.placeholder.com/300x200/FFD700/3A3A3A?text=Category';
 
 export function getImageUrl(imagePath: string | null | undefined, type: 'recipe' | 'category' = 'recipe'): string {
   if (!imagePath) {
-    return type === 'category' ? CATEGORY_PLACEHOLDER : PLACEHOLDER_IMAGE;
+    return type === 'category' ? PLACEHOLDER_CATEGORY : PLACEHOLDER_RECIPE;
   }
   
-  // Clean the filename
-  const filename = imagePath
+  // Clean the filename - remove path prefixes
+  let filename = imagePath
     .replace(/^(images\/|Images\/|bilder\/)/i, '')
     .trim();
   
   if (!filename) {
-    return type === 'category' ? CATEGORY_PLACEHOLDER : PLACEHOLDER_IMAGE;
+    return type === 'category' ? PLACEHOLDER_CATEGORY : PLACEHOLDER_RECIPE;
   }
   
-  // Check if we have a mapped file ID
-  if (IMAGE_MAP[filename]) {
-    return `https://drive.google.com/uc?export=view&id=${IMAGE_MAP[filename]}`;
-  }
+  // Remove file extension for Cloudinary (it handles it automatically)
+  const nameWithoutExt = filename.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '');
   
-  // For now, use placeholder with the recipe/category name
-  const encodedName = encodeURIComponent(filename.replace(/\.[^/.]+$/, ''));
-  if (type === 'category') {
-    return `https://via.placeholder.com/300x200/FFFFF0/DAA520?text=${encodedName}`;
-  }
-  return `https://via.placeholder.com/300x200/FFD700/1A1A1A?text=${encodedName}`;
+  // Build Cloudinary URL with optimizations
+  // f_auto: automatic format selection
+  // q_auto: automatic quality
+  // w_400: width 400px for recipes, w_300 for categories
+  const width = type === 'category' ? 300 : 400;
+  
+  return `${CLOUDINARY_BASE_URL}/f_auto,q_auto,w_${width}/${nameWithoutExt}`;
 }
 
 export function getCategoryImage(category: { cover_image?: string; name_en?: string }): string {
   if (category.cover_image) {
     return getImageUrl(category.cover_image, 'category');
   }
+  // Fallback with category name
   const name = encodeURIComponent(category.name_en || 'Category');
-  return `https://via.placeholder.com/300x200/FFFFF0/DAA520?text=${name}`;
+  return `https://via.placeholder.com/300x200/FFD700/3A3A3A?text=${name}`;
 }
 
 export function getRecipeImage(recipe: { image?: string; name_en?: string }): string {
   if (recipe.image) {
     return getImageUrl(recipe.image, 'recipe');
   }
+  // Fallback with recipe name
   const name = encodeURIComponent(recipe.name_en || 'Recipe');
-  return `https://via.placeholder.com/300x200/FFD700/1A1A1A?text=${name}`;
+  return `https://via.placeholder.com/300x200/FFD700/3A3A3A?text=${name}`;
 }
