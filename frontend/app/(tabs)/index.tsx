@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,9 +22,16 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [drawerVisible, setDrawerVisible] = useState(false);
 
+  const navigation = useNavigation();
+
   useEffect(() => {
-    // Set language to Arabic for this tab
-    setLanguage('ar');
+    const unsubscribe = navigation.addListener('focus', () => {
+      setLanguage('ar');
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
     loadData();
   }, []);
 
