@@ -57,7 +57,7 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
       
       <View style={[styles.drawer, isRTL ? styles.drawerRTL : styles.drawerLTR]}>
         <LinearGradient
-          colors={['#FFD700', '#DAA520', '#B8860B']}
+          colors={['#FFE566', '#FFD700', '#FFCC00']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.header}
@@ -78,7 +78,7 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
               onPress={() => handleNavigation(item.route)}
               activeOpacity={0.7}
             >
-              <Ionicons name={item.icon as any} size={24} color="#B8860B" />
+              <Ionicons name={item.icon as any} size={24} color="#DAA520" />
               <Text style={[styles.menuLabel, isRTL && styles.menuLabelRTL]}>
                 {getLabel(item)}
               </Text>

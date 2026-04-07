@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../src/context/LanguageContext';
+import { useFavorites } from '../../src/context/FavoritesContext';
 import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../../src/constants/theme';
 import { getRecipe, Recipe } from '../../src/services/api';
 import { getRecipeImage } from '../../src/utils/imageHelper';
@@ -12,6 +13,7 @@ export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { language, t, isRTL } = useLanguage();
+  const { isFavorite, toggleFavorite } = useFavorites();
   
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
@@ -172,7 +174,20 @@ export default function RecipeDetailScreen() {
           {getName()}
         </Text>
         
-        <View style={styles.placeholder} />
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={() => {
+            const recipeId = recipe?.id || recipe?._id || id;
+            if (recipeId) toggleFavorite(recipeId as string);
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons 
+            name={isFavorite(recipe?.id || recipe?._id || id as string) ? "heart" : "heart-outline"} 
+            size={26} 
+            color={isFavorite(recipe?.id || recipe?._id || id as string) ? "#E74C3C" : COLORS.textPrimary} 
+          />
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -311,6 +326,12 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: 40,
+  },
+  favoriteButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   rtlText: {
     textAlign: 'right',

@@ -11,7 +11,7 @@ const FLAG_SE = { uri: 'https://flagcdn.com/w80/se.png' };
 
 export default function TabLayout() {
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFD700' }}>
+    <View style={{ flex: 1, backgroundColor: '#FFE566' }}>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -25,7 +25,7 @@ export default function TabLayout() {
           },
           tabBarBackground: () => (
             <LinearGradient
-              colors={['#FFD700', '#DAA520', '#B8860B']}
+              colors={['#FFE566', '#FFD700', '#FFCC00']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={StyleSheet.absoluteFill}

@@ -51,7 +51,7 @@ export default function EnglishScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#FFD700', '#DAA520', '#B8860B']}
+        colors={['#FFE566', '#FFD700', '#FFCC00']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -113,7 +113,7 @@ export default function EnglishScreen() {
             onPress={() => router.push('/contact')}
           >
             <LinearGradient
-              colors={['#FFD700', '#DAA520', '#B8860B']}
+              colors={['#FFE566', '#FFD700', '#FFCC00']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.askKitchenGradient}
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#F5F5DC',
     borderWidth: 3,
-    borderColor: '#DAA520',
+    borderColor: '#FFD700',
   },
   categoryImage: {
     width: '100%',

@@ -1,15 +1,16 @@
 export const COLORS = {
-  // Primary colors - Syrian heritage theme
+  // Primary colors - Syrian heritage theme (24K Gold Bar inspired)
   ivory: '#FFFFF0',
   ivoryDark: '#F5F5DC',
-  gold: '#FFD700',
-  goldDark: '#DAA520',
-  goldLight: '#FFF8DC',
-  goldDeep: '#B8860B',
+  gold: '#FFE14D',
+  goldDark: '#FFD700',
+  goldLight: '#FFF4CC',
+  goldDeep: '#DAA520',
   
-  // Gradient colors for header/footer
-  goldGradientStart: '#FFD700',
-  goldGradientEnd: '#DAA520',
+  // Gradient colors for header/footer (24K gold bar sheen)
+  goldGradientStart: '#FFE566',
+  goldGradientMiddle: '#FFD700',
+  goldGradientEnd: '#FFCC00',
   
   // Text colors
   textPrimary: '#1A1A1A',
@@ -32,9 +33,12 @@ export const COLORS = {
   error: '#F44336',
   warning: '#FFC107',
   
+  // Favorite
+  favoriteRed: '#E74C3C',
+  
   // Border colors
   border: '#E0E0E0',
-  borderGold: '#FFD700',
+  borderGold: '#FFD54F',
 };
 
 export const FONTS = {
