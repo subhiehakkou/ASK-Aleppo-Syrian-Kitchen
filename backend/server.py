@@ -458,14 +458,15 @@ async def search_recipes(q: str = ""):
     regex_parts = []
     for p in patterns:
         escaped = re.escape(p)
-        # Match: start/space + optional Arabic prefix + word + end/space/suffix
-        regex_parts.append(r'(?:^|\s|ال|بال|وال)' + escaped + r'(?:\s|$|ة|ي|ية|ات|ين|ون|ها|هم)')
-        # Also match the exact word with ال prefix
-        regex_parts.append(r'(?:^|\s)ال' + escaped)
-        # Also match as part of compound name (باللبن، واللبن)
-        regex_parts.append(r'(?:بال|وال)' + escaped)
-        # Direct name match
-        regex_parts.append(r'(?:^|\s)' + escaped + r'(?:\s|$)')
+        # Match standalone word: لبن followed by space/end (NOT another Arabic letter)
+        # Using negative lookahead (?![ا-ي]) to prevent matching inside longer words
+        regex_parts.append(r'(?:^|\s)' + escaped + r'(?![ا-ي])')
+        # Match with Arabic prefix ال: اللبن
+        regex_parts.append(r'(?:^|\s)ال' + escaped + r'(?![ا-ي])')
+        # Match compound forms: باللبن، واللبن
+        regex_parts.append(r'(?:بال|وال)' + escaped + r'(?![ا-ي])')
+        # Match with noun suffixes (ة، ات) that end the word
+        regex_parts.append(r'(?:^|\s|ال|بال|وال)' + escaped + r'(?:ة|ات|ين|ون)(?:\s|$)')
     
     combined_regex = '|'.join(regex_parts)
     
