@@ -1,8 +1,13 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+
+// Flag images
+const FLAG_SY = { uri: 'https://flagcdn.com/w80/sy.png' };
+const FLAG_GB = { uri: 'https://flagcdn.com/w80/gb.png' };
+const FLAG_SE = { uri: 'https://flagcdn.com/w80/se.png' };
 
 export default function TabLayout() {
   return (
@@ -13,8 +18,8 @@ export default function TabLayout() {
           backgroundColor: 'transparent',
           borderTopWidth: 0,
           elevation: 0,
-          height: 70,
-          paddingBottom: 10,
+          height: 75,
+          paddingBottom: 15,
           paddingTop: 10,
         },
         tabBarBackground: () => (
@@ -28,8 +33,9 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#FFFFFF',
         tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.7)',
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: '600',
+          marginTop: 4,
         },
       }}
     >
@@ -37,22 +43,25 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'العربية',
-          tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: 20 }}>🇸🇾</Text>
+          tabBarIcon: ({ focused }) => (
+            <Image 
+              source={FLAG_SY} 
+              style={[styles.flagIcon, focused && styles.flagIconActive]} 
+              resizeMode="cover"
+            />
           ),
         }}
-        listeners={({ navigation }) => ({
-          tabPress: (e) => {
-            // Navigate to home with Arabic language
-          },
-        })}
       />
       <Tabs.Screen
         name="english"
         options={{
           title: 'English',
-          tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: 20 }}>🇬🇧</Text>
+          tabBarIcon: ({ focused }) => (
+            <Image 
+              source={FLAG_GB} 
+              style={[styles.flagIcon, focused && styles.flagIconActive]} 
+              resizeMode="cover"
+            />
           ),
         }}
       />
@@ -60,8 +69,12 @@ export default function TabLayout() {
         name="svenska"
         options={{
           title: 'Svenska',
-          tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: 20 }}>🇸🇪</Text>
+          tabBarIcon: ({ focused }) => (
+            <Image 
+              source={FLAG_SE} 
+              style={[styles.flagIcon, focused && styles.flagIconActive]} 
+              resizeMode="cover"
+            />
           ),
         }}
       />
@@ -69,11 +82,29 @@ export default function TabLayout() {
         name="favorites"
         options={{
           title: 'Favorite',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart" size={24} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons 
+              name={focused ? "heart" : "heart-outline"} 
+              size={26} 
+              color={color} 
+            />
           ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  flagIcon: {
+    width: 32,
+    height: 22,
+    borderRadius: 3,
+    opacity: 0.8,
+  },
+  flagIconActive: {
+    opacity: 1,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+});

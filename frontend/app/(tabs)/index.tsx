@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   mottoText: {
     fontSize: FONTS.sizes.xl,
     fontWeight: FONTS.weights.bold,
-    color: '#B8860B',
+    color: '#3A3A3A',
     textAlign: 'center',
     lineHeight: 32,
   },
