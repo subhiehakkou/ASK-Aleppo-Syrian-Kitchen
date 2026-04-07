@@ -11,7 +11,7 @@ import { getCategoryImage } from '../../src/utils/imageHelper';
 import DrawerMenu from '../../src/components/DrawerMenu';
 
 // App Logo
-const APP_LOGO = require('../../assets/images/logo.png');
+const APP_LOGO = require('../../assets/images/Logo1.png');
 
 export default function HomeScreen() {
   const { language, setLanguage, t, isRTL } = useLanguage();
