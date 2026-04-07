@@ -331,22 +331,22 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
         {/* Action Buttons: Print + QR */}
         <View style={styles.actionBar}>
           <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: COLORS.gold }]}
+            style={styles.actionButton}
             onPress={() => {
               console.log('Print button pressed directly in recipe page');
               generatePDF();
             }}
             activeOpacity={0.7}
           >
-            <Ionicons name="print-outline" size={20} color="#FFF" />
-            <Text style={[styles.actionButtonText, { color: '#FFF' }]}>{isRTL ? 'طباعة الوصفة' : 'Print Recipe'}</Text>
+            <Ionicons name="print-outline" size={20} color="#3A3A3A" />
+            <Text style={styles.actionButtonText}>{isRTL ? 'طباعة الوصفة' : 'Print Recipe'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
             onPress={() => setShowQR(!showQR)}
             activeOpacity={0.7}
           >
-            <Ionicons name="qr-code-outline" size={20} color={COLORS.gold} />
+            <Ionicons name="qr-code-outline" size={20} color="#3A3A3A" />
             <Text style={styles.actionButtonText}>{isRTL ? 'باركود الوصفة' : 'Recipe QR Code'}</Text>
           </TouchableOpacity>
         </View>
@@ -646,16 +646,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
     paddingVertical: SPACING.sm,
-    backgroundColor: '#FFF',
+    backgroundColor: '#E8C800',
     borderRadius: BORDER_RADIUS.lg,
     borderWidth: 1.5,
-    borderColor: COLORS.gold,
+    borderColor: '#D4A800',
     ...SHADOWS.small,
   },
   actionButtonText: {
     fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontSize: 13,
-    color: COLORS.goldDark,
+    color: '#3A3A3A',
   },
   qrSection: {
     alignItems: 'center',
