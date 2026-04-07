@@ -240,7 +240,7 @@ In this app, I will present authentic Aleppo Syrian recipes and some Gulf recipe
 
 Umm Samer - Aleppo Syrian Kitchen""",
             title_sv="Aleppo Syriskt Kök",
-            slogan_sv="Slow cooked food fit for kings, as our grandmothers said",
+            slogan_sv="Långsamt tillagad mat passande för kungar, som våra mormödrar sa",
             about_sv="""Om skaparen av rätterna och appen:
 Jag är Umm Samer, en äkta syrisk dam från Aleppo. Mina rötter går 300 år tillbaka i Aleppo, där jag växte upp i en miljö som älskar utsökt, kärleksfullt tillagad mat att dela med familj och vänner.
 
@@ -364,7 +364,7 @@ In this app, I will present authentic Aleppo Syrian recipes and some Gulf recipe
 
 Umm Samer - Aleppo Syrian Kitchen""",
             title_sv="Aleppo Syriskt Kök",
-            slogan_sv="Slow cooked food fit for kings, as our grandmothers said",
+            slogan_sv="Långsamt tillagad mat passande för kungar, som våra mormödrar sa",
             about_sv="""Om skaparen av rätterna och appen:
 Jag är Umm Samer, en äkta syrisk dam från Aleppo. Mina rötter går 300 år tillbaka i Aleppo, där jag växte upp i en miljö som älskar utsökt, kärleksfullt tillagad mat att dela med familj och vänner.
 
