@@ -1,19 +1,26 @@
 export const COLORS = {
   // Primary colors - Syrian heritage theme
   ivory: '#FFFFF0',
+  ivoryDark: '#F5F5DC',
   gold: '#FFD700',
   goldDark: '#DAA520',
   goldLight: '#FFF8DC',
+  goldDeep: '#B8860B',
+  
+  // Gradient colors for header/footer
+  goldGradientStart: '#FFD700',
+  goldGradientEnd: '#DAA520',
   
   // Text colors
   textPrimary: '#1A1A1A',
   textSecondary: '#4A4A4A',
   textLight: '#6A6A6A',
   textWhite: '#FFFFFF',
+  textGold: '#B8860B',
   
   // Background colors
   background: '#FFFFF0',
-  cardBackground: '#FFFFFF',
+  cardBackground: '#FFFFF0',
   cardShadow: 'rgba(0, 0, 0, 0.1)',
   
   // Accent colors

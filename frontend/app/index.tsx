@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIn
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../src/context/LanguageContext';
 import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../src/constants/theme';
 import { getCategories, Category, getAbout, AboutInfo } from '../src/services/api';
@@ -71,8 +72,13 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
+      {/* Header with Gold Gradient */}
+      <LinearGradient
+        colors={['#FFD700', '#DAA520', '#B8860B']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <View style={styles.headerContent}>
           <View style={[styles.titleContainer, isRTL && styles.rtlRow]}>
             <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
@@ -83,7 +89,7 @@ export default function HomeScreen() {
             style={styles.langButton}
             onPress={() => setShowLangPicker(!showLangPicker)}
           >
-            <Ionicons name="globe-outline" size={22} color={COLORS.gold} />
+            <Ionicons name="globe-outline" size={22} color={COLORS.goldDark} />
             <Text style={styles.langButtonText}>
               {language.toUpperCase()}
             </Text>
@@ -114,13 +120,12 @@ export default function HomeScreen() {
             ))}
           </View>
         )}
-      </View>
+      </LinearGradient>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Hero Section */}
-        <View style={styles.heroSection}>
-          <Image source={APP_LOGO} style={styles.heroLogo} resizeMode="contain" />
-          <Text style={[styles.sloganText, isRTL && styles.rtlText]}>{getSlogan()}</Text>
+        {/* Motto Section - Ivory Background, No Logo */}
+        <View style={styles.mottoSection}>
+          <Text style={[styles.mottoText, isRTL && styles.rtlText]}>{getSlogan()}</Text>
         </View>
 
         {/* Categories Section */}
@@ -141,13 +146,17 @@ export default function HomeScreen() {
                     style={styles.categoryImage}
                     resizeMode="cover"
                   />
-                  <View style={styles.categoryOverlay} />
                 </View>
-                <View style={styles.categoryInfo}>
+                <LinearGradient
+                  colors={['#FFD700', '#DAA520', '#B8860B']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.categoryInfo}
+                >
                   <Text style={[styles.categoryName, isRTL && styles.rtlText]} numberOfLines={2}>
                     {getCategoryName(category)}
                   </Text>
-                </View>
+                </LinearGradient>
               </TouchableOpacity>
             ))}
           </View>
@@ -159,14 +168,28 @@ export default function HomeScreen() {
             style={styles.askKitchenButton}
             onPress={() => router.push('/contact')}
           >
-            <Ionicons name="chatbubble-ellipses" size={24} color={COLORS.textWhite} />
-            <Text style={styles.askKitchenText}>{t('ask_kitchen')}</Text>
+            <LinearGradient
+              colors={['#FFD700', '#DAA520', '#B8860B']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.askKitchenGradient}
+            >
+              <Ionicons name="chatbubble-ellipses" size={24} color={COLORS.textWhite} />
+              <Text style={styles.askKitchenText}>{t('ask_kitchen')}</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.footer}>
+        {/* Footer with Gold Gradient */}
+        <LinearGradient
+          colors={['#B8860B', '#DAA520', '#FFD700']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.footer}
+        >
           <Text style={styles.footerText}>© 2024 Aleppo Syrian Kitchen</Text>
-        </View>
+          <Text style={styles.footerSubtext}>أم سامر - المطبخ الحلبي السوري</Text>
+        </LinearGradient>
       </ScrollView>
     </SafeAreaView>
   );
@@ -175,12 +198,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.ivory,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS.ivory,
   },
   loadingText: {
     marginTop: SPACING.md,
@@ -188,12 +212,8 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   header: {
-    backgroundColor: COLORS.cardBackground,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.gold,
-    ...SHADOWS.small,
   },
   headerContent: {
     flexDirection: 'row',
@@ -206,16 +226,11 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   headerLogo: {
-    width: 45,
-    height: 45,
+    width: 50,
+    height: 50,
   },
   rtlRow: {
     flexDirection: 'row-reverse',
-  },
-  appTitle: {
-    fontSize: FONTS.sizes.xl,
-    fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
   },
   rtlText: {
     textAlign: 'right',
@@ -226,19 +241,18 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.goldLight,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: BORDER_RADIUS.lg,
   },
   langButtonText: {
     fontSize: FONTS.sizes.md,
-    fontWeight: FONTS.weights.semibold,
+    fontWeight: FONTS.weights.bold,
     color: COLORS.goldDark,
   },
   langPicker: {
     marginTop: SPACING.md,
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: COLORS.ivory,
     borderRadius: BORDER_RADIUS.md,
-    ...SHADOWS.medium,
     overflow: 'hidden',
   },
   langOption: {
@@ -266,43 +280,22 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  heroSection: {
+  mottoSection: {
     alignItems: 'center',
-    paddingVertical: SPACING.xl,
+    paddingVertical: SPACING.xxl,
     paddingHorizontal: SPACING.lg,
-    backgroundColor: COLORS.goldLight,
+    backgroundColor: COLORS.ivory,
   },
-  heroLogo: {
-    width: 150,
-    height: 150,
-    marginBottom: SPACING.md,
-  },
-  welcomeText: {
-    fontSize: FONTS.sizes.lg,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.xs,
-  },
-  heroTitle: {
-    fontSize: FONTS.sizes.title,
+  mottoText: {
+    fontSize: FONTS.sizes.xl,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.goldDark,
+    color: COLORS.goldDeep,
     textAlign: 'center',
-  },
-  divider: {
-    width: 60,
-    height: 3,
-    backgroundColor: COLORS.gold,
-    marginVertical: SPACING.lg,
-    borderRadius: BORDER_RADIUS.round,
-  },
-  sloganText: {
-    fontSize: FONTS.sizes.lg,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    fontStyle: 'italic',
+    lineHeight: 32,
   },
   categoriesSection: {
     padding: SPACING.lg,
+    backgroundColor: COLORS.ivory,
   },
   sectionTitle: {
     fontSize: FONTS.sizes.xxl,
@@ -319,47 +312,42 @@ const styles = StyleSheet.create({
     width: '48%',
     marginBottom: SPACING.lg,
     borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.cardBackground,
     overflow: 'hidden',
-    ...SHADOWS.medium,
+    backgroundColor: COLORS.ivory,
   },
   categoryImageContainer: {
     height: 100,
     position: 'relative',
+    backgroundColor: COLORS.ivoryDark,
   },
   categoryImage: {
     width: '100%',
     height: '100%',
   },
-  categoryOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.1)',
-  },
   categoryInfo: {
     padding: SPACING.md,
-    backgroundColor: COLORS.cardBackground,
-    borderTopWidth: 2,
-    borderTopColor: COLORS.gold,
   },
   categoryName: {
     fontSize: FONTS.sizes.md,
-    fontWeight: FONTS.weights.semibold,
-    color: COLORS.textPrimary,
+    fontWeight: FONTS.weights.bold,
+    color: COLORS.textWhite,
     textAlign: 'center',
   },
   contactSection: {
     padding: SPACING.lg,
     alignItems: 'center',
+    backgroundColor: COLORS.ivory,
   },
   askKitchenButton: {
+    borderRadius: BORDER_RADIUS.xxl,
+    overflow: 'hidden',
+  },
+  askKitchenGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.md,
-    backgroundColor: COLORS.gold,
     paddingHorizontal: SPACING.xxl,
     paddingVertical: SPACING.lg,
-    borderRadius: BORDER_RADIUS.xxl,
-    ...SHADOWS.medium,
   },
   askKitchenText: {
     fontSize: FONTS.sizes.lg,
@@ -368,10 +356,17 @@ const styles = StyleSheet.create({
   },
   footer: {
     alignItems: 'center',
-    padding: SPACING.xl,
+    paddingVertical: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
   },
   footerText: {
+    fontSize: FONTS.sizes.md,
+    fontWeight: FONTS.weights.semibold,
+    color: COLORS.textWhite,
+  },
+  footerSubtext: {
     fontSize: FONTS.sizes.sm,
-    color: COLORS.textLight,
+    color: COLORS.textWhite,
+    marginTop: SPACING.xs,
   },
 });
