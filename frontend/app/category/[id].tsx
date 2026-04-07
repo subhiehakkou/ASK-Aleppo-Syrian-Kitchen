@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     fontSize: FONTS.sizes.xl,
-    fontFamily: 'Cairo_700Bold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
     textAlign: 'center',
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   },
   recipeCount: {
     fontSize: FONTS.sizes.md,
-    fontFamily: 'Cairo_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: COLORS.goldDark,
   },
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xxxl * 2,
   },
   emptyText: {
-    fontFamily: 'Cairo_400Regular',
+    fontFamily: 'NotoNaskhArabic_400Regular',
     marginTop: SPACING.lg,
     fontSize: FONTS.sizes.lg,
     color: COLORS.textLight,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   recipeName: {
     fontSize: FONTS.sizes.lg,
-    fontFamily: 'Cairo_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.sm,

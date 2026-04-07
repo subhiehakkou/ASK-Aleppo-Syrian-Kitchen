@@ -43,9 +43,14 @@ export const COLORS = {
 
 export const FONTS = {
   families: {
-    regular: 'Cairo_400Regular',
-    semibold: 'Cairo_600SemiBold',
-    bold: 'Cairo_700Bold',
+    regular: 'NotoNaskhArabic_400Regular',
+    medium: 'NotoNaskhArabic_500Medium',
+    semibold: 'NotoNaskhArabic_600SemiBold',
+    bold: 'NotoNaskhArabic_700Bold',
+    // Keep Cairo for English/Swedish headings
+    cairoRegular: 'Cairo_400Regular',
+    cairoSemibold: 'Cairo_600SemiBold',
+    cairoBold: 'Cairo_700Bold',
   },
   sizes: {
     xs: 10,

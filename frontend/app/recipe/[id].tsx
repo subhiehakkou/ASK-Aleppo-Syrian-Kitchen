@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     color: COLORS.textWhite,
-    fontFamily: 'Cairo_700Bold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
   },
   header: {
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     fontSize: FONTS.sizes.lg,
-    fontFamily: 'Cairo_700Bold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
     textAlign: 'center',
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   },
   recipeName: {
     fontSize: FONTS.sizes.xxl,
-    fontFamily: 'Cairo_700Bold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.md,
@@ -391,13 +391,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   metaLabel: {
-    fontFamily: 'Cairo_400Regular',
+    fontFamily: 'NotoNaskhArabic_400Regular',
     fontSize: FONTS.sizes.sm,
     color: COLORS.textLight,
   },
   metaValue: {
     fontSize: FONTS.sizes.md,
-    fontFamily: 'Cairo_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: COLORS.textPrimary,
   },
@@ -433,11 +433,11 @@ const styles = StyleSheet.create({
     fontSize: FONTS.sizes.sm,
     color: COLORS.textLight,
     textAlign: 'center',
-    fontFamily: 'Cairo_400Regular',
+    fontFamily: 'NotoNaskhArabic_400Regular',
   },
   activeTabText: {
     color: COLORS.goldDark,
-    fontFamily: 'Cairo_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontWeight: FONTS.weights.semibold,
   },
   tabContent: {
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.small,
   },
   contentText: {
-    fontFamily: 'Cairo_400Regular',
+    fontFamily: 'NotoNaskhArabic_400Regular',
     fontSize: FONTS.sizes.md,
     color: COLORS.textPrimary,
     lineHeight: 24,
@@ -467,12 +467,12 @@ const styles = StyleSheet.create({
   },
   subSectionTitle: {
     fontSize: FONTS.sizes.lg,
-    fontFamily: 'Cairo_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontWeight: FONTS.weights.semibold,
     color: COLORS.goldDark,
   },
   noContent: {
-    fontFamily: 'Cairo_400Regular',
+    fontFamily: 'NotoNaskhArabic_400Regular',
     textAlign: 'center',
     color: COLORS.textLight,
     fontSize: FONTS.sizes.lg,

@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
   },
   label: {
-    fontFamily: 'Cairo_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontSize: 11,
     fontWeight: '600',
     color: 'rgba(58, 58, 58, 0.6)',

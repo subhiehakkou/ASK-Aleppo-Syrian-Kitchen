@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     height: 60,
   },
   title: {
-    fontFamily: 'Cairo_700Bold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontSize: 16,
     fontWeight: '700',
     color: '#3A3A3A',
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   slogan: {
-    fontFamily: 'Cairo_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontSize: 11,
     fontWeight: '600',
     color: '#3A3A3A',

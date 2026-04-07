@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Cairo_400Regular, Cairo_600SemiBold, Cairo_700Bold } from '@expo-google-fonts/cairo';
+import { NotoNaskhArabic_400Regular, NotoNaskhArabic_500Medium, NotoNaskhArabic_600SemiBold, NotoNaskhArabic_700Bold } from '@expo-google-fonts/noto-naskh-arabic';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import WelcomeScreen from '../src/components/WelcomeScreen';
 
@@ -15,6 +16,10 @@ export default function RootLayout() {
     Cairo_400Regular,
     Cairo_600SemiBold,
     Cairo_700Bold,
+    NotoNaskhArabic_400Regular,
+    NotoNaskhArabic_500Medium,
+    NotoNaskhArabic_600SemiBold,
+    NotoNaskhArabic_700Bold,
   });
   const [timedOut, setTimedOut] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);

@@ -20,21 +20,21 @@ const TEXTS = [
     text: 'هذا التطبيق سيفتح لك أبواب أسرار تراث الطهي الحلبي الأصيل، بوصفات دقيقة ونكهات مميزة لن تنساها.',
     color: '#FFD700',
     direction: 'rtl' as const,
-    fontStyle: 'Cairo_700Bold',
+    fontStyle: 'NotoNaskhArabic_700Bold',
   },
   {
     lang: 'en',
     text: 'This app will unlock the secrets of authentic Aleppo culinary heritage, with precise recipes and distinctive flavours you will never forget.',
     color: '#FFFFF0',
     direction: 'ltr' as const,
-    fontStyle: 'Cairo_600SemiBold',
+    fontStyle: 'NotoNaskhArabic_600SemiBold',
   },
   {
     lang: 'sv',
     text: 'Den här appen kommer att låsa upp hemligheterna bakom Aleppos autentiska kulinariska arv, med precisa recept och distinkta smaker som du aldrig kommer att glömma.',
     color: '#C4A265',
     direction: 'ltr' as const,
-    fontStyle: 'Cairo_400Regular',
+    fontStyle: 'NotoNaskhArabic_400Regular',
   },
 ];
 
@@ -396,14 +396,14 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   titleTextAr: {
-    fontFamily: 'Cairo_700Bold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontSize: 28,
     color: '#FFD700',
     textAlign: 'center',
     letterSpacing: 1,
   },
   titleTextEn: {
-    fontFamily: 'Cairo_700Bold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontSize: 36,
     color: '#FFD700',
     textAlign: 'center',
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     marginTop: -4,
   },
   titleSubtext: {
-    fontFamily: 'Cairo_400Regular',
+    fontFamily: 'NotoNaskhArabic_400Regular',
     fontSize: 13,
     color: '#C4A265',
     textAlign: 'center',
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   pauseText: {
-    fontFamily: 'Cairo_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontSize: 14,
     color: '#FFD700',
     marginLeft: 8,
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
   },
   enterText: {
-    fontFamily: 'Cairo_700Bold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontSize: 20,
     color: '#1A1A2E',
     letterSpacing: 2,
