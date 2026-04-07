@@ -78,9 +78,6 @@ export default function AboutScreen() {
       <ScrollView 
         style={styles.scrollView} 
         showsVerticalScrollIndicator={false}
-        maximumZoomScale={3}
-        minimumZoomScale={1}
-        bouncesZoom={true}
       >
         {/* Hero Section */}
         <View style={styles.heroSection}>

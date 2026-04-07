@@ -311,9 +311,6 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
       <ScrollView 
         style={styles.scrollView} 
         showsVerticalScrollIndicator={false}
-        maximumZoomScale={3}
-        minimumZoomScale={1}
-        bouncesZoom={true}
       >
         {/* Recipe Image */}
         <View style={styles.imageContainer}>
