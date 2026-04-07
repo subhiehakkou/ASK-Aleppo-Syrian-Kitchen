@@ -8,6 +8,7 @@ import {
   Dimensions,
   Platform,
   Image,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -146,10 +147,15 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
     <View style={[styles.container]}>
       <LinearGradient
         colors={['#1A1A2E', '#16213E', '#0F3460']}
-        style={[styles.gradient, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
+        style={[styles.gradient, { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 10 }]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.5, y: 1 }}
       >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
         {/* Top decorative line */}
         <Animated.View
           style={[
@@ -195,7 +201,7 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
           <Text style={styles.titleTextAr}>المطبخ الحلبي السوري</Text>
           <View style={styles.logoRow}>
             <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
-            <Text style={styles.titleTextEn}>ASK</Text>
+            <Text style={styles.titleTextEn}>A S K</Text>
             <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
           </View>
           <Text style={styles.titleSubtext}>Aleppo Syrian Kitchen</Text>
@@ -282,8 +288,8 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
                       textAlign: item.direction === 'rtl' ? 'right' : 'left',
                       writingDirection: item.direction,
                       fontFamily: item.fontStyle,
-                      fontSize: item.lang === 'ar' ? 18 : 15,
-                      lineHeight: item.lang === 'ar' ? 34 : 26,
+                      fontSize: item.lang === 'ar' ? 16 : 14,
+                      lineHeight: item.lang === 'ar' ? 30 : 24,
                     },
                   ]}
                 >
@@ -367,6 +373,7 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
             style={styles.decorLine}
           />
         </Animated.View>
+        </ScrollView>
       </LinearGradient>
     </View>
   );
@@ -379,19 +386,23 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    justifyContent: 'space-between',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
+    paddingVertical: 16,
   },
   topDecor: {
     width: '80%',
     height: 2,
-    marginTop: 16,
+    marginBottom: 16,
   },
   bottomDecor: {
     width: '60%',
     height: 1,
-    marginBottom: 12,
+    marginTop: 16,
   },
   decorLine: {
     flex: 1,
@@ -399,7 +410,7 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     alignItems: 'center',
-    marginTop: 24,
+    marginBottom: 20,
   },
   logoRow: {
     flexDirection: 'row',
@@ -437,10 +448,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   contentArea: {
-    flex: 1,
-    justifyContent: 'center',
     width: '100%',
     paddingHorizontal: 8,
+    marginVertical: 16,
   },
   textBlock: {
     paddingVertical: 8,
