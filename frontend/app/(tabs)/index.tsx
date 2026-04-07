@@ -69,7 +69,8 @@ export default function HomeScreen() {
         <View style={styles.headerContent}>
           <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
           <View style={styles.titleTextContainer}>
-            <Text style={styles.headerTitle}>المطبخ الحلبي السوري</Text>
+            <Text style={styles.headerTitleAr}>المطبخ الحلبي السوري</Text>
+            <Text style={styles.headerTitleEn}>Aleppo Syrian Kitchen</Text>
             <Text style={styles.headerSubtitle}>ASK</Text>
           </View>
           <View style={styles.headerPlaceholder} />
@@ -173,15 +174,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: FONTS.sizes.lg,
-    fontWeight: FONTS.weights.bold,
-    color: '#FFFFFF',
-  },
-  headerSubtitle: {
+  headerTitleAr: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: '#FFFFFF',
+    color: '#3A3A3A',
+  },
+  headerTitleEn: {
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.semibold,
+    color: '#3A3A3A',
+  },
+  headerSubtitle: {
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.bold,
+    color: '#3A3A3A',
     letterSpacing: 3,
   },
   headerPlaceholder: {
