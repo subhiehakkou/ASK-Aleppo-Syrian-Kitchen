@@ -7,12 +7,14 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
+const APP_LOGO = require('../../assets/images/logo.png');
 
 const TEXTS = [
   {
@@ -190,7 +192,11 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
             },
           ]}
         >
-          <Text style={styles.titleTextAr}>مطبخ حلب السوري</Text>
+          <View style={styles.titleRow}>
+            <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
+            <Text style={styles.titleTextAr}>مطبخ حلب السوري</Text>
+            <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
+          </View>
           <Text style={styles.titleTextEn}>ASK</Text>
           <Text style={styles.titleSubtext}>Aleppo Syrian Kitchen</Text>
         </Animated.View>
@@ -394,6 +400,17 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: 'center',
     marginTop: 24,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  titleLogo: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   titleTextAr: {
     fontFamily: 'NotoNaskhArabic_700Bold',
