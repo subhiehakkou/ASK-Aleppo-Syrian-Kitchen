@@ -48,30 +48,50 @@ export default function RecipeDetailScreen() {
     const servings = getServings() || '';
     const dir = isRTL ? 'rtl' : 'ltr';
 
+    // Image URLs for PDF
+    const recipeImageUrl = getRecipeImage(recipe);
+    const logoUrl = BACKEND_URL + '/api/images/logo.png';
+    const qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=' + encodeURIComponent(recipeDeepLink);
+
     const html = `<!DOCTYPE html>
 <html dir="${dir}">
 <head>
 <meta charset="utf-8">
 <style>
-body { font-family: serif; color: #333; padding: 30px; direction: ${dir}; }
-.header { text-align: center; border-bottom: 3px solid #DAA520; padding-bottom: 15px; margin-bottom: 20px; }
-.header h1 { color: #DAA520; font-size: 24px; margin-bottom: 5px; }
-.header h2 { color: #333; font-size: 14px; letter-spacing: 3px; }
-.header h3 { color: #666; font-size: 12px; }
-.recipe-title { font-size: 22px; font-weight: 700; color: #333; text-align: center; margin: 15px 0; padding: 10px; background: #FFF8DC; border-radius: 8px; border: 2px solid #DAA520; }
-.meta { text-align: center; color: #666; font-size: 13px; margin-bottom: 15px; }
-.section { margin: 15px 0; }
-.section-title { font-size: 16px; font-weight: 700; color: #DAA520; border-bottom: 2px solid #DAA520; padding-bottom: 5px; margin-bottom: 10px; }
-.section-content { font-size: 14px; line-height: 2; white-space: pre-wrap; }
-.footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #DAA520; color: #999; font-size: 11px; }
+body { font-family: serif; color: #333; padding: 24px; direction: ${dir}; margin: 0; }
+.top-bar { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #DAA520; padding-bottom: 12px; margin-bottom: 10px; }
+.top-logo { width: 60px; height: 60px; border-radius: 50%; }
+.top-center { text-align: center; flex: 1; }
+.top-center h1 { color: #DAA520; font-size: 20px; margin: 0; }
+.top-center h2 { color: #333; font-size: 12px; letter-spacing: 3px; margin: 2px 0; }
+.top-center h3 { color: #666; font-size: 10px; margin: 0; }
+.top-qr { width: 80px; text-align: center; }
+.top-qr img { width: 70px; height: 70px; }
+.top-qr p { font-size: 7px; color: #999; margin: 2px 0 0 0; }
+.hero { text-align: center; margin: 10px 0; }
+.hero img { max-width: 100%; max-height: 200px; border-radius: 10px; border: 2px solid #DAA520; }
+.recipe-title { font-size: 22px; font-weight: 700; color: #333; text-align: center; margin: 10px 0; padding: 8px; background: #FFF8DC; border-radius: 8px; border: 2px solid #DAA520; }
+.meta { text-align: center; color: #666; font-size: 13px; margin-bottom: 12px; }
+.section { margin: 12px 0; }
+.section-title { font-size: 15px; font-weight: 700; color: #DAA520; border-bottom: 2px solid #DAA520; padding-bottom: 4px; margin-bottom: 8px; }
+.section-content { font-size: 13px; line-height: 1.9; white-space: pre-wrap; }
+.footer { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 2px solid #DAA520; color: #999; font-size: 10px; }
 </style>
 </head>
 <body>
-<div class="header">
-<h1>المطبخ الحلبي السوري</h1>
-<h2>A S K</h2>
-<h3>Aleppo Syrian Kitchen</h3>
+<div class="top-bar">
+  <img class="top-logo" src="${logoUrl}" alt="ASK" />
+  <div class="top-center">
+    <h1>المطبخ الحلبي السوري</h1>
+    <h2>A S K</h2>
+    <h3>Aleppo Syrian Kitchen</h3>
+  </div>
+  <div class="top-qr">
+    <img src="${qrCodeUrl}" alt="QR" />
+    <p>${isRTL ? 'امسح للوصفة' : 'Scan for recipe'}</p>
+  </div>
 </div>
+<div class="hero"><img src="${recipeImageUrl}" alt="${name}" /></div>
 <div class="recipe-title">${name}</div>
 ${time || servings ? '<div class="meta">' + (time ? (isRTL ? 'الوقت: ' : 'Time: ') + time : '') + (time && servings ? ' | ' : '') + (servings ? (isRTL ? 'الحصص: ' : 'Servings: ') + servings : '') + '</div>' : ''}
 ${ingredients ? '<div class="section"><div class="section-title">' + (isRTL ? 'المكونات' : 'Ingredients') + '</div><div class="section-content">' + ingredients.replace(/\n/g, '<br>') + '</div></div>' : ''}
@@ -79,7 +99,7 @@ ${instructions ? '<div class="section"><div class="section-title">' + (isRTL ? '
 ${decoration ? '<div class="section"><div class="section-title">' + (isRTL ? 'التزيين' : 'Decoration') + '</div><div class="section-content">' + decoration.replace(/\n/g, '<br>') + '</div></div>' : ''}
 ${tips ? '<div class="section"><div class="section-title">' + (isRTL ? 'نصائح' : 'Tips') + '</div><div class="section-content">' + tips.replace(/\n/g, '<br>') + '</div></div>' : ''}
 ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أسرار الوصفة' : 'Secrets') + '</div><div class="section-content">' + secrets.replace(/\n/g, '<br>') + '</div></div>' : ''}
-<div class="footer">&copy; 2026 ASK</div>
+<div class="footer">&copy; 2026 ASK - المطبخ الحلبي السوري | Aleppo Syrian Kitchen</div>
 </body>
 </html>`;
 
