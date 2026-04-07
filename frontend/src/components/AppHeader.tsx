@@ -106,16 +106,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 4,
+    gap: 6,
   },
   sideLogo: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
   },
   nameCenter: {
-    flex: 1,
     alignItems: 'center',
-    paddingHorizontal: 8,
   },
   title: {
     fontFamily: 'NotoNaskhArabic_700Bold',

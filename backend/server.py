@@ -391,7 +391,7 @@ Umm Samer - Aleppo Syriskt Kök"""
 # ============== SEARCH HELPER ==============
 
 def build_arabic_search_patterns(query: str) -> list:
-    """Build fuzzy search patterns for Arabic text"""
+    """Build search patterns for Arabic text - root must be 3+ chars"""
     patterns = []
     clean_q = query.strip()
     
@@ -399,31 +399,29 @@ def build_arabic_search_patterns(query: str) -> list:
     patterns.append(clean_q)
     
     # Strip Arabic definite article ال
-    if clean_q.startswith('ال'):
-        root = clean_q[2:]
-        patterns.append(root)
-    else:
-        # Add with ال prefix
-        patterns.append('ال' + clean_q)
-    
-    # Extract root (first 2-3 consonant chars) for broad matching
-    root_no_al = clean_q.replace('ال', '')
-    if len(root_no_al) >= 2:
-        # Match anything containing the root letters
+    root_no_al = clean_q
+    if clean_q.startswith('ال') and len(clean_q) > 3:
+        root_no_al = clean_q[2:]
         patterns.append(root_no_al)
-        # Try with common Arabic suffixes/prefixes stripped
-        # ة (ta marbuta), ات (plural feminine), ي (nisba), ين, ون
-        for suffix in ['ة', 'ات', 'ي', 'ين', 'ون', 'يات', 'ية']:
-            if root_no_al.endswith(suffix) and len(root_no_al) > len(suffix) + 1:
-                patterns.append(root_no_al[:-len(suffix)])
+    
+    # Try stripping common endings but KEEP minimum 3 chars
+    for suffix in ['ة', 'ات', 'يات', 'ية', 'ين', 'ون']:
+        stripped = root_no_al
+        if stripped.endswith(suffix) and len(stripped) - len(suffix) >= 3:
+            patterns.append(stripped[:-len(suffix)])
     
     # Remove duplicates while preserving order
     seen = set()
     unique = []
     for p in patterns:
-        if p and p not in seen:
+        if p and len(p) >= 3 and p not in seen:
             seen.add(p)
             unique.append(p)
+    
+    # If no valid patterns, use original query if 3+ chars
+    if not unique and len(clean_q) >= 2:
+        unique = [clean_q]
+    
     return unique
 
 

@@ -78,36 +78,37 @@ export default function HomeScreen() {
         style={styles.header}
       >
         <SafeAreaView edges={['top']}>
-          <View style={styles.headerContent}>
-            {/* Menu Button */}
+          {/* Top Row: Action Icons */}
+          <View style={styles.iconsRow}>
             <TouchableOpacity 
-              style={styles.menuButton} 
+              style={styles.iconBtn} 
               onPress={() => setDrawerVisible(true)}
             >
-              <Ionicons name="menu" size={28} color="#3A3A3A" />
+              <Ionicons name="menu" size={26} color="#3A3A3A" />
             </TouchableOpacity>
-
-            <View style={styles.titleTextContainer}>
-              <Text style={styles.headerTitleAr}>المطبخ الحلبي السوري</Text>
-              <Text style={styles.headerSubtitle}>A S K</Text>
-              <Text style={styles.headerTitleEn}>Aleppo Syrian Kitchen</Text>
-            </View>
-            
-            <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
+            <View style={{ flex: 1 }} />
             <TouchableOpacity 
-              style={styles.searchButton} 
+              style={styles.iconBtn} 
               onPress={() => router.push('/search')}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Ionicons name="search-outline" size={22} color="#3A3A3A" />
             </TouchableOpacity>
             <TouchableOpacity 
-              style={styles.shareButton} 
+              style={styles.iconBtn} 
               onPress={shareApp}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Ionicons name="share-social-outline" size={22} color="#3A3A3A" />
             </TouchableOpacity>
+          </View>
+          {/* Name Block: Logo | Name | Logo */}
+          <View style={styles.nameBlock}>
+            <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
+            <View style={styles.nameCenter}>
+              <Text style={styles.headerTitleAr}>المطبخ الحلبي السوري</Text>
+              <Text style={styles.headerSubtitle}>A S K</Text>
+              <Text style={styles.headerTitleEn}>Aleppo Syrian Kitchen</Text>
+            </View>
+            <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
           </View>
         </SafeAreaView>
       </LinearGradient>
@@ -212,6 +213,33 @@ const styles = StyleSheet.create({
   },
   titleTextContainer: {
     flex: 1,
+    alignItems: 'center',
+  },
+  iconsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.sm,
+    marginBottom: 2,
+  },
+  iconBtn: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nameBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingBottom: 4,
+  },
+  sideLogo: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+  },
+  nameCenter: {
     alignItems: 'center',
   },
   headerTitleAr: {
