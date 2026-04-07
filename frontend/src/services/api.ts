@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
 
-const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://aleppo-culinary-app.preview.emergentagent.com';
+const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 const api = axios.create({
   baseURL: `${API_BASE}/api`,
