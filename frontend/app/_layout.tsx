@@ -5,7 +5,7 @@ import { LanguageProvider } from '../src/context/LanguageContext';
 import { FavoritesProvider } from '../src/context/FavoritesContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
-import { useFonts } from '@expo-google-fonts/cairo/useFonts';
+import { useFonts } from 'expo-font';
 import { Cairo_400Regular, Cairo_600SemiBold, Cairo_700Bold } from '@expo-google-fonts/cairo';
 
 export default function RootLayout() {

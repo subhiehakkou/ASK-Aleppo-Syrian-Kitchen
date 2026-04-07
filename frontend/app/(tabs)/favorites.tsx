@@ -11,7 +11,7 @@ import { getRecipeImage } from '../../src/utils/imageHelper';
 const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 export default function FavoritesScreen() {
-  const { favorites, toggleFavorite } = useFavorites();
+  const { favorites, toggleFavorite, clearFavorites } = useFavorites();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -76,8 +76,18 @@ export default function FavoritesScreen() {
           </View>
         ) : (
           <View style={styles.recipesList}>
-            <View style={styles.countBadge}>
-              <Text style={styles.countText}>{recipes.length} وصفة مفضلة</Text>
+            <View style={styles.topRow}>
+              <View style={styles.countBadge}>
+                <Text style={styles.countText}>{recipes.length} وصفة مفضلة</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.clearAllBtn}
+                onPress={() => clearFavorites()}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="trash-outline" size={16} color="#E74C3C" />
+                <Text style={styles.clearAllText}>تفريغ الكل</Text>
+              </TouchableOpacity>
             </View>
             {recipes.map((recipe) => (
               <TouchableOpacity
@@ -192,13 +202,32 @@ const styles = StyleSheet.create({
   recipesList: {
     padding: SPACING.lg,
   },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+  },
   countBadge: {
-    alignSelf: 'center',
     backgroundColor: '#FFF4CC',
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     borderRadius: BORDER_RADIUS.round,
-    marginBottom: SPACING.lg,
+  },
+  clearAllBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF0F0',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.round,
+    gap: 4,
+  },
+  clearAllText: {
+    fontFamily: 'Cairo_600SemiBold',
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.semibold,
+    color: '#E74C3C',
   },
   countText: {
     fontSize: FONTS.sizes.md,
