@@ -411,11 +411,11 @@ const styles = StyleSheet.create({
     marginTop: -4,
   },
   titleSubtext: {
-    fontFamily: 'NotoNaskhArabic_400Regular',
-    fontSize: 13,
-    color: '#C4A265',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontSize: 20,
+    color: '#FFD700',
     textAlign: 'center',
-    letterSpacing: 3,
+    letterSpacing: 2,
     marginTop: 2,
   },
   contentArea: {
