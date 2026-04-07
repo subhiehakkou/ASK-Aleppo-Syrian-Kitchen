@@ -12,8 +12,11 @@ const FLAG_SE = { uri: 'https://flagcdn.com/w80/se.png' };
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
-  const bottomPadding = Math.max(insets.bottom, 10);
-  const tabBarHeight = 60 + bottomPadding;
+  // Large bottom padding to stay well above Android nav bar + browser chrome
+  const bottomSafe = Platform.OS === 'android' 
+    ? Math.max(insets.bottom + 30, 50) 
+    : Platform.OS === 'web' ? 30 : Math.max(insets.bottom + 10, 30);
+  const tabBarHeight = 80 + bottomSafe;
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFDA47' }}>
@@ -25,8 +28,8 @@ export default function TabLayout() {
             borderTopWidth: 0,
             elevation: 0,
             height: tabBarHeight,
-            paddingBottom: bottomPadding,
-            paddingTop: 8,
+            paddingBottom: bottomSafe,
+            paddingTop: 12,
           },
           tabBarBackground: () => (
             <LinearGradient
@@ -39,8 +42,8 @@ export default function TabLayout() {
           tabBarActiveTintColor: '#3A3A3A',
           tabBarInactiveTintColor: 'rgba(58, 58, 58, 0.6)',
           tabBarLabelStyle: {
-            fontSize: 11,
-            fontWeight: '600',
+            fontSize: 12,
+            fontWeight: '700',
             marginTop: 4,
           },
         }}
@@ -104,9 +107,9 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   flagIcon: {
-    width: 32,
-    height: 22,
-    borderRadius: 3,
+    width: 36,
+    height: 26,
+    borderRadius: 4,
     opacity: 0.8,
   },
   flagIconActive: {
