@@ -52,7 +52,11 @@ export default function AppHeader({ showBack = false, title }: AppHeaderProps) {
       {title ? (
         <Text style={styles.title}>{title}</Text>
       ) : (
-        <Text style={styles.slogan}>مطبخ حلب السوري | Aleppo Syrian Kitchen</Text>
+        <View style={styles.nameStack}>
+          <Text style={styles.nameAr}>المطبخ الحلبي السوري</Text>
+          <Text style={styles.nameAbbr}>A S K</Text>
+          <Text style={styles.nameEn}>Aleppo Syrian Kitchen</Text>
+        </View>
       )}
     </LinearGradient>
   );
@@ -99,12 +103,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 4,
   },
-  slogan: {
-    fontFamily: 'NotoNaskhArabic_600SemiBold',
-    fontSize: 11,
-    fontWeight: '600',
+  nameStack: {
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  nameAr: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#3A3A3A',
     textAlign: 'center',
-    marginTop: 4,
+    lineHeight: 22,
+  },
+  nameAbbr: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#3A3A3A',
+    textAlign: 'center',
+    letterSpacing: 6,
+    lineHeight: 16,
+  },
+  nameEn: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 10,
+    color: '#5A5A5A',
+    textAlign: 'center',
+    letterSpacing: 1,
+    lineHeight: 14,
   },
 });

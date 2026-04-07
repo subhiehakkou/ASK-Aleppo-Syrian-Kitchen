@@ -89,8 +89,8 @@ export default function HomeScreen() {
 
             <View style={styles.titleTextContainer}>
               <Text style={styles.headerTitleAr}>المطبخ الحلبي السوري</Text>
+              <Text style={styles.headerSubtitle}>A S K</Text>
               <Text style={styles.headerTitleEn}>Aleppo Syrian Kitchen</Text>
-              <Text style={styles.headerSubtitle}>ASK</Text>
             </View>
             
             <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
-    letterSpacing: 3,
+    letterSpacing: 6,
   },
   headerPlaceholder: {
     width: 50,
