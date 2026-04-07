@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SPACING } from '../constants/theme';
+import { shareApp } from '../utils/shareHelper';
 
 const APP_LOGO = require('../../assets/images/logo.png');
 
@@ -39,7 +40,13 @@ export default function AppHeader({ showBack = false, title }: AppHeaderProps) {
           <Image source={APP_LOGO} style={styles.logo} resizeMode="contain" />
         </View>
 
-        <View style={styles.spacer} />
+        <TouchableOpacity
+          style={styles.shareButton}
+          onPress={shareApp}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="share-social-outline" size={22} color="#3A3A3A" />
+        </TouchableOpacity>
       </View>
 
       {title ? (
@@ -70,6 +77,12 @@ const styles = StyleSheet.create({
   },
   spacer: {
     width: 40,
+  },
+  shareButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   logoContainer: {
     alignItems: 'center',

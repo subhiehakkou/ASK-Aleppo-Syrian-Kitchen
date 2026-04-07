@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { FONTS, SPACING, COLORS, SHADOWS, BORDER_RADIUS } from '../../src/constants/theme';
 import { useFavorites } from '../../src/context/FavoritesContext';
 import { getRecipeImage } from '../../src/utils/imageHelper';
+import { shareApp } from '../../src/utils/shareHelper';
 
 const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
@@ -51,8 +52,15 @@ export default function FavoritesScreen() {
         style={styles.header}
       >
         <View style={styles.headerContent}>
-          <Ionicons name="heart" size={24} color="#FFFFFF" />
+          <TouchableOpacity
+            style={styles.shareButton}
+            onPress={shareApp}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="share-social-outline" size={22} color="#FFFFFF" />
+          </TouchableOpacity>
           <Text style={styles.headerTitle}>المفضلة | Favorites</Text>
+          <Ionicons name="heart" size={24} color="#FFFFFF" />
         </View>
       </LinearGradient>
 
@@ -142,6 +150,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+  },
+  shareButton: {
+    padding: 4,
   },
   headerTitle: {
     fontSize: FONTS.sizes.xl,

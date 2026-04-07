@@ -9,6 +9,7 @@ import { useLanguage } from '../../src/context/LanguageContext';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
 import { getCategories, Category, getAbout, AboutInfo } from '../../src/services/api';
 import { getCategoryImage } from '../../src/utils/imageHelper';
+import { shareApp } from '../../src/utils/shareHelper';
 import DrawerMenu from '../../src/components/DrawerMenu';
 
 const APP_LOGO = require('../../assets/images/logo.png');
@@ -81,6 +82,13 @@ export default function SvenskaScreen() {
             </View>
             
             <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
+            <TouchableOpacity 
+              style={styles.shareButton} 
+              onPress={shareApp}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="share-social-outline" size={22} color="#3A3A3A" />
+            </TouchableOpacity>
           </View>
         </SafeAreaView>
       </LinearGradient>
@@ -172,6 +180,9 @@ const styles = StyleSheet.create({
   headerLogo: {
     width: 50,
     height: 50,
+  },
+  shareButton: {
+    padding: SPACING.xs,
   },
   titleTextContainer: {
     flex: 1,
