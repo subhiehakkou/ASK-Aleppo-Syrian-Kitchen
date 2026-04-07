@@ -181,10 +181,21 @@ async def get_category(cat_id: str):
 # Recipes
 @api_router.get("/recipes", response_model=List[Recipe])
 async def get_recipes(category_id: Optional[str] = None):
-    """Get all recipes, optionally filtered by category"""
+    """Get all recipes, optionally filtered by category.
+    Special: Yog category returns all recipes containing yogurt (لبن) in ingredients."""
     query = {}
     if category_id:
-        query["category_id"] = category_id
+        if category_id == "Yog":
+            # Yogurt category: return recipes assigned to Yog OR containing لبن in ingredients
+            import re
+            query = {
+                "$or": [
+                    {"category_id": "Yog"},
+                    {"ingredients_ar": {"$regex": "لبن", "$options": "i"}}
+                ]
+            }
+        else:
+            query["category_id"] = category_id
     recipes = await db.recipes.find(query).to_list(1000)
     return [Recipe(**recipe) for recipe in recipes]
 
