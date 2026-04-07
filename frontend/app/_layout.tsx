@@ -65,6 +65,7 @@ export default function RootLayout() {
             <Stack.Screen name="recipe/[id]" />
             <Stack.Screen name="contact" />
             <Stack.Screen name="about" />
+            <Stack.Screen name="search" />
           </Stack>
         </FavoritesProvider>
       </LanguageProvider>

@@ -11,6 +11,7 @@ from typing import List, Optional
 import uuid
 from datetime import datetime
 import openpyxl
+import re
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -387,7 +388,123 @@ Umm Samer - Aleppo Syriskt Kök"""
         logger.error(f"Error seeding database: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.get("/stats")
+# ============== SEARCH HELPER ==============
+
+def build_arabic_search_patterns(query: str) -> list:
+    """Build fuzzy search patterns for Arabic text"""
+    patterns = []
+    clean_q = query.strip()
+    
+    # Original query as-is
+    patterns.append(clean_q)
+    
+    # Strip Arabic definite article ال
+    if clean_q.startswith('ال'):
+        root = clean_q[2:]
+        patterns.append(root)
+    else:
+        # Add with ال prefix
+        patterns.append('ال' + clean_q)
+    
+    # Extract root (first 2-3 consonant chars) for broad matching
+    root_no_al = clean_q.replace('ال', '')
+    if len(root_no_al) >= 2:
+        # Match anything containing the root letters
+        patterns.append(root_no_al)
+        # Try with common Arabic suffixes/prefixes stripped
+        # ة (ta marbuta), ات (plural feminine), ي (nisba), ين, ون
+        for suffix in ['ة', 'ات', 'ي', 'ين', 'ون', 'يات', 'ية']:
+            if root_no_al.endswith(suffix) and len(root_no_al) > len(suffix) + 1:
+                patterns.append(root_no_al[:-len(suffix)])
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique = []
+    for p in patterns:
+        if p and p not in seen:
+            seen.add(p)
+            unique.append(p)
+    return unique
+
+
+@api_router.get("/search")
+async def search_recipes(q: str = ""):
+    """Smart global search across recipes - names, ingredients, tips, secrets"""
+    if not q or len(q.strip()) < 2:
+        return {"results": [], "query": q}
+    
+    query = q.strip()
+    
+    # Build search patterns for Arabic fuzzy matching
+    patterns = build_arabic_search_patterns(query)
+    
+    # Create regex pattern that matches any of the patterns
+    regex_parts = [re.escape(p) for p in patterns]
+    combined_regex = '|'.join(regex_parts)
+    
+    # Also add the raw query for English/Swedish
+    if query not in patterns:
+        combined_regex += '|' + re.escape(query)
+    
+    # Fields to search in
+    search_fields = [
+        'name_ar', 'name_en', 'name_sv',
+        'ingredients_ar', 'ingredients_en', 'ingredients_sv',
+        'instructions_ar', 'instructions_en', 'instructions_sv',
+        'secrets_ar', 'secrets_en', 'secrets_sv',
+        'decoration_ar', 'decoration_en', 'decoration_sv',
+    ]
+    
+    # Build MongoDB $or query
+    or_conditions = []
+    for field in search_fields:
+        or_conditions.append({field: {"$regex": combined_regex, "$options": "i"}})
+    
+    # Execute search
+    recipes = await db.recipes.find({"$or": or_conditions}).to_list(1000)
+    
+    # Build results with match context
+    results = []
+    for recipe in recipes:
+        match_fields = []
+        for field in search_fields:
+            val = recipe.get(field, '') or ''
+            if val and re.search(combined_regex, val, re.IGNORECASE):
+                # Determine match type
+                if 'name' in field:
+                    match_fields.append({'field': field, 'type': 'name'})
+                elif 'ingredients' in field:
+                    match_fields.append({'field': field, 'type': 'ingredients'})
+                elif 'instructions' in field:
+                    match_fields.append({'field': field, 'type': 'instructions'})
+                else:
+                    match_fields.append({'field': field, 'type': 'other'})
+        
+        # Get category name
+        cat = await db.categories.find_one({"cat_id": recipe.get('category_id', '')})
+        
+        results.append({
+            'id': recipe.get('id', ''),
+            'name_ar': recipe.get('name_ar', ''),
+            'name_en': recipe.get('name_en', ''),
+            'name_sv': recipe.get('name_sv', ''),
+            'image': recipe.get('image', ''),
+            'category_id': recipe.get('category_id', ''),
+            'category_name_ar': cat.get('name_ar', '') if cat else '',
+            'category_name_en': cat.get('name_en', '') if cat else '',
+            'category_name_sv': cat.get('name_sv', '') if cat else '',
+            'match_fields': match_fields,
+            'time_ar': recipe.get('time_ar', ''),
+        })
+    
+    # Sort: name matches first, then ingredient matches
+    def sort_key(r):
+        has_name = any(m['type'] == 'name' for m in r['match_fields'])
+        return (0 if has_name else 1, r['name_ar'])
+    
+    results.sort(key=sort_key)
+    
+    return {"results": results, "query": query, "count": len(results)}
 async def get_stats():
     """Get database statistics"""
     categories_count = await db.categories.count_documents({})

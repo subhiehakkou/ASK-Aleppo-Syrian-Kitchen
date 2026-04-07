@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,14 @@ import { getRecipe, Recipe } from '../../src/services/api';
 import { getRecipeImage } from '../../src/utils/imageHelper';
 import AppHeader from '../../src/components/AppHeader';
 import BottomTabBar from '../../src/components/BottomTabBar';
+import QRCode from 'react-native-qrcode-svg';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import Constants from 'expo-constants';
+
+const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL
+  || process.env.EXPO_PUBLIC_BACKEND_URL
+  || '';
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -20,6 +28,64 @@ export default function RecipeDetailScreen() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions' | 'tips'>('ingredients');
+  const [showQR, setShowQR] = useState(false);
+
+  const recipeDeepLink = `ask-kitchen://recipe/${id}`;
+
+  const generatePDF = async () => {
+    if (!recipe) return;
+    const name = getName();
+    const ingredients = getIngredients();
+    const instructions = getInstructions();
+    const tips = getProTips();
+    const secrets = getSecrets();
+    const imageUrl = getRecipeImage(recipe);
+
+    const html = `
+      <!DOCTYPE html>
+      <html dir="${isRTL ? 'rtl' : 'ltr'}">
+      <head>
+        <meta charset="utf-8">
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&display=swap');
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Noto Naskh Arabic', serif; color: #333; padding: 30px; direction: ${isRTL ? 'rtl' : 'ltr'}; }
+          .header { text-align: center; border-bottom: 3px solid #FFD700; padding-bottom: 15px; margin-bottom: 20px; }
+          .header h1 { color: #FFD700; font-size: 24px; margin-bottom: 5px; }
+          .header h2 { color: #333; font-size: 14px; letter-spacing: 3px; }
+          .header h3 { color: #666; font-size: 12px; }
+          .recipe-title { font-size: 22px; font-weight: 700; color: #333; text-align: center; margin: 15px 0; }
+          .section { margin: 15px 0; }
+          .section-title { font-size: 16px; font-weight: 700; color: #FFD700; border-bottom: 2px solid #FFD700; padding-bottom: 5px; margin-bottom: 10px; }
+          .section-content { font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
+          .footer { text-align: center; margin-top: 30px; padding-top: 15px; border-top: 2px solid #FFD700; color: #999; font-size: 11px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>مطبخ حلب السوري</h1>
+          <h2>A S K</h2>
+          <h3>Aleppo Syrian Kitchen</h3>
+        </div>
+        <div class="recipe-title">${name}</div>
+        ${ingredients ? `<div class="section"><div class="section-title">${isRTL ? 'المكونات' : 'Ingredients'}</div><div class="section-content">${ingredients.replace(/\n/g, '<br>')}</div></div>` : ''}
+        ${instructions ? `<div class="section"><div class="section-title">${isRTL ? 'طريقة التحضير' : 'Instructions'}</div><div class="section-content">${instructions.replace(/\n/g, '<br>')}</div></div>` : ''}
+        ${tips ? `<div class="section"><div class="section-title">${isRTL ? 'نصائح' : 'Tips'}</div><div class="section-content">${tips.replace(/\n/g, '<br>')}</div></div>` : ''}
+        ${secrets ? `<div class="section"><div class="section-title">${isRTL ? 'أسرار الوصفة' : 'Secrets'}</div><div class="section-content">${secrets.replace(/\n/g, '<br>')}</div></div>` : ''}
+        <div class="footer">© 2026 ASK - مطبخ حلب السوري | Aleppo Syrian Kitchen</div>
+      </body>
+      </html>
+    `;
+
+    try {
+      const { uri } = await Print.printToFileAsync({ html, base64: false });
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+      }
+    } catch (e) {
+      console.log('PDF error:', e);
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -86,32 +152,39 @@ export default function RecipeDetailScreen() {
     { key: 'tips', label: t('pro_tips'), icon: 'bulb-outline' },
   ];
 
+  const TAB_STYLES: Record<string, { bg: string; text: string }> = {
+    ingredients: { bg: '#FFD700', text: '#1A1A1A' },
+    instructions: { bg: '#1A1A2E', text: '#FFD700' },
+    tips: { bg: '#FFD700', text: '#1A1A1A' },
+  };
+
   const renderTabContent = () => {
+    const tabStyle = TAB_STYLES[activeTab];
     switch (activeTab) {
       case 'ingredients':
         return (
-          <View style={styles.tabContent}>
-            <Text style={[styles.contentText, isRTL && styles.rtlText]}>
+          <View style={[styles.tabContent, { backgroundColor: tabStyle.bg }]}>
+            <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
               {getIngredients() || '-'}
             </Text>
           </View>
         );
       case 'instructions':
         return (
-          <View style={styles.tabContent}>
-            <Text style={[styles.contentText, isRTL && styles.rtlText]}>
+          <View style={[styles.tabContent, { backgroundColor: tabStyle.bg }]}>
+            <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
               {getInstructions() || '-'}
             </Text>
             
             {getDecoration() && (
-              <View style={styles.subSection}>
+              <View style={[styles.subSection, { borderTopColor: tabStyle.text + '30' }]}>
                 <View style={[styles.subSectionHeader, isRTL && styles.rtlRow]}>
-                  <Ionicons name="color-palette-outline" size={16} color={COLORS.gold} />
-                  <Text style={[styles.subSectionTitle, isRTL && styles.rtlText]}>
+                  <Ionicons name="color-palette-outline" size={16} color={tabStyle.text} />
+                  <Text style={[styles.subSectionTitle, isRTL && styles.rtlText, { color: tabStyle.text }]}>
                     {t('decoration')}
                   </Text>
                 </View>
-                <Text style={[styles.contentText, isRTL && styles.rtlText]}>
+                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
                   {getDecoration()}
                 </Text>
               </View>
@@ -120,37 +193,37 @@ export default function RecipeDetailScreen() {
         );
       case 'tips':
         return (
-          <View style={styles.tabContent}>
+          <View style={[styles.tabContent, { backgroundColor: tabStyle.bg }]}>
             {getSecrets() && (
               <View style={styles.subSection}>
                 <View style={[styles.subSectionHeader, isRTL && styles.rtlRow]}>
-                  <Ionicons name="key-outline" size={16} color={COLORS.gold} />
-                  <Text style={[styles.subSectionTitle, isRTL && styles.rtlText]}>
+                  <Ionicons name="key-outline" size={16} color={tabStyle.text} />
+                  <Text style={[styles.subSectionTitle, isRTL && styles.rtlText, { color: tabStyle.text }]}>
                     {t('secrets')}
                   </Text>
                 </View>
-                <Text style={[styles.contentText, isRTL && styles.rtlText]}>
+                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
                   {getSecrets()}
                 </Text>
               </View>
             )}
             
             {getProTips() && (
-              <View style={styles.subSection}>
+              <View style={[styles.subSection, { borderTopColor: tabStyle.text + '30' }]}>
                 <View style={[styles.subSectionHeader, isRTL && styles.rtlRow]}>
-                  <Ionicons name="bulb-outline" size={16} color={COLORS.gold} />
-                  <Text style={[styles.subSectionTitle, isRTL && styles.rtlText]}>
+                  <Ionicons name="bulb-outline" size={16} color={tabStyle.text} />
+                  <Text style={[styles.subSectionTitle, isRTL && styles.rtlText, { color: tabStyle.text }]}>
                     {t('pro_tips')}
                   </Text>
                 </View>
-                <Text style={[styles.contentText, isRTL && styles.rtlText]}>
+                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
                   {getProTips()}
                 </Text>
               </View>
             )}
             
             {!getSecrets() && !getProTips() && (
-              <Text style={styles.noContent}>-</Text>
+              <Text style={[styles.noContent, { color: tabStyle.text }]}>-</Text>
             )}
           </View>
         );
@@ -204,7 +277,7 @@ export default function RecipeDetailScreen() {
             {getTime() && (
               <View style={styles.metaItem}>
                 <View style={styles.metaIconContainer}>
-                  <Ionicons name="time" size={18} color={COLORS.gold} />
+                  <Ionicons name="alarm-outline" size={22} color={COLORS.goldDark} />
                 </View>
                 <Text style={styles.metaLabel}>{t('time')}</Text>
                 <Text style={styles.metaValue}>{getTime()}</Text>
@@ -214,7 +287,7 @@ export default function RecipeDetailScreen() {
             {getServings() && (
               <View style={styles.metaItem}>
                 <View style={styles.metaIconContainer}>
-                  <Ionicons name="people" size={18} color={COLORS.gold} />
+                  <Ionicons name="people-outline" size={22} color={COLORS.goldDark} />
                 </View>
                 <Text style={styles.metaLabel}>{t('servings')}</Text>
                 <Text style={styles.metaValue}>{getServings()}</Text>
@@ -222,6 +295,51 @@ export default function RecipeDetailScreen() {
             )}
           </View>
         </View>
+
+        {/* Action Buttons: QR + Print */}
+        <View style={styles.actionBar}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setShowQR(!showQR)}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="qr-code-outline" size={20} color={COLORS.gold} />
+            <Text style={styles.actionButtonText}>{isRTL ? 'باركود' : 'QR Code'}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={generatePDF}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="print-outline" size={20} color={COLORS.gold} />
+            <Text style={styles.actionButtonText}>{isRTL ? 'طباعة PDF' : 'Print PDF'}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* QR Code Section */}
+        {showQR && (
+          <View style={styles.qrSection}>
+            <View style={styles.qrCard}>
+              {Platform.OS !== 'web' ? (
+                <QRCode
+                  value={recipeDeepLink}
+                  size={160}
+                  color="#333"
+                  backgroundColor="#FFF"
+                />
+              ) : (
+                <View style={styles.qrWebFallback}>
+                  <Ionicons name="qr-code" size={100} color="#333" />
+                </View>
+              )}
+              <Text style={styles.qrLabel}>{getName()}</Text>
+              <Text style={styles.qrHint}>
+                {isRTL ? 'امسح الكود للوصول السريع للوصفة' : 'Scan to access this recipe'}
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Tabs */}
         <View style={[styles.tabsContainer, isRTL && styles.tabsContainerRTL]}>
@@ -479,5 +597,66 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: SPACING.xxxl,
+  },
+  actionBar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: SPACING.md,
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.md,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: SPACING.sm,
+    backgroundColor: '#FFF',
+    borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 1.5,
+    borderColor: COLORS.gold,
+    ...SHADOWS.small,
+  },
+  actionButtonText: {
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontSize: 13,
+    color: COLORS.goldDark,
+  },
+  qrSection: {
+    alignItems: 'center',
+    marginTop: SPACING.md,
+    marginHorizontal: SPACING.lg,
+  },
+  qrCard: {
+    backgroundColor: '#FFF',
+    borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.xl,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.gold,
+    ...SHADOWS.medium,
+  },
+  qrWebFallback: {
+    width: 160,
+    height: 160,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    borderRadius: BORDER_RADIUS.md,
+  },
+  qrLabel: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 14,
+    color: '#333',
+    marginTop: SPACING.md,
+    textAlign: 'center',
+  },
+  qrHint: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 11,
+    color: '#888',
+    marginTop: 4,
+    textAlign: 'center',
   },
 });

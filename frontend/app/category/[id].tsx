@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    backgroundColor: COLORS.goldLight,
+    backgroundColor: COLORS.gold,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     borderRadius: BORDER_RADIUS.xxl,
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     fontSize: FONTS.sizes.md,
     fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontWeight: FONTS.weights.semibold,
-    color: COLORS.goldDark,
+    color: '#FFFFFF',
   },
   emptyContainer: {
     flex: 1,

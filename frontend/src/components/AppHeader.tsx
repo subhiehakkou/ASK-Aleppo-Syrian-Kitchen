@@ -23,25 +23,32 @@ export default function AppHeader({ showBack = false, title }: AppHeaderProps) {
       end={{ x: 1, y: 1 }}
       style={styles.header}
     >
-      <View style={styles.headerRow}>
+      {/* Top Row: Action Icons */}
+      <View style={styles.iconsRow}>
         {showBack ? (
           <TouchableOpacity
-            style={styles.backButton}
+            style={styles.iconBtn}
             onPress={() => router.back()}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons name="arrow-back" size={24} color="#3A3A3A" />
+            <Ionicons name="arrow-back" size={22} color="#3A3A3A" />
           </TouchableOpacity>
         ) : (
-          <View style={styles.spacer} />
+          <View style={styles.iconBtn} />
         )}
 
-        <View style={styles.logoContainer}>
-          <Image source={APP_LOGO} style={styles.logo} resizeMode="contain" />
-        </View>
+        <View style={styles.iconsCenter} />
 
         <TouchableOpacity
-          style={styles.shareButton}
+          style={styles.iconBtn}
+          onPress={() => router.push('/search')}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="search-outline" size={22} color="#3A3A3A" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.iconBtn}
           onPress={shareApp}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
@@ -49,13 +56,24 @@ export default function AppHeader({ showBack = false, title }: AppHeaderProps) {
         </TouchableOpacity>
       </View>
 
+      {/* Name Block: Logo | Name | Logo */}
       {title ? (
-        <Text style={styles.title}>{title}</Text>
+        <View style={styles.nameBlock}>
+          <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
+          <View style={styles.nameCenter}>
+            <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          </View>
+          <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
+        </View>
       ) : (
-        <View style={styles.nameStack}>
-          <Text style={styles.nameAr}>المطبخ الحلبي السوري</Text>
-          <Text style={styles.nameAbbr}>A S K</Text>
-          <Text style={styles.nameEn}>Aleppo Syrian Kitchen</Text>
+        <View style={styles.nameBlock}>
+          <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
+          <View style={styles.nameCenter}>
+            <Text style={styles.nameAr}>المطبخ الحلبي السوري</Text>
+            <Text style={styles.nameAbbr}>A S K</Text>
+            <Text style={styles.nameEn}>Aleppo Syrian Kitchen</Text>
+          </View>
+          <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
         </View>
       )}
     </LinearGradient>
@@ -64,60 +82,59 @@ export default function AppHeader({ showBack = false, title }: AppHeaderProps) {
 
 const styles = StyleSheet.create({
   header: {
-    paddingTop: SPACING.sm,
-    paddingBottom: SPACING.md,
-    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.xs,
+    paddingBottom: SPACING.sm,
+    paddingHorizontal: SPACING.md,
   },
-  headerRow: {
+  iconsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
+    marginBottom: 4,
   },
-  backButton: {
-    width: 40,
-    height: 40,
+  iconBtn: {
+    width: 36,
+    height: 36,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  spacer: {
-    width: 40,
+  iconsCenter: {
+    flex: 1,
   },
-  shareButton: {
-    width: 40,
-    height: 40,
+  nameBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
+    paddingVertical: 4,
   },
-  logoContainer: {
-    alignItems: 'center',
+  sideLogo: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
   },
-  logo: {
-    width: 60,
-    height: 60,
+  nameCenter: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 8,
   },
   title: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#3A3A3A',
+    textAlign: 'center',
+  },
+  nameAr: {
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontSize: 16,
     fontWeight: '700',
     color: '#3A3A3A',
     textAlign: 'center',
-    marginTop: 4,
-  },
-  nameStack: {
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  nameAr: {
-    fontFamily: 'NotoNaskhArabic_700Bold',
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#3A3A3A',
-    textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 24,
   },
   nameAbbr: {
     fontFamily: 'NotoNaskhArabic_700Bold',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: '#3A3A3A',
     textAlign: 'center',
@@ -125,11 +142,11 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   nameEn: {
-    fontFamily: 'NotoNaskhArabic_400Regular',
-    fontSize: 10,
-    color: '#5A5A5A',
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontSize: 13,
+    color: '#3A3A3A',
     textAlign: 'center',
-    letterSpacing: 1,
-    lineHeight: 14,
+    letterSpacing: 1.5,
+    lineHeight: 18,
   },
 });

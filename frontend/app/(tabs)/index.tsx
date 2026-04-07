@@ -95,6 +95,13 @@ export default function HomeScreen() {
             
             <Image source={APP_LOGO} style={styles.headerLogo} resizeMode="contain" />
             <TouchableOpacity 
+              style={styles.searchButton} 
+              onPress={() => router.push('/search')}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="search-outline" size={22} color="#3A3A3A" />
+            </TouchableOpacity>
+            <TouchableOpacity 
               style={styles.shareButton} 
               onPress={shareApp}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -198,6 +205,9 @@ const styles = StyleSheet.create({
     height: 50,
   },
   shareButton: {
+    padding: SPACING.xs,
+  },
+  searchButton: {
     padding: SPACING.xs,
   },
   titleTextContainer: {
