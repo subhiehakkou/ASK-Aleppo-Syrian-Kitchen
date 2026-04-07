@@ -192,12 +192,12 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
             },
           ]}
         >
-          <View style={styles.titleRow}>
+          <Text style={styles.titleTextAr}>مطبخ حلب السوري</Text>
+          <View style={styles.logoRow}>
             <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
-            <Text style={styles.titleTextAr}>مطبخ حلب السوري</Text>
+            <Text style={styles.titleTextEn}>ASK</Text>
             <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
           </View>
-          <Text style={styles.titleTextEn}>ASK</Text>
           <Text style={styles.titleSubtext}>Aleppo Syrian Kitchen</Text>
         </Animated.View>
 
@@ -401,16 +401,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 24,
   },
-  titleRow: {
+  logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 14,
+    marginVertical: 4,
   },
   titleLogo: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
   },
   titleTextAr: {
     fontFamily: 'NotoNaskhArabic_700Bold',
