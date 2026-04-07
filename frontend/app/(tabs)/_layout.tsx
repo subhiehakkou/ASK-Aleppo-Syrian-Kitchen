@@ -30,8 +30,8 @@ export default function TabLayout() {
             style={StyleSheet.absoluteFill}
           />
         ),
-        tabBarActiveTintColor: '#FFFFFF',
-        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.7)',
+        tabBarActiveTintColor: '#3A3A3A',
+        tabBarInactiveTintColor: 'rgba(58, 58, 58, 0.6)',
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',

@@ -129,7 +129,7 @@ export default function HomeScreen() {
               end={{ x: 1, y: 1 }}
               style={styles.askKitchenGradient}
             >
-              <Ionicons name="chatbubble-ellipses" size={24} color="#FFFFFF" />
+              <Ionicons name="chatbubble-ellipses" size={24} color="#3A3A3A" />
               <Text style={styles.askKitchenText}>اسأل المطبخ</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
-    color: '#FFFFFF',
+    color: '#3A3A3A',
     textAlign: 'center',
   },
   contactSection: {
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   askKitchenText: {
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
-    color: '#FFFFFF',
+    color: '#3A3A3A',
   },
   bottomPadding: {
     height: 20,
