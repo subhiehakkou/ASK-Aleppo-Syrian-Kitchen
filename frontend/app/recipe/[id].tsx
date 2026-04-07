@@ -224,19 +224,20 @@ export default function RecipeDetailScreen() {
         </View>
 
         {/* Tabs */}
-        <View style={styles.tabsContainer}>
-          {tabs.map((tab) => (
+        <View style={[styles.tabsContainer, isRTL && styles.tabsContainerRTL]}>
+          {(isRTL ? [...tabs].reverse() : tabs).map((tab) => (
             <TouchableOpacity
               key={tab.key}
               style={[
                 styles.tab,
+                isRTL && styles.tabRTL,
                 activeTab === tab.key && styles.activeTab
               ]}
               onPress={() => setActiveTab(tab.key as typeof activeTab)}
             >
               <Ionicons 
                 name={tab.icon as any} 
-                size={18} 
+                size={16} 
                 color={activeTab === tab.key ? COLORS.gold : COLORS.textLight} 
               />
               <Text style={[
@@ -409,14 +410,21 @@ const styles = StyleSheet.create({
     padding: SPACING.xs,
     ...SHADOWS.small,
   },
+  tabsContainerRTL: {
+    flexDirection: 'row',
+  },
   tab: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: SPACING.xs,
-    paddingVertical: SPACING.md,
+    gap: 2,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: 2,
     borderRadius: BORDER_RADIUS.md,
+  },
+  tabRTL: {
+    flexDirection: 'column',
   },
   activeTab: {
     backgroundColor: COLORS.goldLight,
@@ -424,6 +432,8 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: FONTS.sizes.sm,
     color: COLORS.textLight,
+    textAlign: 'center',
+    fontFamily: 'Cairo_400Regular',
   },
   activeTabText: {
     color: COLORS.goldDark,
