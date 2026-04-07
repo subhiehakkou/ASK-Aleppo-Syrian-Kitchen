@@ -39,7 +39,6 @@ export default function RecipeDetailScreen() {
     const instructions = getInstructions();
     const tips = getProTips();
     const secrets = getSecrets();
-    const imageUrl = getRecipeImage(recipe);
 
     const html = `
       <!DOCTYPE html>
@@ -54,7 +53,7 @@ export default function RecipeDetailScreen() {
           .header h1 { color: #FFD700; font-size: 24px; margin-bottom: 5px; }
           .header h2 { color: #333; font-size: 14px; letter-spacing: 3px; }
           .header h3 { color: #666; font-size: 12px; }
-          .recipe-title { font-size: 22px; font-weight: 700; color: #333; text-align: center; margin: 15px 0; }
+          .recipe-title { font-size: 22px; font-weight: 700; color: #333; text-align: center; margin: 15px 0; padding: 10px; background: #FFF8DC; border-radius: 8px; border: 2px solid #FFD700; }
           .section { margin: 15px 0; }
           .section-title { font-size: 16px; font-weight: 700; color: #FFD700; border-bottom: 2px solid #FFD700; padding-bottom: 5px; margin-bottom: 10px; }
           .section-content { font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
@@ -63,7 +62,7 @@ export default function RecipeDetailScreen() {
       </head>
       <body>
         <div class="header">
-          <h1>مطبخ حلب السوري</h1>
+          <h1>المطبخ الحلبي السوري</h1>
           <h2>A S K</h2>
           <h3>Aleppo Syrian Kitchen</h3>
         </div>
@@ -72,18 +71,22 @@ export default function RecipeDetailScreen() {
         ${instructions ? `<div class="section"><div class="section-title">${isRTL ? 'طريقة التحضير' : 'Instructions'}</div><div class="section-content">${instructions.replace(/\n/g, '<br>')}</div></div>` : ''}
         ${tips ? `<div class="section"><div class="section-title">${isRTL ? 'نصائح' : 'Tips'}</div><div class="section-content">${tips.replace(/\n/g, '<br>')}</div></div>` : ''}
         ${secrets ? `<div class="section"><div class="section-title">${isRTL ? 'أسرار الوصفة' : 'Secrets'}</div><div class="section-content">${secrets.replace(/\n/g, '<br>')}</div></div>` : ''}
-        <div class="footer">© 2026 ASK - مطبخ حلب السوري | Aleppo Syrian Kitchen</div>
+        <div class="footer">© 2026 ASK - المطبخ الحلبي السوري | Aleppo Syrian Kitchen</div>
       </body>
       </html>
     `;
 
     try {
-      const { uri } = await Print.printToFileAsync({ html, base64: false });
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
-      }
+      await Print.printAsync({ html });
     } catch (e) {
-      console.log('PDF error:', e);
+      try {
+        const { uri } = await Print.printToFileAsync({ html });
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+        }
+      } catch (err) {
+        console.log('PDF error:', err);
+      }
     }
   };
 
@@ -233,7 +236,7 @@ export default function RecipeDetailScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* App Header with Logo */}
-      <AppHeader showBack={true} />
+      <AppHeader showBack={true} title={getName()} onPrint={generatePDF} />
       
       {/* Recipe Name & Favorite */}
       <View style={styles.recipeNameRow}>
@@ -296,7 +299,7 @@ export default function RecipeDetailScreen() {
           </View>
         </View>
 
-        {/* Action Buttons: QR + Print */}
+        {/* QR Code Button */}
         <View style={styles.actionBar}>
           <TouchableOpacity
             style={styles.actionButton}
@@ -304,16 +307,7 @@ export default function RecipeDetailScreen() {
             activeOpacity={0.7}
           >
             <Ionicons name="qr-code-outline" size={20} color={COLORS.gold} />
-            <Text style={styles.actionButtonText}>{isRTL ? 'باركود' : 'QR Code'}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={generatePDF}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="print-outline" size={20} color={COLORS.gold} />
-            <Text style={styles.actionButtonText}>{isRTL ? 'طباعة PDF' : 'Print PDF'}</Text>
+            <Text style={styles.actionButtonText}>{isRTL ? 'باركود الوصفة' : 'Recipe QR Code'}</Text>
           </TouchableOpacity>
         </View>
 

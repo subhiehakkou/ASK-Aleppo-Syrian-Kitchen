@@ -15,14 +15,19 @@ interface AppHeaderProps {
   showMenu?: boolean;
   title?: string;
   onMenuPress?: () => void;
-  printContent?: string;
+  onPrint?: () => void;
 }
 
-export default function AppHeader({ showBack = false, showMenu = false, title, onMenuPress, printContent }: AppHeaderProps) {
+export default function AppHeader({ showBack = false, showMenu = false, title, onMenuPress, onPrint }: AppHeaderProps) {
   const router = useRouter();
 
   const handlePrint = async () => {
-    const html = printContent || getDefaultPrintHTML();
+    if (onPrint) {
+      onPrint();
+      return;
+    }
+    // Default: print kitchen info
+    const html = getDefaultPrintHTML();
     try {
       if (Platform.OS === 'web') {
         const printWindow = window.open('', '_blank');
@@ -35,7 +40,6 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
         await Print.printAsync({ html });
       }
     } catch (e) {
-      // If direct print fails, try PDF share
       try {
         const { uri } = await Print.printToFileAsync({ html });
         if (await Sharing.isAvailableAsync()) {
