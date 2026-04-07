@@ -484,9 +484,16 @@ async def search_recipes(q: str = ""):
     # Execute search
     recipes = await db.recipes.find({"$or": or_conditions}).to_list(1000)
     
+    # Recipes to exclude from yogurt-related searches (contain trace amounts only)
+    yogurt_minor_recipes = ["عش البلبل"]
+    
     # Build results with match context
     results = []
     for recipe in recipes:
+        # Skip recipes with only trace yogurt when searching for لبن
+        if query.strip() in ["لبن", "اللبن", "باللبن"] and recipe.get('name_ar', '') in yogurt_minor_recipes:
+            continue
+        
         match_fields = []
         for field in search_fields:
             val = recipe.get(field, '') or ''
