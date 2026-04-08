@@ -370,7 +370,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             activeOpacity={0.7}
           >
             <Ionicons name="qr-code-outline" size={20} color="#3A3A3A" />
-            <Text style={styles.actionButtonText}>{isRTL ? 'باركود الوصفة' : 'Recipe QR Code'}</Text>
+            <Text style={styles.actionButtonText}>{isRTL ? 'QR Code الوصفة' : 'Recipe QR Code'}</Text>
           </TouchableOpacity>
         </View>
 

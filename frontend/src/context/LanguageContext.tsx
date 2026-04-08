@@ -40,7 +40,7 @@ const translations: Record<Language, Record<string, string>> = {
     slogan: 'الأكل المهدا للملوك يتودا',
     explore: 'استكشف الوصفات',
     all_categories: 'جميع الأصناف',
-    qr_guide: 'دليل الوصفات بالباركود',
+    qr_guide: 'دليل الوصفات بال QR Code',
     scan_to_recipe: 'امسح الكود للوصول السريع للوصفة',
   },
   en: {
@@ -72,7 +72,7 @@ const translations: Record<Language, Record<string, string>> = {
     slogan: 'Food fit for kings',
     explore: 'Explore Recipes',
     all_categories: 'All Categories',
-    qr_guide: 'Recipe Barcode Guide',
+    qr_guide: 'Recipe QR Code Guide',
     scan_to_recipe: 'Scan QR code for quick access to recipe',
   },
   sv: {
@@ -104,7 +104,7 @@ const translations: Record<Language, Record<string, string>> = {
     slogan: 'Mat som passar kungar',
     explore: 'Utforska recept',
     all_categories: 'Alla kategorier',
-    qr_guide: 'Receptguide med streckkod',
+    qr_guide: 'Receptguide med QR Code',
     scan_to_recipe: 'Skanna QR-koden för snabb åtkomst till receptet',
   },
 };
