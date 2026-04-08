@@ -57,6 +57,9 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/search')}>
           <Ionicons name="search-outline" size={20} color="#3A3A3A" />
         </TouchableOpacity>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/qrcodes')} accessibilityLabel="qr-guide">
+          <Ionicons name="qr-code-outline" size={20} color="#3A3A3A" />
+        </TouchableOpacity>
         {onPrint ? (
           <TouchableOpacity style={styles.iconBtn} onPress={handlePrint}>
             <Ionicons name="print-outline" size={20} color="#3A3A3A" />
