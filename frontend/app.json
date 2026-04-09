@@ -1,22 +1,29 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "ASK - المطبخ الحلبي السوري",
+    "slug": "ask-aleppo-syrian-kitchen",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "icon": "./assets/images/logo.png",
+    "scheme": "ask-kitchen",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ask.aleppokitchen",
+      "infoPlist": {
+        "CFBundleDisplayName": "ASK Kitchen"
+      }
     },
     "android": {
+      "package": "com.ask.aleppokitchen",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000"
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#FFD700"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": []
     },
     "web": {
       "bundler": "metro",
@@ -28,10 +35,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000"
+          "backgroundColor": "#1A1A2E"
         }
       ],
       "expo-mail-composer",
@@ -39,6 +46,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "EXPO_PUBLIC_BACKEND_URL": "https://aleppo-culinary-app.preview.emergentagent.com",
+      "eas": {
+        "projectId": ""
+      }
     }
   }
 }
