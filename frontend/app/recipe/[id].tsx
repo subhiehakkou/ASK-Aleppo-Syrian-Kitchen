@@ -7,7 +7,7 @@ import { useLanguage } from '../../src/context/LanguageContext';
 import { useFavorites } from '../../src/context/FavoritesContext';
 import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../../src/constants/theme';
 import { getRecipe, Recipe } from '../../src/services/api';
-import { getRecipeImage } from '../../src/utils/imageHelper';
+import { getRecipeImage, getImageSource } from '../../src/utils/imageHelper';
 import AppHeader from '../../src/components/AppHeader';
 import BottomTabBar from '../../src/components/BottomTabBar';
 import QRCode from 'react-native-qrcode-svg';
@@ -315,7 +315,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
         {/* Recipe Image */}
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: getRecipeImage(recipe) }}
+            source={getImageSource(getRecipeImage(recipe))}
             style={styles.recipeImage}
             resizeMode="cover"
           />

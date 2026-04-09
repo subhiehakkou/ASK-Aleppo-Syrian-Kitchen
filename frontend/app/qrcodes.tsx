@@ -10,7 +10,7 @@ import QRCode from 'react-native-qrcode-svg';
 import { useLanguage } from '../src/context/LanguageContext';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
 import { getCategories, getRecipes, Category, Recipe } from '../src/services/api';
-import { getRecipeImage } from '../src/utils/imageHelper';
+import { getRecipeImage, getImageSource } from '../src/utils/imageHelper';
 import AppHeader from '../src/components/AppHeader';
 import BottomTabBar from '../src/components/BottomTabBar';
 
@@ -148,7 +148,7 @@ export default function QRCodesScreen() {
                   >
                     {/* Recipe Image Thumbnail */}
                     <Image
-                      source={{ uri: getRecipeImage(recipe) }}
+                      source={getImageSource(getRecipeImage(recipe))}
                       style={styles.recipeThumbnail}
                       resizeMode="cover"
                     />

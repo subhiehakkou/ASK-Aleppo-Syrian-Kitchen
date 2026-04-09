@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../../src/context/LanguageContext';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../src/constants/theme';
 import { getCategories, Category, getAbout, AboutInfo } from '../../src/services/api';
-import { getCategoryImage } from '../../src/utils/imageHelper';
+import { getCategoryImage, getImageSource } from '../../src/utils/imageHelper';
 import { shareApp } from '../../src/utils/shareHelper';
 import DrawerMenu from '../../src/components/DrawerMenu';
 import AppHeader from '../../src/components/AppHeader';
@@ -83,7 +83,7 @@ export default function EnglishScreen() {
               >
                 <View style={styles.categoryImageContainer}>
                   <Image
-                    source={{ uri: getCategoryImage(category) }}
+                    source={getImageSource(getCategoryImage(category))}
                     style={styles.categoryImage}
                     resizeMode="cover"
                   />

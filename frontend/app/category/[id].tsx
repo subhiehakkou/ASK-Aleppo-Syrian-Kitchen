@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../src/context/LanguageContext';
 import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../../src/constants/theme';
 import { getRecipes, getCategory, Recipe, Category } from '../../src/services/api';
-import { getRecipeImage } from '../../src/utils/imageHelper';
+import { getRecipeImage, getImageSource } from '../../src/utils/imageHelper';
 import AppHeader from '../../src/components/AppHeader';
 import BottomTabBar from '../../src/components/BottomTabBar';
 
@@ -115,7 +115,7 @@ export default function CategoryScreen() {
                 activeOpacity={0.8}
               >
                 <Image
-                  source={{ uri: getRecipeImage(recipe) }}
+                  source={getImageSource(getRecipeImage(recipe))}
                   style={styles.recipeImage}
                   resizeMode="cover"
                 />

@@ -1,6 +1,11 @@
 import axios from 'axios';
 import Constants from 'expo-constants';
 
+// Local data imports (bundled with the app)
+import localCategories from '../data/categories.json';
+import localRecipes from '../data/recipes.json';
+import localAbout from '../data/about.json';
+
 const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 const api = axios.create({
@@ -69,44 +74,96 @@ export interface Feedback {
   message: string;
 }
 
-// Categories
+// Categories - local data with API fallback
 export const getCategories = async (): Promise<Category[]> => {
-  const response = await api.get('/categories');
-  return response.data;
+  try {
+    if (API_BASE) {
+      const response = await api.get('/categories');
+      return response.data;
+    }
+  } catch (e) {
+    console.log('API unavailable, using local data');
+  }
+  return localCategories as Category[];
 };
 
 export const getCategory = async (catId: string): Promise<Category> => {
-  const response = await api.get(`/categories/${catId}`);
-  return response.data;
+  try {
+    if (API_BASE) {
+      const response = await api.get(`/categories/${catId}`);
+      return response.data;
+    }
+  } catch (e) {
+    console.log('API unavailable, using local data');
+  }
+  const cat = (localCategories as Category[]).find(c => c.cat_id === catId || c.id === catId);
+  if (!cat) throw new Error('Category not found');
+  return cat;
 };
 
-// Recipes
+// Recipes - local data with API fallback
 export const getRecipes = async (categoryId?: string): Promise<Recipe[]> => {
-  const params = categoryId ? { category_id: categoryId } : {};
-  const response = await api.get('/recipes', { params });
-  return response.data;
+  try {
+    if (API_BASE) {
+      const params = categoryId ? { category_id: categoryId } : {};
+      const response = await api.get('/recipes', { params });
+      return response.data;
+    }
+  } catch (e) {
+    console.log('API unavailable, using local data');
+  }
+  const recipes = localRecipes as Recipe[];
+  if (categoryId) {
+    return recipes.filter(r => r.category_id === categoryId);
+  }
+  return recipes;
 };
 
 export const getRecipe = async (recipeId: string): Promise<Recipe> => {
-  const response = await api.get(`/recipes/${recipeId}`);
-  return response.data;
+  try {
+    if (API_BASE) {
+      const response = await api.get(`/recipes/${recipeId}`);
+      return response.data;
+    }
+  } catch (e) {
+    console.log('API unavailable, using local data');
+  }
+  const recipe = (localRecipes as Recipe[]).find(r => r.id === recipeId);
+  if (!recipe) throw new Error('Recipe not found');
+  return recipe;
 };
 
-// About
+// About - local data with API fallback
 export const getAbout = async (): Promise<AboutInfo> => {
-  const response = await api.get('/about');
-  return response.data;
+  try {
+    if (API_BASE) {
+      const response = await api.get('/about');
+      return response.data;
+    }
+  } catch (e) {
+    console.log('API unavailable, using local data');
+  }
+  return localAbout as AboutInfo;
 };
 
 // Contact
 export const getContact = async () => {
-  const response = await api.get('/contact');
-  return response.data;
+  try {
+    if (API_BASE) {
+      const response = await api.get('/contact');
+      return response.data;
+    }
+  } catch (e) {
+    console.log('API unavailable, using local data');
+  }
+  return {};
 };
 
 // Feedback
 export const submitFeedback = async (feedback: Feedback): Promise<void> => {
-  await api.post('/feedback', feedback);
+  if (API_BASE) {
+    await api.post('/feedback', feedback);
+  }
 };
 
 export default api;

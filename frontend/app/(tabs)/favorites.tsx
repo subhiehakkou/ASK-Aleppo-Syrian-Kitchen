@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { FONTS, SPACING, COLORS, SHADOWS, BORDER_RADIUS } from '../../src/constants/theme';
 import { useFavorites } from '../../src/context/FavoritesContext';
-import { getRecipeImage } from '../../src/utils/imageHelper';
+import { getRecipeImage, getImageSource } from '../../src/utils/imageHelper';
 import { shareApp } from '../../src/utils/shareHelper';
 
 const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL || '';
@@ -105,7 +105,7 @@ export default function FavoritesScreen() {
                 activeOpacity={0.8}
               >
                 <Image
-                  source={{ uri: getRecipeImage(recipe) }}
+                  source={getImageSource(getRecipeImage(recipe))}
                   style={styles.recipeImage}
                   resizeMode="cover"
                 />
