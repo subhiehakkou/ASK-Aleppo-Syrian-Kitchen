@@ -16,8 +16,8 @@
       }
     },
     "android": {
-      "package": "com.ask.aleppokitchen",
-      "versionCode": 2,
+      "package": "com.ask.syr",
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#FFD700"
