@@ -1,4 +1,5 @@
 // Auto-generated image map for offline recipe images
+
 const imageMap: Record<string, any> = {
   'Arman.jpg': require('../../assets/recipe-images/Arman.jpg'),
   'Baba_Ghannouj.jpg': require('../../assets/recipe-images/Baba_Ghannouj.jpg'),
@@ -36,7 +37,6 @@ const imageMap: Record<string, any> = {
   'Kebbe_Mabroumeh.jpg': require('../../assets/recipe-images/Kebbe_Mabroumeh.jpg'),
   'Kebbe_Meqleyeh.jpg': require('../../assets/recipe-images/Kebbe_Meqleyeh.jpg'),
   'Kebbe_Meshweyeh.jpeg': require('../../assets/recipe-images/Kebbe_Meshweyeh.jpeg'),
-  'Kebbe_Raw1.jpeg': require('../../assets/recipe-images/Kebbe_Raw1.jpeg'),
   'Kebbe_Safarjaleieh.jpg': require('../../assets/recipe-images/Kebbe_Safarjaleieh.jpg'),
   'Kebbe_Semmaqyeh.jpeg': require('../../assets/recipe-images/Kebbe_Semmaqyeh.jpeg'),
   'Kebbe_Seneyeh.jpg': require('../../assets/recipe-images/Kebbe_Seneyeh.jpg'),
@@ -78,7 +78,6 @@ const imageMap: Record<string, any> = {
   'Selq_Mqala.jpg': require('../../assets/recipe-images/Selq_Mqala.jpg'),
   'Sheikh_Elmehshi.jpg': require('../../assets/recipe-images/Sheikh_Elmehshi.jpg'),
   'Sheikh_Elmehshi_Bakar.jpg': require('../../assets/recipe-images/Sheikh_Elmehshi_Bakar.jpg'),
-  'Sheikh_Elmehshi_Bakar.png': require('../../assets/recipe-images/Sheikh_Elmehshi_Bakar.png'),
   'Shishbarak.jpg': require('../../assets/recipe-images/Shishbarak.jpg'),
   'Shourba_Ades.jpg': require('../../assets/recipe-images/Shourba_Ades.jpg'),
   'Sorar_Ouzi.jpg': require('../../assets/recipe-images/Sorar_Ouzi.jpg'),
