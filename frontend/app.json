@@ -10,9 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ask.aleppokitchen",
+      "bundleIdentifier": "com.ask.syr",
+      "buildNumber": "1",
       "infoPlist": {
-        "CFBundleDisplayName": "ASK Kitchen"
+        "CFBundleDisplayName": "ASK Kitchen",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

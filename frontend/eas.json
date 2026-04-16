@@ -26,6 +26,10 @@
       "android": {
         "serviceAccountKeyPath": "./google-services.json",
         "track": "production"
+      },
+      "ios": {
+        "appleId": "sofia.akkou@gmail.com",
+        "appleTeamId": "H4BK37FNXQ"
       }
     }
   }
