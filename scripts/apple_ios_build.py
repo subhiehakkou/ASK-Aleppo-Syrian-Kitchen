@@ -262,14 +262,17 @@ def step5_create_p12():
         print(f"  Cert modulus: {cert_modulus.stdout[:50]}...")
         return False
     
-    # Create P12 with the certificate chain
+    # Create P12 with LEGACY encryption for macOS compatibility
+    # OpenSSL 3.x defaults to AES-256-CBC which macOS keychain can't import
+    # Must use legacy 3DES encryption that macOS security framework understands
     result = subprocess.run(
         ["openssl", "pkcs12", "-export",
          "-out", P12_PATH,
          "-inkey", PRIVATE_KEY_PATH,
          "-in", CERT_PEM_PATH,
          "-certfile", APPLE_WWDR_PEM,
-         "-password", f"pass:{P12_PASSWORD}"],
+         "-password", f"pass:{P12_PASSWORD}",
+         "-legacy"],
         capture_output=True, text=True
     )
     
@@ -277,10 +280,10 @@ def step5_create_p12():
         print(f"  ERROR creating P12: {result.stderr}")
         return False
     
-    # Verify P12
+    # Verify P12 (also needs -legacy flag to read legacy-encrypted P12)
     verify = subprocess.run(
         ["openssl", "pkcs12", "-in", P12_PATH, "-noout",
-         "-password", f"pass:{P12_PASSWORD}"],
+         "-password", f"pass:{P12_PASSWORD}", "-legacy"],
         capture_output=True, text=True
     )
     
