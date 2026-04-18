@@ -71,6 +71,22 @@ export default function SvenskaScreen() {
         </View>
 
         <View style={styles.categoriesSection}>
+          {/* Journal Card */}
+          <TouchableOpacity
+            style={styles.journalCard}
+            onPress={() => router.push('/journal')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.journalCardContent}>
+              <Ionicons name="book" size={28} color={COLORS.goldDark} />
+              <View style={styles.journalCardText}>
+                <Text style={styles.journalCardTitle}>Berätta vad du lagade idag</Text>
+                <Text style={styles.journalCardSubtitle}>Bygg din kokbok här</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={22} color={COLORS.goldDark} />
+            </View>
+          </TouchableOpacity>
+
           <Text style={styles.sectionTitle}>Alla kategorier</Text>
           
           <View style={styles.categoriesGrid}>
@@ -299,5 +315,35 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 20,
+  },
+  journalCard: {
+    backgroundColor: '#FFF',
+    borderRadius: BORDER_RADIUS.lg,
+    marginBottom: SPACING.lg,
+    borderWidth: 2,
+    borderColor: COLORS.goldDark,
+    overflow: 'hidden',
+  },
+  journalCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: SPACING.lg,
+    gap: SPACING.md,
+    backgroundColor: COLORS.goldLight,
+  },
+  journalCardText: {
+    flex: 1,
+  },
+  journalCardTitle: {
+    fontSize: FONTS.sizes.lg,
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: FONTS.weights.bold,
+    color: COLORS.textPrimary,
+  },
+  journalCardSubtitle: {
+    fontSize: FONTS.sizes.sm,
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    color: COLORS.textSecondary,
+    marginTop: 2,
   },
 });
