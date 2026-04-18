@@ -19,7 +19,7 @@
     },
     "android": {
       "package": "com.ask.syr",
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#FFD700"
