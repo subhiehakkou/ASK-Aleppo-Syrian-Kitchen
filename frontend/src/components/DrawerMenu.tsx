@@ -44,6 +44,14 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
       icon: 'book-outline',
       route: '/journal',
     },
+    {
+      id: 'privacy',
+      label_ar: 'سياسة الخصوصية',
+      label_en: 'Privacy Policy',
+      label_sv: 'Integritetspolicy',
+      icon: 'shield-checkmark-outline',
+      route: '/privacy',
+    },
   ];
 
   const getLabel = (item: typeof menuItems[0]) => {

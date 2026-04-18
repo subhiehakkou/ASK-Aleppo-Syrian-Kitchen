@@ -206,9 +206,9 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
   ];
 
   const TAB_STYLES: Record<string, { bg: string; text: string }> = {
-    ingredients: { bg: '#FFD700', text: '#1A1A1A' },
-    instructions: { bg: '#1A1A2E', text: '#FFD700' },
-    tips: { bg: '#FFD700', text: '#1A1A1A' },
+    ingredients: { bg: '#FFFFF0', text: '#1A1A1A' },
+    instructions: { bg: '#FFFFF0', text: '#1A1A1A' },
+    tips: { bg: '#FFFFF0', text: '#1A1A1A' },
   };
 
   const renderTabContent = () => {
@@ -620,14 +620,16 @@ const styles = StyleSheet.create({
   tabContent: {
     margin: SPACING.lg,
     padding: SPACING.lg,
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: '#FFFFF0',
     borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.borderGold,
     ...SHADOWS.small,
   },
   contentText: {
     fontFamily: 'NotoNaskhArabic_400Regular',
     fontSize: FONTS.sizes.md,
-    color: COLORS.textPrimary,
+    color: '#1A1A1A',
     lineHeight: 24,
   },
   subSection: {
