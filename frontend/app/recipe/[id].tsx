@@ -286,13 +286,10 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* App Header with Logo */}
-      <AppHeader showBack={true} title={getName()} onPrint={generatePDF} />
+      <AppHeader showBack={true} onPrint={generatePDF} />
       
-      {/* Recipe Name & Favorite */}
+      {/* Recipe Name & Favorite - centered */}
       <View style={styles.recipeNameRow}>
-        <Text style={[styles.headerTitle, isRTL && styles.rtlText]} numberOfLines={2}>
-          {getName()}
-        </Text>
         <TouchableOpacity
           style={styles.favoriteButton}
           onPress={() => {
@@ -307,6 +304,10 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             color={isFavorite(recipe?.id || recipe?._id || id as string) ? "#E74C3C" : COLORS.textPrimary} 
           />
         </TouchableOpacity>
+        <Text style={styles.headerTitle} numberOfLines={2}>
+          {getName()}
+        </Text>
+        <View style={{ width: 28 }} />
       </View>
 
       <ScrollView 
@@ -325,10 +326,6 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
 
         {/* Recipe Info */}
         <View style={styles.infoSection}>
-          <Text style={[styles.recipeName, isRTL && styles.rtlText]}>
-            {getName()}
-          </Text>
-          
           <View style={[styles.metaRow, isRTL && styles.rtlRow]}>
             {getTime() && (
               <View style={styles.metaItem}>
@@ -529,11 +526,19 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     backgroundColor: '#FFFFF0',
   },
+  headerTitle: {
+    flex: 1,
+    fontSize: FONTS.sizes.xl,
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: FONTS.weights.bold,
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+  },
   scrollView: {
     flex: 1,
   },
   imageContainer: {
-    height: 220,
+    height: 180,
     position: 'relative',
   },
   recipeImage: {
