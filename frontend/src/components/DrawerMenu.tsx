@@ -36,6 +36,14 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
       icon: 'chatbubble-ellipses-outline',
       route: '/contact',
     },
+    {
+      id: 'journal',
+      label_ar: 'خبرينا ماذا طبخت اليوم',
+      label_en: 'My Cooking Journal',
+      label_sv: 'Min matdagbok',
+      icon: 'book-outline',
+      route: '/journal',
+    },
   ];
 
   const getLabel = (item: typeof menuItems[0]) => {
