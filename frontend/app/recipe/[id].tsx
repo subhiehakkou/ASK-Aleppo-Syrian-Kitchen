@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.goldLight,
+    backgroundColor: '#FFD700',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.xs,
@@ -582,9 +582,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: SPACING.lg,
     marginHorizontal: SPACING.lg,
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: '#FFFFF0',
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.xs,
+    borderWidth: 1,
+    borderColor: '#FFD700',
     ...SHADOWS.small,
   },
   tabsContainerRTL: {
@@ -604,7 +606,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   activeTab: {
-    backgroundColor: COLORS.goldLight,
+    backgroundColor: '#FFD700',
   },
   tabText: {
     fontSize: FONTS.sizes.sm,
@@ -613,7 +615,7 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoNaskhArabic_400Regular',
   },
   activeTabText: {
-    color: COLORS.goldDark,
+    color: '#1A1A1A',
     fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontWeight: FONTS.weights.semibold,
   },
