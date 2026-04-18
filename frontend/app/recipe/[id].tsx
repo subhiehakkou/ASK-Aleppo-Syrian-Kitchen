@@ -10,6 +10,7 @@ import { getRecipe, Recipe } from '../../src/services/api';
 import { getRecipeImage, getImageSource } from '../../src/utils/imageHelper';
 import AppHeader from '../../src/components/AppHeader';
 import BottomTabBar from '../../src/components/BottomTabBar';
+import CookingTimer from '../../src/components/CookingTimer';
 import QRCode from 'react-native-qrcode-svg';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -351,7 +352,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           </View>
         </View>
 
-        {/* Action Buttons: Print + QR */}
+        {/* Action Buttons: Print + QR + Timer */}
         <View style={styles.actionBar}>
           <TouchableOpacity
             style={styles.actionButton}
@@ -362,7 +363,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             activeOpacity={0.7}
           >
             <Ionicons name="print-outline" size={20} color="#3A3A3A" />
-            <Text style={styles.actionButtonText}>{isRTL ? 'طباعة الوصفة' : 'Print Recipe'}</Text>
+            <Text style={styles.actionButtonText}>{isRTL ? 'طباعة' : 'Print'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
@@ -370,8 +371,9 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             activeOpacity={0.7}
           >
             <Ionicons name="qr-code-outline" size={20} color="#3A3A3A" />
-            <Text style={styles.actionButtonText}>{isRTL ? 'QR Code الوصفة' : 'Recipe QR Code'}</Text>
+            <Text style={styles.actionButtonText}>QR Code</Text>
           </TouchableOpacity>
+          <CookingTimer isRTL={isRTL} />
         </View>
 
         {/* QR Code Section */}

@@ -42,6 +42,9 @@ const translations: Record<Language, Record<string, string>> = {
     all_categories: 'جميع الأصناف',
     qr_guide: 'دليل الوصفات بال QR Code',
     scan_to_recipe: 'امسح الكود للوصول السريع للوصفة',
+    cooking_timer: 'مؤقت الطبخ',
+    cooking_journal: 'ماذا طبخت اليوم؟',
+    my_journal: 'سجل طبخي',
   },
   en: {
     app_name: 'Aleppo Syrian Kitchen',
@@ -74,6 +77,9 @@ const translations: Record<Language, Record<string, string>> = {
     all_categories: 'All Categories',
     qr_guide: 'Recipe QR Code Guide',
     scan_to_recipe: 'Scan QR code for quick access to recipe',
+    cooking_timer: 'Cooking Timer',
+    cooking_journal: 'What did I cook today?',
+    my_journal: 'My Cooking Journal',
   },
   sv: {
     app_name: 'Aleppo Syriskt Kök',
@@ -106,6 +112,9 @@ const translations: Record<Language, Record<string, string>> = {
     all_categories: 'Alla kategorier',
     qr_guide: 'Receptguide med QR Code',
     scan_to_recipe: 'Skanna QR-koden för snabb åtkomst till receptet',
+    cooking_timer: 'Koktimer',
+    cooking_journal: 'Vad lagade jag idag?',
+    my_journal: 'Min matdagbok',
   },
 };
 
