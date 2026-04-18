@@ -348,6 +348,18 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           </View>
         </View>
 
+        {/* Cooking Tip Banner */}
+        <View style={styles.cookingTipBanner}>
+          <Text style={styles.cookingTipIcon}>💡</Text>
+          <Text style={[styles.cookingTipText, isRTL && styles.rtlText]}>
+            {language === 'ar'
+              ? 'في حال الرغبة بتقليل أو زيادة الكمية، يرجى مراعاة وقت النضج ومراقبة درجات الحرارة ومستوى السوائل في الطبخة'
+              : language === 'sv'
+                ? 'Om du vill minska eller öka mängden, var noga med att justera koktiden och övervaka temperaturen och vätskenivån i grytan'
+                : 'If you wish to reduce or increase the quantity, please adjust the cooking time and monitor the temperature and liquid level accordingly'}
+          </Text>
+        </View>
+
         {/* Action Buttons: Print + QR + Timer */}
         <View style={styles.actionBar}>
           <TouchableOpacity
@@ -557,6 +569,28 @@ const styles = StyleSheet.create({
   metaEmoji: {
     fontSize: 32,
     marginBottom: SPACING.xs,
+  },
+  cookingTipBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.md,
+    padding: SPACING.md,
+    backgroundColor: '#FFF8E1',
+    borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 1,
+    borderColor: '#FFD700',
+    gap: SPACING.sm,
+  },
+  cookingTipIcon: {
+    fontSize: 20,
+  },
+  cookingTipText: {
+    flex: 1,
+    fontSize: FONTS.sizes.sm,
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    color: '#5D4037',
+    lineHeight: 20,
   },
   metaIconContainer: {
     width: 40,
