@@ -332,9 +332,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           <View style={[styles.metaRow, isRTL && styles.rtlRow]}>
             {getTime() && (
               <View style={styles.metaItem}>
-                <View style={styles.metaIconContainer}>
-                  <Ionicons name="alarm-outline" size={22} color={COLORS.goldDark} />
-                </View>
+                <Text style={styles.metaEmoji}>⏱️</Text>
                 <Text style={styles.metaLabel}>{t('time')}</Text>
                 <Text style={styles.metaValue}>{getTime()}</Text>
               </View>
@@ -342,9 +340,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             
             {getServings() && (
               <View style={styles.metaItem}>
-                <View style={styles.metaIconContainer}>
-                  <Ionicons name="people-outline" size={22} color={COLORS.goldDark} />
-                </View>
+                <Text style={styles.metaEmoji}>🍽️</Text>
                 <Text style={styles.metaLabel}>{t('servings')}</Text>
                 <Text style={styles.metaValue}>{getServings()}</Text>
               </View>
@@ -557,6 +553,10 @@ const styles = StyleSheet.create({
   },
   metaItem: {
     alignItems: 'center',
+  },
+  metaEmoji: {
+    fontSize: 32,
+    marginBottom: SPACING.xs,
   },
   metaIconContainer: {
     width: 40,
