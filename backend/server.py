@@ -544,7 +544,119 @@ async def get_stats():
         "feedback": feedback_count
     }
 
-# Include the router in the main app
+# (Admin routes defined below, router included after all routes)
+
+# ============== ADMIN API ROUTES ==============
+
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'ASK2026admin')
+
+class AdminAuth(BaseModel):
+    password: str
+
+class RecipeUpdate(BaseModel):
+    name_ar: Optional[str] = None
+    name_en: Optional[str] = None
+    name_sv: Optional[str] = None
+    time_ar: Optional[str] = None
+    time_en: Optional[str] = None
+    time_sv: Optional[str] = None
+    ingredients_ar: Optional[str] = None
+    ingredients_en: Optional[str] = None
+    ingredients_sv: Optional[str] = None
+    instructions_ar: Optional[str] = None
+    instructions_en: Optional[str] = None
+    instructions_sv: Optional[str] = None
+    servings_ar: Optional[str] = None
+    servings_en: Optional[str] = None
+    servings_sv: Optional[str] = None
+    decoration_ar: Optional[str] = None
+    decoration_en: Optional[str] = None
+    decoration_sv: Optional[str] = None
+    secrets_ar: Optional[str] = None
+    secrets_en: Optional[str] = None
+    secrets_sv: Optional[str] = None
+    pro_tips_ar: Optional[str] = None
+    pro_tips_en: Optional[str] = None
+    pro_tips_sv: Optional[str] = None
+
+class CategoryUpdate(BaseModel):
+    name_ar: Optional[str] = None
+    name_en: Optional[str] = None
+    name_sv: Optional[str] = None
+
+class AboutUpdate(BaseModel):
+    title_ar: Optional[str] = None
+    title_en: Optional[str] = None
+    title_sv: Optional[str] = None
+    slogan_ar: Optional[str] = None
+    slogan_en: Optional[str] = None
+    slogan_sv: Optional[str] = None
+    about_ar: Optional[str] = None
+    about_en: Optional[str] = None
+    about_sv: Optional[str] = None
+
+@api_router.post("/admin/verify")
+async def verify_admin(auth: AdminAuth):
+    """Verify admin password"""
+    if auth.password == ADMIN_PASSWORD:
+        return {"success": True, "message": "Admin access granted"}
+    raise HTTPException(status_code=401, detail="Invalid password")
+
+@api_router.put("/admin/recipes/{recipe_id}")
+async def update_recipe(recipe_id: str, update: RecipeUpdate, password: str = ""):
+    """Update recipe text fields (admin only)"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    # Try both id formats
+    result = await db.recipes.update_one({"recipe_id": recipe_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        result = await db.recipes.update_one({"id": recipe_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    
+    logger.info(f"Admin updated recipe {recipe_id}: {list(update_data.keys())}")
+    return {"success": True, "updated_fields": list(update_data.keys())}
+
+@api_router.put("/admin/categories/{cat_id}")
+async def update_category(cat_id: str, update: CategoryUpdate, password: str = ""):
+    """Update category text fields (admin only)"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.categories.update_one({"cat_id": cat_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    logger.info(f"Admin updated category {cat_id}: {list(update_data.keys())}")
+    return {"success": True, "updated_fields": list(update_data.keys())}
+
+@api_router.put("/admin/about")
+async def update_about(update: AboutUpdate, password: str = ""):
+    """Update about page text (admin only)"""
+    if password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.about.update_one({}, {"$set": update_data})
+    if result.matched_count == 0:
+        await db.about.insert_one(update_data)
+    
+    logger.info(f"Admin updated about: {list(update_data.keys())}")
+    return {"success": True, "updated_fields": list(update_data.keys())}
+
+# Include the router AFTER all routes are defined
 app.include_router(api_router)
 
 # Mount static files for recipe images
