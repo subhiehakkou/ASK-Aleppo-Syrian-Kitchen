@@ -3,8 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LanguageProvider } from '../src/context/LanguageContext';
 import { FavoritesProvider } from '../src/context/FavoritesContext';
-// NOTE: Admin mode is disabled (requires live backend DB). Keeping files for future use.
-// import { AdminProvider } from '../src/context/AdminContext';
+import { AdminProvider } from '../src/context/AdminContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -54,22 +53,24 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.container}>
       <LanguageProvider>
         <FavoritesProvider>
-          <StatusBar style="dark" backgroundColor="#FFDA47" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: '#FFFFF0' },
-              animation: 'slide_from_right',
-            }}
-          >
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="category/[id]" />
-            <Stack.Screen name="recipe/[id]" />
-            <Stack.Screen name="contact" />
-            <Stack.Screen name="about" />
-            <Stack.Screen name="search" />
-            <Stack.Screen name="qrcodes" />
-          </Stack>
+          <AdminProvider>
+            <StatusBar style="dark" backgroundColor="#FFDA47" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: '#FFFFF0' },
+                animation: 'slide_from_right',
+              }}
+            >
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="category/[id]" />
+              <Stack.Screen name="recipe/[id]" />
+              <Stack.Screen name="contact" />
+              <Stack.Screen name="about" />
+              <Stack.Screen name="search" />
+              <Stack.Screen name="qrcodes" />
+            </Stack>
+          </AdminProvider>
         </FavoritesProvider>
       </LanguageProvider>
     </GestureHandlerRootView>

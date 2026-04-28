@@ -548,7 +548,7 @@ async def get_stats():
 
 # ============== ADMIN API ROUTES ==============
 
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'ASK2026admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Gimini2026')
 
 class AdminAuth(BaseModel):
     password: str
