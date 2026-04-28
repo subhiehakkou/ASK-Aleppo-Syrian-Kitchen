@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Platform, Alert, LayoutAnimation, UIManager } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,6 +30,19 @@ export default function RecipeDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions' | 'tips'>('ingredients');
   const [showQR, setShowQR] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+
+  // Enable LayoutAnimation on Android
+  useEffect(() => {
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
+
+  const toggleAbout = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setShowAbout(prev => !prev);
+  };
 
   const recipeDeepLink = `ask-kitchen://recipe/${id}`;
 
@@ -309,14 +322,33 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           <Text style={styles.headerTitle} numberOfLines={2}>
             {getName()}
           </Text>
+          {/* Optional dropdown button for dish description */}
           {getDescription() ? (
-            <Text style={[styles.headerSubtitle, isRTL && styles.rtlText]} numberOfLines={3}>
-              {getDescription()}
-            </Text>
+            <TouchableOpacity
+              style={styles.aboutToggle}
+              onPress={toggleAbout}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.aboutToggleIcon}>📖</Text>
+              <Text style={styles.aboutToggleText}>{t('about_dish')}</Text>
+              <Ionicons
+                name={showAbout ? 'chevron-up' : 'chevron-down'}
+                size={16}
+                color="#8B6914"
+              />
+            </TouchableOpacity>
           ) : null}
         </View>
         <View style={{ width: 28 }} />
       </View>
+      {/* Collapsible description panel */}
+      {showAbout && getDescription() ? (
+        <View style={styles.aboutPanel}>
+          <Text style={[styles.aboutPanelText, isRTL && styles.rtlText]}>
+            {getDescription()}
+          </Text>
+        </View>
+      ) : null}
 
       <ScrollView 
         style={styles.scrollView} 
@@ -352,19 +384,6 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             )}
           </View>
         </View>
-
-        {/* About this Dish Card */}
-        {getDescription() ? (
-          <View style={styles.aboutCard}>
-            <View style={[styles.aboutHeader, isRTL && styles.rtlRow]}>
-              <Text style={styles.aboutIcon}>📖</Text>
-              <Text style={[styles.aboutTitle, isRTL && styles.rtlText]}>{t('about_dish')}</Text>
-            </View>
-            <Text style={[styles.aboutContent, isRTL && styles.rtlText]}>
-              {getDescription()}
-            </Text>
-          </View>
-        ) : null}
 
         {/* Cooking Tip Banner */}
         <View style={styles.cookingTipBanner}>
@@ -559,42 +578,39 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     textAlign: 'center',
   },
-  headerSubtitle: {
-    fontSize: FONTS.sizes.sm,
-    fontFamily: 'NotoNaskhArabic_400Regular',
-    color: '#8E8E93',
-    textAlign: 'center',
-    marginTop: 4,
-    lineHeight: 18,
-  },
-  aboutCard: {
-    marginHorizontal: SPACING.lg,
-    marginTop: SPACING.md,
-    padding: SPACING.md,
-    backgroundColor: '#FFFEF5',
-    borderRadius: BORDER_RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.borderGold,
-    borderLeftWidth: 4,
-    borderLeftColor: '#DAA520',
-    ...SHADOWS.small,
-  },
-  aboutHeader: {
+  aboutToggle: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 6,
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFF8DC',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E8C56B',
   },
-  aboutIcon: {
-    fontSize: 18,
+  aboutToggleIcon: {
+    fontSize: 13,
   },
-  aboutTitle: {
-    fontSize: FONTS.sizes.md,
-    fontFamily: 'NotoNaskhArabic_700Bold',
-    fontWeight: FONTS.weights.bold,
+  aboutToggleText: {
+    fontSize: 12,
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
     color: '#8B6914',
   },
-  aboutContent: {
+  aboutPanel: {
+    marginHorizontal: SPACING.lg,
+    marginTop: 4,
+    marginBottom: 6,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    backgroundColor: '#FFFEF5',
+    borderRadius: BORDER_RADIUS.md,
+    borderLeftWidth: 3,
+    borderLeftColor: '#DAA520',
+  },
+  aboutPanelText: {
     fontSize: FONTS.sizes.sm,
     fontFamily: 'NotoNaskhArabic_400Regular',
     color: '#4A4A4A',
