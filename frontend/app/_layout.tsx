@@ -3,7 +3,8 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LanguageProvider } from '../src/context/LanguageContext';
 import { FavoritesProvider } from '../src/context/FavoritesContext';
-import { AdminProvider } from '../src/context/AdminContext';
+// NOTE: Admin mode is disabled (requires live backend DB). Keeping files for future use.
+// import { AdminProvider } from '../src/context/AdminContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -53,7 +54,6 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.container}>
       <LanguageProvider>
         <FavoritesProvider>
-          <AdminProvider>
           <StatusBar style="dark" backgroundColor="#FFDA47" />
           <Stack
             screenOptions={{
@@ -71,7 +71,6 @@ export default function RootLayout() {
             <Stack.Screen name="qrcodes" />
           </Stack>
         </FavoritesProvider>
-          </AdminProvider>
       </LanguageProvider>
     </GestureHandlerRootView>
   );

@@ -166,6 +166,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
   };
 
   const getName = () => recipe ? getLocalizedValue(recipe.name_ar, recipe.name_en, recipe.name_sv) : '';
+  const getDescription = () => recipe ? getLocalizedValue((recipe as any).description_ar, (recipe as any).description_en, (recipe as any).description_sv) : '';
   const getTime = () => recipe ? getLocalizedValue(recipe.time_ar, recipe.time_en, recipe.time_sv) : '';
   const getServings = () => recipe ? getLocalizedValue(recipe.servings_ar, recipe.servings_en, recipe.servings_sv) : '';
   const getIngredients = () => recipe ? getLocalizedValue(recipe.ingredients_ar, recipe.ingredients_en, recipe.ingredients_sv) : '';
@@ -304,9 +305,16 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             color={isFavorite(recipe?.id || recipe?._id || id as string) ? "#E74C3C" : COLORS.textPrimary} 
           />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={2}>
-          {getName()}
-        </Text>
+        <View style={styles.titleWrap}>
+          <Text style={styles.headerTitle} numberOfLines={2}>
+            {getName()}
+          </Text>
+          {getDescription() ? (
+            <Text style={[styles.headerSubtitle, isRTL && styles.rtlText]} numberOfLines={3}>
+              {getDescription()}
+            </Text>
+          ) : null}
+        </View>
         <View style={{ width: 28 }} />
       </View>
 
@@ -344,6 +352,19 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             )}
           </View>
         </View>
+
+        {/* About this Dish Card */}
+        {getDescription() ? (
+          <View style={styles.aboutCard}>
+            <View style={[styles.aboutHeader, isRTL && styles.rtlRow]}>
+              <Text style={styles.aboutIcon}>📖</Text>
+              <Text style={[styles.aboutTitle, isRTL && styles.rtlText]}>{t('about_dish')}</Text>
+            </View>
+            <Text style={[styles.aboutContent, isRTL && styles.rtlText]}>
+              {getDescription()}
+            </Text>
+          </View>
+        ) : null}
 
         {/* Cooking Tip Banner */}
         <View style={styles.cookingTipBanner}>
@@ -526,13 +547,58 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     backgroundColor: '#FFFFF0',
   },
-  headerTitle: {
+  titleWrap: {
     flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: SPACING.sm,
+  },
+  headerTitle: {
     fontSize: FONTS.sizes.xl,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
     textAlign: 'center',
+  },
+  headerSubtitle: {
+    fontSize: FONTS.sizes.sm,
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    color: '#8E8E93',
+    textAlign: 'center',
+    marginTop: 4,
+    lineHeight: 18,
+  },
+  aboutCard: {
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.md,
+    padding: SPACING.md,
+    backgroundColor: '#FFFEF5',
+    borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.borderGold,
+    borderLeftWidth: 4,
+    borderLeftColor: '#DAA520',
+    ...SHADOWS.small,
+  },
+  aboutHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 6,
+  },
+  aboutIcon: {
+    fontSize: 18,
+  },
+  aboutTitle: {
+    fontSize: FONTS.sizes.md,
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: FONTS.weights.bold,
+    color: '#8B6914',
+  },
+  aboutContent: {
+    fontSize: FONTS.sizes.sm,
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    color: '#4A4A4A',
+    lineHeight: 22,
   },
   scrollView: {
     flex: 1,

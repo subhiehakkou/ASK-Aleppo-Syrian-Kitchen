@@ -32,6 +32,9 @@ export interface Recipe {
   name_ar: string;
   name_en: string;
   name_sv: string;
+  description_ar?: string;
+  description_en?: string;
+  description_sv?: string;
   time_ar?: string;
   time_en?: string;
   time_sv?: string;
@@ -101,17 +104,8 @@ export const getCategory = async (catId: string): Promise<Category> => {
   return cat;
 };
 
-// Recipes - local data with API fallback
+// Recipes - LOCAL DATA IS SOURCE OF TRUTH (app ships offline with bundled JSON)
 export const getRecipes = async (categoryId?: string): Promise<Recipe[]> => {
-  try {
-    if (API_BASE) {
-      const params = categoryId ? { category_id: categoryId } : {};
-      const response = await api.get('/recipes', { params });
-      return response.data;
-    }
-  } catch (e) {
-    console.log('API unavailable, using local data');
-  }
   const recipes = localRecipes as Recipe[];
   if (categoryId) {
     return recipes.filter(r => r.category_id === categoryId);
@@ -120,15 +114,7 @@ export const getRecipes = async (categoryId?: string): Promise<Recipe[]> => {
 };
 
 export const getRecipe = async (recipeId: string): Promise<Recipe> => {
-  try {
-    if (API_BASE) {
-      const response = await api.get(`/recipes/${recipeId}`);
-      return response.data;
-    }
-  } catch (e) {
-    console.log('API unavailable, using local data');
-  }
-  const recipe = (localRecipes as Recipe[]).find(r => r.id === recipeId);
+  const recipe = (localRecipes as Recipe[]).find(r => r.id === recipeId || r.recipe_id === recipeId);
   if (!recipe) throw new Error('Recipe not found');
   return recipe;
 };

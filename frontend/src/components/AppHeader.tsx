@@ -1,11 +1,12 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Platform, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SPACING } from '../constants/theme';
 import { shareApp } from '../utils/shareHelper';
-import { useAdmin } from '../context/AdminContext';
+// NOTE: Admin mode disabled (requires live backend DB). Keeping files for future use.
+// import { useAdmin } from '../context/AdminContext';
 
 const APP_LOGO = require('../../assets/images/logo.png');
 
@@ -19,28 +20,8 @@ interface AppHeaderProps {
 
 export default function AppHeader({ showBack = false, showMenu = false, title, onMenuPress, onPrint }: AppHeaderProps) {
   const router = useRouter();
-  const { isAdmin, enterAdminMode, exitAdminMode } = useAdmin();
-  const tapCountRef = useRef(0);
-  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleLogoTap = () => {
-    tapCountRef.current += 1;
-    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
-    
-    if (tapCountRef.current >= 5) {
-      tapCountRef.current = 0;
-      if (isAdmin) {
-        exitAdminMode();
-      } else {
-        enterAdminMode();
-      }
-      return;
-    }
-    
-    tapTimerRef.current = setTimeout(() => {
-      tapCountRef.current = 0;
-    }, 2000);
-  };
+  // Admin mode disabled
+  const isAdmin = false;
 
   const handlePrint = async () => {
     if (!onPrint) return;
@@ -95,26 +76,21 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
 
       {/* Row 2: Logo | Name | Logo */}
       <View style={styles.nameBlock}>
-        <TouchableOpacity onPress={handleLogoTap} activeOpacity={0.8}>
-          <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
-        </TouchableOpacity>
+        <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
         <View style={styles.nameCenter}>
           <Text style={styles.nameAr}>المطبخ الحلبي السوري</Text>
           <Text style={styles.nameAbbr}>A S K</Text>
           <Text style={styles.nameEn}>Aleppo Syrian Kitchen</Text>
         </View>
-        <TouchableOpacity onPress={handleLogoTap} activeOpacity={0.8}>
-          <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
-        </TouchableOpacity>
+        <Image source={APP_LOGO} style={styles.sideLogo} resizeMode="contain" />
       </View>
 
-      {/* Admin Mode Indicator */}
+      {/* Admin Mode Indicator - disabled */}
       {isAdmin && (
-        <TouchableOpacity style={styles.adminBar} onPress={exitAdminMode}>
+        <View style={styles.adminBar}>
           <Ionicons name="construct" size={14} color="#FFF" />
-          <Text style={styles.adminBarText}>وضع التحرير - اضغط للخروج</Text>
-          <Ionicons name="close-circle" size={16} color="#FFF" />
-        </TouchableOpacity>
+          <Text style={styles.adminBarText}>وضع التحرير</Text>
+        </View>
       )}
 
       {/* Row 3: Optional subtitle/title */}

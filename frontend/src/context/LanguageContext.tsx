@@ -45,6 +45,7 @@ const translations: Record<Language, Record<string, string>> = {
     cooking_timer: 'مؤقت الطبخ',
     cooking_journal: 'ماذا طبخت اليوم؟',
     my_journal: 'سجل طبخي',
+    about_dish: 'عن الطبق',
   },
   en: {
     app_name: 'Aleppo Syrian Kitchen',
@@ -80,6 +81,7 @@ const translations: Record<Language, Record<string, string>> = {
     cooking_timer: 'Cooking Timer',
     cooking_journal: 'What did I cook today?',
     my_journal: 'My Cooking Journal',
+    about_dish: 'About this dish',
   },
   sv: {
     app_name: 'Aleppo Syriskt Kök',
@@ -115,6 +117,7 @@ const translations: Record<Language, Record<string, string>> = {
     cooking_timer: 'Koktimer',
     cooking_journal: 'Vad lagade jag idag?',
     my_journal: 'Min matdagbok',
+    about_dish: 'Om rätten',
   },
 };
 
