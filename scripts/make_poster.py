@@ -186,34 +186,40 @@ y += 60
 draw_divider(draw, y, 0.6)
 y += 45
 
-# ============ SCREENSHOTS ROW (4 side by side) ============
-SHOT_SCALE = 0.62  # 390 -> 242; 844 -> 523
+# ============ MIDDLE: Screenshots LEFT | Center Text | Screenshots RIGHT ============
+SHOT_SCALE = 0.95  # Large side screenshots for vertical balance
 shot_w = int(390 * SHOT_SCALE)
 shot_h = int(844 * SHOT_SCALE)
+vertical_gap = 55
 
-shots = [
+left_shots = [
     '/app/poster_assets/shot_welcome.jpg',
     '/app/poster_assets/shot_home.jpg',
+]
+right_shots = [
     '/app/poster_assets/shot_kebbe.jpg',
     '/app/poster_assets/shot_tabbouleh.jpg',
 ]
 
-margin_sides = 150
-avail_w = W - margin_sides * 2
-gap = (avail_w - shot_w * 4) // 3
-row_cy = y + shot_h // 2 + 10
-for i, path in enumerate(shots):
-    cx = margin_sides + shot_w // 2 + i * (shot_w + gap)
-    paste_phone(img, path, cx, row_cy, SHOT_SCALE)
+side_margin = 80
+left_cx = side_margin + shot_w // 2
+right_cx = W - side_margin - shot_w // 2
+middle_x0 = left_cx + shot_w // 2 + 55
+middle_x1 = right_cx - shot_w // 2 - 55
 
-y = row_cy + shot_h // 2 + 50
+middle_top = y + 10
+paste_phone(img, left_shots[0], left_cx, middle_top + shot_h // 2, SHOT_SCALE)
+paste_phone(img, left_shots[1], left_cx, middle_top + shot_h + vertical_gap + shot_h // 2, SHOT_SCALE)
+paste_phone(img, right_shots[0], right_cx, middle_top + shot_h // 2, SHOT_SCALE)
+paste_phone(img, right_shots[1], right_cx, middle_top + shot_h + vertical_gap + shot_h // 2, SHOT_SCALE)
 
-draw_divider(draw, y, 0.6)
-y += 55
+# Center text area
+center_w = middle_x1 - middle_x0
+center_cx = (middle_x0 + middle_x1) // 2
 
-# ============ MIDDLE: Full-width messages (big, readable) ============
-f_msg_ar = font('NotoNaskhArabic-Regular.ttf', 54)
-f_msg_en = font('Inter-Regular.ttf', 48) if os.path.exists(os.path.join(FONTS, 'Inter-Regular.ttf')) and os.path.getsize(os.path.join(FONTS, 'Inter-Regular.ttf')) > 0 else font('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf', 48)
+# Messages - larger, readable
+f_msg_ar = font('NotoNaskhArabic-Regular.ttf', 46)
+f_msg_en = font('Inter-Regular.ttf', 40) if os.path.exists(os.path.join(FONTS, 'Inter-Regular.ttf')) and os.path.getsize(os.path.join(FONTS, 'Inter-Regular.ttf')) > 0 else font('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf', 40)
 
 msg_ar = ' أنا سورية سويدية عمري ٦٥ عاما، فكرت قبل أن أفارق هذا العالم أن أفرغ كل حبي وشغفي في الطبخ بخبرة ٥٠ عاما في تطبيق سهل يليق بمحبي تراث الطبخ السوري العريق، ولكي يصل لكل انحاء العالم أنتجته بثلاثة لغات العربية والانجليزية والسويدية عرفانا مني للسويد والجامعة البريطانية التي تخرجت منها وأهلي العرب. حملوا التطبيق من هذا الرابط وابدأوا بالاستمتاع بأطيب الوصفات في العالم'
 
@@ -221,58 +227,60 @@ msg_en = '"I am a Syrian-Swedish woman, 65 years old. Before I leave this world,
 
 msg_sv = '"Jag är en syrisk-svensk kvinna, 65 år gammal. Innan jag lämnar denna värld bestämde jag mig för att hälla all min kärlek och passion för matlagning — berikad av 50 års erfarenhet — i en lättanvänd app värdig varje älskare av det djupt rotade arvet av syrisk matkultur. För att den ska nå varje hörn av världen har jag skapat den på tre språk: arabiska, engelska och svenska — som en hyllning till Sverige, till det brittiska universitetet där jag tog min examen, och till min arabiska familj. Ladda ner appen via denna länk och börja njuta av de finaste recepten i världen."'
 
-text_max_w = W - 260
-line_sp_ar = 76
-line_sp_en = 64
-center_cx = W // 2
+line_sp_ar = 66
+line_sp_en = 56
 
-def draw_lang_tag(y, text):
-    f_lt = font('Playfair-Bold.ttf', 36)
+cy = middle_top + 30
+
+def draw_lang_tag(yy, text):
+    f_lt = font('Playfair-Bold.ttf', 34)
     bbox = draw.textbbox((0, 0), text, font=f_lt)
     tw = bbox[2] - bbox[0]
     pad_x, pad_y = 22, 10
     x0 = center_cx - tw // 2 - pad_x
     x1 = center_cx + tw // 2 + pad_x
     ht = bbox[3] - bbox[1] + 2 * pad_y
-    draw.rounded_rectangle([x0, y, x1, y + ht], radius=20, fill=(255, 248, 215), outline=COLOR_GOLD, width=2)
-    draw.text((center_cx - tw // 2, y + pad_y), text, font=f_lt, fill=COLOR_GOLD_DARK)
-    return y + ht + 15
+    draw.rounded_rectangle([x0, yy, x1, yy + ht], radius=20, fill=(255, 248, 215), outline=COLOR_GOLD, width=2)
+    draw.text((center_cx - tw // 2, yy + pad_y), text, font=f_lt, fill=COLOR_GOLD_DARK)
+    return yy + ht + 15
 
 # Arabic
-y = draw_lang_tag(y, 'العربية')
-ar_lines = wrap_arabic(msg_ar, f_msg_ar, text_max_w, draw)
+cy = draw_lang_tag(cy, 'العربية')
+ar_lines = wrap_arabic(msg_ar, f_msg_ar, center_w - 20, draw)
 for line in ar_lines:
     bbox = draw.textbbox((0, 0), line, font=f_msg_ar)
     tw = bbox[2] - bbox[0]
-    draw.text((center_cx - tw // 2, y), line, font=f_msg_ar, fill=COLOR_NAVY)
-    y += line_sp_ar
-y += 20
+    draw.text((center_cx - tw // 2, cy), line, font=f_msg_ar, fill=COLOR_NAVY)
+    cy += line_sp_ar
+cy += 22
 
 # English
-y = draw_lang_tag(y, 'English')
-en_lines = wrap_text(msg_en, f_msg_en, text_max_w, draw)
+cy = draw_lang_tag(cy, 'English')
+en_lines = wrap_text(msg_en, f_msg_en, center_w - 20, draw)
 for line in en_lines:
     bbox = draw.textbbox((0, 0), line, font=f_msg_en)
     tw = bbox[2] - bbox[0]
-    draw.text((center_cx - tw // 2, y), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
-    y += line_sp_en
-y += 20
+    draw.text((center_cx - tw // 2, cy), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
+    cy += line_sp_en
+cy += 22
 
 # Swedish
-y = draw_lang_tag(y, 'Svenska')
-sv_lines = wrap_text(msg_sv, f_msg_en, text_max_w, draw)
+cy = draw_lang_tag(cy, 'Svenska')
+sv_lines = wrap_text(msg_sv, f_msg_en, center_w - 20, draw)
 for line in sv_lines:
     bbox = draw.textbbox((0, 0), line, font=f_msg_en)
     tw = bbox[2] - bbox[0]
-    draw.text((center_cx - tw // 2, y), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
-    y += line_sp_en
-y += 40
+    draw.text((center_cx - tw // 2, cy), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
+    cy += line_sp_en
+
+shots_bottom = middle_top + shot_h * 2 + vertical_gap
+y = max(shots_bottom, cy) + 40
 
 draw_divider(draw, y, 0.7)
-y += 55
+y += 60  # Padding before QR section
 
 # ============ FOOTER: QR Codes + Signature ============
-qr_size = 340
+qr_size = 260
 qr_ios = make_qr('https://apps.apple.com/app/id6762443271', size=qr_size)
 qr_android = make_qr('https://play.google.com/store/apps/details?id=com.ask.syr', size=qr_size)
 
