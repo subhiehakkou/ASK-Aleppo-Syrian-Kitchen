@@ -666,6 +666,13 @@ if IMAGES_DIR.exists():
     app.mount("/api/images", StaticFiles(directory=str(IMAGES_DIR)), name="recipe_images")
     logger.info(f"Static images mounted from {IMAGES_DIR}")
 
+# Mount poster files for download
+POSTERS_DIR = STATIC_DIR / 'posters'
+if POSTERS_DIR.exists():
+    app.mount("/api/posters", StaticFiles(directory=str(POSTERS_DIR)), name="posters")
+    logger.info(f"Posters mounted from {POSTERS_DIR}")
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
