@@ -231,10 +231,10 @@ msg_en = '"With 50 years of cooking experience, I — a Syrian-Swedish woman —
 
 msg_sv = '"Med 50 års erfarenhet av matlagning har jag — en syrisk-svensk kvinna — hällt all min kärlek och passion i en lättanvänd app värdig varje älskare av det djupt rotade arvet av syrisk matkultur. För att den ska nå varje hörn av världen har jag skapat den på tre språk: arabiska, engelska och svenska — som en hyllning till Sverige, till det brittiska universitetet där jag tog min examen, och till min arabiska familj. Ladda ner appen via denna länk och börja njuta av de finaste recepten i världen."'
 
-line_sp_ar = 76
-line_sp_en = 66
+line_sp_ar = 96
+line_sp_en = 82
 
-cy = middle_top + 30
+cy = middle_top + 20
 
 def draw_lang_tag(yy, text):
     f_lt = font('Playfair-Bold.ttf', 34)
@@ -256,7 +256,7 @@ for line in ar_lines:
     tw = bbox[2] - bbox[0]
     draw.text((center_cx - tw // 2, cy), line, font=f_msg_ar, fill=COLOR_NAVY)
     cy += line_sp_ar
-cy += 22
+cy += 38
 
 # English
 cy = draw_lang_tag(cy, 'English')
@@ -266,7 +266,7 @@ for line in en_lines:
     tw = bbox[2] - bbox[0]
     draw.text((center_cx - tw // 2, cy), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
     cy += line_sp_en
-cy += 22
+cy += 38
 
 # Swedish
 cy = draw_lang_tag(cy, 'Svenska')
@@ -278,10 +278,10 @@ for line in sv_lines:
     cy += line_sp_en
 
 shots_bottom = middle_top + shot_h * 2 + vertical_gap
-y = max(shots_bottom, cy) + 40
+y = max(shots_bottom, cy) + 25
 
 draw_divider(draw, y, 0.7)
-y += 60  # Padding before QR section
+y += 40  # Padding before QR section
 
 # ============ FOOTER: QR Codes + Signature ============
 # ============ FOOTER: Store badges (replacing QR codes) ============
