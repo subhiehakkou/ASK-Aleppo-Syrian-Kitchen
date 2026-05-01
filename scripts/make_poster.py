@@ -197,12 +197,12 @@ shot_h = int(844 * SHOT_SCALE)
 vertical_gap = 55
 
 left_shots = [
-    '/app/poster_assets/shot_welcome.jpg',
-    '/app/poster_assets/shot_home.jpg',
+    '/app/poster_assets/shot_home.jpg',      # Categories page with real food photos
+    '/app/poster_assets/shot_kebbe.jpg',     # Kebbe Meqleyeh (AR)
 ]
 right_shots = [
-    '/app/poster_assets/shot_kebbe.jpg',
-    '/app/poster_assets/shot_tabbouleh.jpg',
+    '/app/poster_assets/shot_tabbouleh.jpg', # Tabbouleh (EN)
+    '/app/poster_assets/shot_mehshi.jpg',    # Mehshi (SV)
 ]
 
 side_margin = 80
