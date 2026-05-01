@@ -17,38 +17,24 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
 import { useLanguage } from '../src/context/LanguageContext';
-import Constants from 'expo-constants';
-
-const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL
-  || process.env.EXPO_PUBLIC_BACKEND_URL
-  || '';
+import { searchRecipes, SearchResult } from '../src/utils/searchHelper';
 
 const MATCH_LABELS: Record<string, Record<string, string>> = {
-  ar: { name: 'الاسم', ingredients: 'المكونات', instructions: 'الطريقة', other: 'نصائح' },
-  en: { name: 'Name', ingredients: 'Ingredients', instructions: 'Method', other: 'Tips' },
-  sv: { name: 'Namn', ingredients: 'Ingredienser', instructions: 'Metod', other: 'Tips' },
+  ar: { name: 'الاسم', description: 'الوصف', ingredients: 'المكونات', instructions: 'الطريقة', secrets: 'الأسرار', decoration: 'التزيين', category: 'القسم', other: 'أخرى' },
+  en: { name: 'Name', description: 'Description', ingredients: 'Ingredients', instructions: 'Method', secrets: 'Secrets', decoration: 'Decoration', category: 'Category', other: 'Other' },
+  sv: { name: 'Namn', description: 'Beskrivning', ingredients: 'Ingredienser', instructions: 'Metod', secrets: 'Hemligheter', decoration: 'Dekoration', category: 'Kategori', other: 'Övrigt' },
 };
 
 const MATCH_COLORS: Record<string, string> = {
   name: '#FFD700',
+  description: '#FFA94D',
   ingredients: '#4ECDC4',
   instructions: '#FF6B6B',
-  other: '#A78BFA',
+  secrets: '#A78BFA',
+  decoration: '#F783AC',
+  category: '#74C0FC',
+  other: '#9CA3AF',
 };
-
-interface SearchResult {
-  id: string;
-  name_ar: string;
-  name_en: string;
-  name_sv: string;
-  image: string;
-  category_id: string;
-  category_name_ar: string;
-  category_name_en: string;
-  category_name_sv: string;
-  match_fields: Array<{ field: string; type: string }>;
-  time_ar: string;
-}
 
 export default function SearchScreen() {
   const router = useRouter();
@@ -70,7 +56,7 @@ export default function SearchScreen() {
   };
   const t = labels[lang];
 
-  const performSearch = useCallback(async (searchQuery: string) => {
+  const performSearch = useCallback((searchQuery: string) => {
     if (searchQuery.trim().length < 2) {
       setResults([]);
       setSearched(false);
@@ -79,9 +65,9 @@ export default function SearchScreen() {
     setLoading(true);
     setSearched(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      const data = await res.json();
-      setResults(data.results || []);
+      // Client-side comprehensive search across ALL fields (offline-first)
+      const localResults = searchRecipes(searchQuery);
+      setResults(localResults);
     } catch (e) {
       console.error('Search error:', e);
       setResults([]);

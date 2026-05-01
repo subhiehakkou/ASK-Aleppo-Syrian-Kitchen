@@ -1,0 +1,144 @@
+/**
+ * Client-side comprehensive search across ALL recipe fields.
+ * Works offline using bundled recipe data (offline-first).
+ * Searches: name, description, ingredients, instructions, secrets,
+ *           decoration, time, servings, and category names — in all 3 languages.
+ */
+import recipesData from '../data/recipes.json';
+import categoriesData from '../data/categories.json';
+
+export interface SearchMatchField {
+  field: string;
+  type: 'name' | 'description' | 'ingredients' | 'instructions' | 'secrets' | 'decoration' | 'category' | 'other';
+}
+
+export interface SearchResult {
+  id: string;
+  name_ar: string;
+  name_en: string;
+  name_sv: string;
+  image: string;
+  category_id: string;
+  category_name_ar: string;
+  category_name_en: string;
+  category_name_sv: string;
+  match_fields: SearchMatchField[];
+  time_ar: string;
+  description_ar?: string;
+  description_en?: string;
+  description_sv?: string;
+}
+
+const FIELD_GROUPS: Record<string, SearchMatchField['type']> = {
+  name_ar: 'name', name_en: 'name', name_sv: 'name',
+  description_ar: 'description', description_en: 'description', description_sv: 'description',
+  ingredients_ar: 'ingredients', ingredients_en: 'ingredients', ingredients_sv: 'ingredients',
+  instructions_ar: 'instructions', instructions_en: 'instructions', instructions_sv: 'instructions',
+  secrets_ar: 'secrets', secrets_en: 'secrets', secrets_sv: 'secrets',
+  decoration_ar: 'decoration', decoration_en: 'decoration', decoration_sv: 'decoration',
+  category_name_ar: 'category', category_name_en: 'category', category_name_sv: 'category',
+};
+
+// Normalize Arabic text for fuzzy matching (handle diacritics, alef variants, etc.)
+function normalizeArabic(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/[\u064B-\u0652\u0670]/g, '') // remove diacritics
+    .replace(/[إأآا]/g, 'ا')               // unify alef
+    .replace(/[ىي]/g, 'ي')                  // unify ya
+    .replace(/[ةه]/g, 'ه')                  // unify ta marbuta
+    .replace(/[ؤو]/g, 'و')                  // unify waw
+    .replace(/[ئءى]/g, 'ي')                 // unify hamza
+    .toLowerCase()
+    .trim();
+}
+
+function normalize(text: string): string {
+  if (!text) return '';
+  // Latin: lowercase + remove diacritics
+  const latin = text.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+  // Apply Arabic normalization too (it's harmless on Latin text)
+  return normalizeArabic(latin);
+}
+
+function fieldContains(fieldValue: string, normQuery: string): boolean {
+  if (!fieldValue) return false;
+  const normField = normalize(fieldValue);
+  return normField.includes(normQuery);
+}
+
+// Build category lookup
+const categoriesMap: Record<string, any> = {};
+(categoriesData as any[]).forEach((c) => {
+  categoriesMap[c.cat_id] = c;
+});
+
+export function searchRecipes(query: string): SearchResult[] {
+  const trimmed = (query || '').trim();
+  if (trimmed.length < 2) return [];
+
+  const normQuery = normalize(trimmed);
+  const recipes = recipesData as any[];
+  const results: SearchResult[] = [];
+
+  for (const recipe of recipes) {
+    const matchFields: SearchMatchField[] = [];
+    const seenTypes = new Set<string>();
+
+    // Get category info
+    const cat = categoriesMap[recipe.category_id] || {};
+    const fullRecord: Record<string, string> = {
+      ...recipe,
+      category_name_ar: cat.name_ar || '',
+      category_name_en: cat.name_en || '',
+      category_name_sv: cat.name_sv || '',
+    };
+
+    // Check each searchable field
+    for (const fieldName of Object.keys(FIELD_GROUPS)) {
+      const value = fullRecord[fieldName];
+      if (value && fieldContains(String(value), normQuery)) {
+        const type = FIELD_GROUPS[fieldName];
+        if (!seenTypes.has(type)) {
+          matchFields.push({ field: fieldName, type });
+          seenTypes.add(type);
+        }
+      }
+    }
+
+    if (matchFields.length > 0) {
+      results.push({
+        id: recipe.id,
+        name_ar: recipe.name_ar || '',
+        name_en: recipe.name_en || '',
+        name_sv: recipe.name_sv || '',
+        image: recipe.image || '',
+        category_id: recipe.category_id || '',
+        category_name_ar: cat.name_ar || '',
+        category_name_en: cat.name_en || '',
+        category_name_sv: cat.name_sv || '',
+        match_fields: matchFields,
+        time_ar: recipe.time_ar || '',
+        description_ar: recipe.description_ar,
+        description_en: recipe.description_en,
+        description_sv: recipe.description_sv,
+      });
+    }
+  }
+
+  // Priority sort: name match > description > ingredients > others
+  const priority: Record<string, number> = {
+    name: 0, description: 1, ingredients: 2, category: 3,
+    instructions: 4, secrets: 5, decoration: 6, other: 7,
+  };
+  results.sort((a, b) => {
+    const aBest = Math.min(...a.match_fields.map((m) => priority[m.type] ?? 9));
+    const bBest = Math.min(...b.match_fields.map((m) => priority[m.type] ?? 9));
+    if (aBest !== bBest) return aBest - bBest;
+    return (a.name_ar || '').localeCompare(b.name_ar || '');
+  });
+
+  return results;
+}
