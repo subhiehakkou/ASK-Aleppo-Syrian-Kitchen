@@ -97,16 +97,20 @@ def paste_phone(bg, screenshot_path, cx, cy, scale=1.0):
     bg.paste(gb, (cx - pw // 2, cy - ph // 2), gb)
 
 def make_qr(data, size=500):
-    qr = qrcode.QRCode(version=None, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=20, border=2)
+    # Use fixed version 4 for consistent box sizes, H-level correction
+    qr = qrcode.QRCode(version=4, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=10, border=4)
     qr.add_data(data)
     qr.make(fit=True)
-    qr_img = qr.make_image(fill_color=(20, 32, 72), back_color='white').convert('RGBA')
+    qr_img = qr.make_image(fill_color='black', back_color='white').convert('RGBA')
+    # Use NEAREST to keep crisp edges (critical for scanning)
     qr_img = qr_img.resize((size, size), Image.NEAREST)
-    framed = Image.new('RGBA', (size + 30, size + 30), (255, 255, 255, 255))
+    # Frame with ample white quiet zone
+    pad = 20
+    framed_w = size + pad * 2
+    framed = Image.new('RGBA', (framed_w, framed_w), (255, 255, 255, 255))
     fdraw = ImageDraw.Draw(framed)
-    fdraw.rounded_rectangle([0, 0, size + 29, size + 29], radius=15, fill=(255, 255, 255, 255))
-    fdraw.rounded_rectangle([0, 0, size + 29, size + 29], radius=15, outline=COLOR_GOLD, width=4)
-    framed.paste(qr_img, (15, 15))
+    fdraw.rectangle([0, 0, framed_w - 1, framed_w - 1], outline=COLOR_GOLD, width=4)
+    framed.paste(qr_img, (pad, pad))
     return framed
 
 def wrap_text(text, font_obj, max_width, draw):
@@ -280,7 +284,7 @@ draw_divider(draw, y, 0.7)
 y += 60  # Padding before QR section
 
 # ============ FOOTER: QR Codes + Signature ============
-qr_size = 260
+qr_size = 420  # Bigger for reliable scanning
 qr_ios = make_qr('https://apps.apple.com/app/id6762443271', size=qr_size)
 qr_android = make_qr('https://play.google.com/store/apps/details?id=com.ask.syr', size=qr_size)
 
@@ -291,6 +295,12 @@ qr_y = y
 
 img.paste(qr_ios, (qr_left_x, qr_y), qr_ios)
 img.paste(qr_android, (qr_left_x + qr_size + qr_spacing + 30, qr_y), qr_android)
+
+# Store QR bounding boxes for PDF hyperlinks (in pixels, poster coords)
+QR_LINKS = [
+    (qr_left_x, qr_y, qr_left_x + qr_ios.size[0], qr_y + qr_ios.size[1], 'https://apps.apple.com/app/id6762443271'),
+    (qr_left_x + qr_size + qr_spacing + 30, qr_y, qr_left_x + qr_size + qr_spacing + 30 + qr_android.size[0], qr_y + qr_android.size[1], 'https://play.google.com/store/apps/details?id=com.ask.syr'),
+]
 
 f_qr_label = font('Playfair-Bold.ttf', 48)
 f_qr_label_ar = font('NotoNaskhArabic-Bold.ttf', 40)
@@ -331,5 +341,26 @@ pdf_path = os.path.join(ASSETS, 'ASK_Poster_A4.pdf')
 img.save(png_path, 'PNG', optimize=True)
 print(f"✓ PNG: {png_path} ({os.path.getsize(png_path)//1024} KB)")
 print(f"Final y={y} (canvas H={H}), overflow={y-H}")
-img.save(pdf_path, 'PDF', resolution=300)
-print(f"✓ PDF: {pdf_path} ({os.path.getsize(pdf_path)//1024} KB)")
+
+# PDF with clickable hyperlinks using reportlab
+from reportlab.pdfgen import canvas as rlc
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.utils import ImageReader
+
+A4_W, A4_H = A4  # in points (1 inch = 72 pt)
+c = rlc.Canvas(pdf_path, pagesize=A4)
+c.drawImage(ImageReader(png_path), 0, 0, width=A4_W, height=A4_H)
+
+# Scale pixel coords to A4 points (PDF origin is bottom-left)
+sx = A4_W / W
+sy = A4_H / H
+for (x0, y0, x1, y1, url) in QR_LINKS:
+    # In PDF, Y is flipped (bottom origin)
+    px0 = x0 * sx
+    px1 = x1 * sx
+    py1 = (H - y0) * sy  # top of rect in PDF coords
+    py0 = (H - y1) * sy  # bottom
+    c.linkURL(url, (px0, py0, px1, py1), relative=0, thickness=0)
+
+c.save()
+print(f"✓ PDF (with clickable QR links): {pdf_path} ({os.path.getsize(pdf_path)//1024} KB)")
