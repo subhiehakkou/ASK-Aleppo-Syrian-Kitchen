@@ -145,88 +145,75 @@ img = make_bg()
 draw_frame(img)
 draw = ImageDraw.Draw(img)
 
-# ============ HEADER ============
-y = 140
+# ============ HEADER (compact) ============
+y = 120
 
-f_title_ar = font('NotoNaskhArabic-Bold.ttf', 130)
+f_title_ar = font('NotoNaskhArabic-Bold.ttf', 115)
 txt_ar = ar('المطبخ الحلبي السوري')
 bbox = draw.textbbox((0, 0), txt_ar, font=f_title_ar)
 tw = bbox[2] - bbox[0]
 draw.text(((W - tw) // 2, y), txt_ar, font=f_title_ar, fill=COLOR_NAVY)
-y += 165
+y += 145
 
 # Logo + ASK + Logo
 logo_path = '/app/frontend/assets/images/logo.png'
-logo = Image.open(logo_path).convert('RGBA').resize((170, 170), Image.LANCZOS) if os.path.exists(logo_path) else None
-f_ask = font('Playfair-Bold.ttf', 155)
+logo = Image.open(logo_path).convert('RGBA').resize((140, 140), Image.LANCZOS) if os.path.exists(logo_path) else None
+f_ask = font('Playfair-Bold.ttf', 130)
 ask_txt = 'A S K'
 bbox = draw.textbbox((0, 0), ask_txt, font=f_ask)
 aw = bbox[2] - bbox[0]
-total_w = 170 + 35 + aw + 35 + 170
+total_w = 140 + 30 + aw + 30 + 140
 x0 = (W - total_w) // 2
 if logo:
     img.paste(logo, (x0, y), logo)
-    draw.text((x0 + 170 + 35, y + 15), ask_txt, font=f_ask, fill=COLOR_GOLD)
-    img.paste(logo, (x0 + 170 + 35 + aw + 35, y), logo)
-y += 195
+    draw.text((x0 + 140 + 30, y + 10), ask_txt, font=f_ask, fill=COLOR_GOLD)
+    img.paste(logo, (x0 + 140 + 30 + aw + 30, y), logo)
+y += 165
 
-f_sub = font('Playfair-Bold.ttf', 90)
+f_sub = font('Playfair-Bold.ttf', 72)
 bbox = draw.textbbox((0, 0), 'Aleppo Syrian Kitchen', font=f_sub)
 tw = bbox[2] - bbox[0]
 draw.text(((W - tw) // 2, y), 'Aleppo Syrian Kitchen', font=f_sub, fill=COLOR_NAVY)
-y += 125
+y += 100
 
-f_tag = font('NotoNaskhArabic-Regular.ttf', 42)
+f_tag = font('NotoNaskhArabic-Regular.ttf', 38)
 tag = ar('٧٣ وصفة سورية أصيلة · بثلاث لغات · تراث أم سامر')
 bbox = draw.textbbox((0, 0), tag, font=f_tag)
 tw = bbox[2] - bbox[0]
 draw.text(((W - tw) // 2, y), tag, font=f_tag, fill=COLOR_GOLD_DARK)
-y += 70
+y += 60
 
 draw_divider(draw, y, 0.6)
-y += 50
+y += 45
 
-# ============ MIDDLE: Screenshots LEFT | Center Text | Screenshots RIGHT ============
-SHOT_SCALE = 0.75  # 390 -> 292; 844 -> 633
+# ============ SCREENSHOTS ROW (4 side by side) ============
+SHOT_SCALE = 0.62  # 390 -> 242; 844 -> 523
 shot_w = int(390 * SHOT_SCALE)
 shot_h = int(844 * SHOT_SCALE)
-side_bezel = 30
-shot_cell_w = shot_w + side_bezel
-vertical_gap = 50
 
-# Screenshots: 2 on left, 2 on right
-left_shots = [
+shots = [
     '/app/poster_assets/shot_welcome.jpg',
     '/app/poster_assets/shot_home.jpg',
-]
-right_shots = [
     '/app/poster_assets/shot_kebbe.jpg',
     '/app/poster_assets/shot_tabbouleh.jpg',
 ]
 
-# Layout
-side_margin = 100
-left_cx = side_margin + shot_cell_w // 2
-right_cx = W - side_margin - shot_cell_w // 2
-middle_x0 = left_cx + shot_cell_w // 2 + 40
-middle_x1 = right_cx - shot_cell_w // 2 - 40
+margin_sides = 150
+avail_w = W - margin_sides * 2
+gap = (avail_w - shot_w * 4) // 3
+row_cy = y + shot_h // 2 + 10
+for i, path in enumerate(shots):
+    cx = margin_sides + shot_w // 2 + i * (shot_w + gap)
+    paste_phone(img, path, cx, row_cy, SHOT_SCALE)
 
-middle_top = y + 10
-row_h = shot_h + vertical_gap
-# Place left shots
-paste_phone(img, left_shots[0], left_cx, middle_top + shot_h // 2, SHOT_SCALE)
-paste_phone(img, left_shots[1], left_cx, middle_top + shot_h + vertical_gap + shot_h // 2, SHOT_SCALE)
-paste_phone(img, right_shots[0], right_cx, middle_top + shot_h // 2, SHOT_SCALE)
-paste_phone(img, right_shots[1], right_cx, middle_top + shot_h + vertical_gap + shot_h // 2, SHOT_SCALE)
+y = row_cy + shot_h // 2 + 50
 
-# Center text area
-center_y = middle_top + 30
-center_w = middle_x1 - middle_x0
-center_cx = (middle_x0 + middle_x1) // 2
+draw_divider(draw, y, 0.6)
+y += 55
 
-# Messages
-f_msg_ar = font('NotoNaskhArabic-Regular.ttf', 34)
-f_msg_en = font('Inter-Regular.ttf', 30) if os.path.exists(os.path.join(FONTS, 'Inter-Regular.ttf')) and os.path.getsize(os.path.join(FONTS, 'Inter-Regular.ttf')) > 0 else font('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf', 30)
+# ============ MIDDLE: Full-width messages (big, readable) ============
+f_msg_ar = font('NotoNaskhArabic-Regular.ttf', 54)
+f_msg_en = font('Inter-Regular.ttf', 48) if os.path.exists(os.path.join(FONTS, 'Inter-Regular.ttf')) and os.path.getsize(os.path.join(FONTS, 'Inter-Regular.ttf')) > 0 else font('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf', 48)
 
 msg_ar = ' أنا سورية سويدية عمري ٦٥ عاما، فكرت قبل أن أفارق هذا العالم أن أفرغ كل حبي وشغفي في الطبخ بخبرة ٥٠ عاما في تطبيق سهل يليق بمحبي تراث الطبخ السوري العريق، ولكي يصل لكل انحاء العالم أنتجته بثلاثة لغات العربية والانجليزية والسويدية عرفانا مني للسويد والجامعة البريطانية التي تخرجت منها وأهلي العرب. حملوا التطبيق من هذا الرابط وابدأوا بالاستمتاع بأطيب الوصفات في العالم'
 
@@ -234,66 +221,62 @@ msg_en = '"I am a Syrian-Swedish woman, 65 years old. Before I leave this world,
 
 msg_sv = '"Jag är en syrisk-svensk kvinna, 65 år gammal. Innan jag lämnar denna värld bestämde jag mig för att hälla all min kärlek och passion för matlagning — berikad av 50 års erfarenhet — i en lättanvänd app värdig varje älskare av det djupt rotade arvet av syrisk matkultur. För att den ska nå varje hörn av världen har jag skapat den på tre språk: arabiska, engelska och svenska — som en hyllning till Sverige, till det brittiska universitetet där jag tog min examen, och till min arabiska familj. Ladda ner appen via denna länk och börja njuta av de finaste recepten i världen."'
 
-line_sp_ar = 46
-line_sp_en = 38
+text_max_w = W - 260
+line_sp_ar = 76
+line_sp_en = 64
+center_cx = W // 2
 
-cy = center_y
-
-# Language tag helper
-def draw_tag(y, text, fill=COLOR_GOLD_DARK):
-    f_tag_small = font('Playfair-Bold.ttf', 32)
-    bbox = draw.textbbox((0, 0), text, font=f_tag_small)
+def draw_lang_tag(y, text):
+    f_lt = font('Playfair-Bold.ttf', 36)
+    bbox = draw.textbbox((0, 0), text, font=f_lt)
     tw = bbox[2] - bbox[0]
-    # Tag pill
-    pad_x, pad_y = 20, 8
+    pad_x, pad_y = 22, 10
     x0 = center_cx - tw // 2 - pad_x
     x1 = center_cx + tw // 2 + pad_x
-    draw.rounded_rectangle([x0, y, x1, y + bbox[3] - bbox[1] + 2 * pad_y], radius=18, fill=(255, 250, 220), outline=COLOR_GOLD, width=1)
-    draw.text((center_cx - tw // 2, y + pad_y), text, font=f_tag_small, fill=fill)
-    return y + bbox[3] - bbox[1] + 2 * pad_y + 12
+    ht = bbox[3] - bbox[1] + 2 * pad_y
+    draw.rounded_rectangle([x0, y, x1, y + ht], radius=20, fill=(255, 248, 215), outline=COLOR_GOLD, width=2)
+    draw.text((center_cx - tw // 2, y + pad_y), text, font=f_lt, fill=COLOR_GOLD_DARK)
+    return y + ht + 15
 
 # Arabic
-cy = draw_tag(cy, 'العربية')
-ar_lines = wrap_arabic(msg_ar, f_msg_ar, center_w - 30, draw)
+y = draw_lang_tag(y, 'العربية')
+ar_lines = wrap_arabic(msg_ar, f_msg_ar, text_max_w, draw)
 for line in ar_lines:
     bbox = draw.textbbox((0, 0), line, font=f_msg_ar)
     tw = bbox[2] - bbox[0]
-    draw.text((center_cx - tw // 2, cy), line, font=f_msg_ar, fill=COLOR_NAVY)
-    cy += line_sp_ar
-cy += 18
+    draw.text((center_cx - tw // 2, y), line, font=f_msg_ar, fill=COLOR_NAVY)
+    y += line_sp_ar
+y += 20
 
 # English
-cy = draw_tag(cy, 'English')
-en_lines = wrap_text(msg_en, f_msg_en, center_w - 30, draw)
+y = draw_lang_tag(y, 'English')
+en_lines = wrap_text(msg_en, f_msg_en, text_max_w, draw)
 for line in en_lines:
     bbox = draw.textbbox((0, 0), line, font=f_msg_en)
     tw = bbox[2] - bbox[0]
-    draw.text((center_cx - tw // 2, cy), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
-    cy += line_sp_en
-cy += 18
+    draw.text((center_cx - tw // 2, y), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
+    y += line_sp_en
+y += 20
 
 # Swedish
-cy = draw_tag(cy, 'Svenska')
-sv_lines = wrap_text(msg_sv, f_msg_en, center_w - 30, draw)
+y = draw_lang_tag(y, 'Svenska')
+sv_lines = wrap_text(msg_sv, f_msg_en, text_max_w, draw)
 for line in sv_lines:
     bbox = draw.textbbox((0, 0), line, font=f_msg_en)
     tw = bbox[2] - bbox[0]
-    draw.text((center_cx - tw // 2, cy), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
-    cy += line_sp_en
-
-# Y after middle section (max of shots bottom or center bottom)
-shots_bottom = middle_top + shot_h * 2 + vertical_gap
-y = max(shots_bottom, cy) + 50
+    draw.text((center_cx - tw // 2, y), line, font=f_msg_en, fill=COLOR_NAVY_SOFT)
+    y += line_sp_en
+y += 40
 
 draw_divider(draw, y, 0.7)
-y += 60
+y += 55
 
 # ============ FOOTER: QR Codes + Signature ============
-qr_size = 360
+qr_size = 340
 qr_ios = make_qr('https://apps.apple.com/app/id6762443271', size=qr_size)
 qr_android = make_qr('https://play.google.com/store/apps/details?id=com.ask.syr', size=qr_size)
 
-qr_spacing = 200
+qr_spacing = 160
 qr_total_w = qr_size * 2 + qr_spacing + 60
 qr_left_x = (W - qr_total_w) // 2
 qr_y = y
@@ -301,11 +284,10 @@ qr_y = y
 img.paste(qr_ios, (qr_left_x, qr_y), qr_ios)
 img.paste(qr_android, (qr_left_x + qr_size + qr_spacing + 30, qr_y), qr_android)
 
-# Labels under QR
-f_qr_label = font('Playfair-Bold.ttf', 52)
-f_qr_label_ar = font('NotoNaskhArabic-Bold.ttf', 42)
+f_qr_label = font('Playfair-Bold.ttf', 48)
+f_qr_label_ar = font('NotoNaskhArabic-Bold.ttf', 40)
 
-label_y = qr_y + qr_size + 40
+label_y = qr_y + qr_size + 35
 
 def label_qr(x_start, title_en, title_ar):
     bbox = draw.textbbox((0, 0), title_en, font=f_qr_label)
@@ -313,45 +295,27 @@ def label_qr(x_start, title_en, title_ar):
     draw.text((x_start + (qr_size + 30 - tw) // 2, label_y), title_en, font=f_qr_label, fill=COLOR_NAVY)
     bbox2 = draw.textbbox((0, 0), title_ar, font=f_qr_label_ar)
     tw2 = bbox2[2] - bbox2[0]
-    draw.text((x_start + (qr_size + 30 - tw2) // 2, label_y + 65), title_ar, font=f_qr_label_ar, fill=COLOR_GOLD_DARK)
+    draw.text((x_start + (qr_size + 30 - tw2) // 2, label_y + 60), title_ar, font=f_qr_label_ar, fill=COLOR_GOLD_DARK)
 
 label_qr(qr_left_x, 'App Store', ar('للآيفون والآيباد'))
 label_qr(qr_left_x + qr_size + qr_spacing + 30, 'Google Play', ar('لأجهزة الأندرويد'))
 
-y = label_y + 140
-
-# CTA
-f_cta_ar = font('NotoNaskhArabic-Bold.ttf', 48)
-cta_ar = ar('امسح الكود أو اضغط على الرابط للتحميل')
-bbox = draw.textbbox((0, 0), cta_ar, font=f_cta_ar)
-tw = bbox[2] - bbox[0]
-draw.text(((W - tw) // 2, y), cta_ar, font=f_cta_ar, fill=COLOR_NAVY)
-y += 65
-
-f_cta_en = font('Playfair-Bold.ttf', 36)
-cta_en = 'Scan · Tap · Download'
-bbox = draw.textbbox((0, 0), cta_en, font=f_cta_en)
-tw = bbox[2] - bbox[0]
-draw.text(((W - tw) // 2, y), cta_en, font=f_cta_en, fill=COLOR_GOLD_DARK)
-y += 65
-
-draw_divider(draw, y, 0.5)
-y += 45
+y = label_y + 130
 
 # Signature
-f_sig_en = font('Playfair-Bold.ttf', 60)
+f_sig_en = font('Playfair-Bold.ttf', 58)
 sig_en = 'Sofia Akkou · Um Samer'
 bbox = draw.textbbox((0, 0), sig_en, font=f_sig_en)
 tw = bbox[2] - bbox[0]
 draw.text(((W - tw) // 2, y), sig_en, font=f_sig_en, fill=COLOR_NAVY)
-y += 75
+y += 70
 
-f_sig_ar = font('NotoNaskhArabic-Bold.ttf', 54)
+f_sig_ar = font('NotoNaskhArabic-Bold.ttf', 52)
 sig_ar = ar('صوفيا عكّو · أم سامر')
 bbox = draw.textbbox((0, 0), sig_ar, font=f_sig_ar)
 tw = bbox[2] - bbox[0]
 draw.text(((W - tw) // 2, y), sig_ar, font=f_sig_ar, fill=COLOR_GOLD_DARK)
-y += 60
+y += 50
 
 # =========== SAVE ===========
 png_path = os.path.join(ASSETS, 'ASK_Poster_A4.png')
