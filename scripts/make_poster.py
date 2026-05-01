@@ -284,41 +284,54 @@ draw_divider(draw, y, 0.7)
 y += 60  # Padding before QR section
 
 # ============ FOOTER: QR Codes + Signature ============
-qr_size = 420  # Bigger for reliable scanning
-qr_ios = make_qr('https://apps.apple.com/app/id6762443271', size=qr_size)
-qr_android = make_qr('https://play.google.com/store/apps/details?id=com.ask.syr', size=qr_size)
+# ============ FOOTER: Store badges (replacing QR codes) ============
+# Load store badges
+APPSTORE_BADGE = Image.open('/app/poster_assets/badges/appstore.png').convert('RGBA')
+GOOGLEPLAY_BADGE = Image.open('/app/poster_assets/badges/googleplay.png').convert('RGBA')
 
-qr_spacing = 160
-qr_total_w = qr_size * 2 + qr_spacing + 60
-qr_left_x = (W - qr_total_w) // 2
-qr_y = y
+BADGE_W = 640
+badge_h_as = int(APPSTORE_BADGE.size[1] * BADGE_W / APPSTORE_BADGE.size[0])
+badge_h_gp = int(GOOGLEPLAY_BADGE.size[1] * BADGE_W / GOOGLEPLAY_BADGE.size[0])
+as_resized = APPSTORE_BADGE.resize((BADGE_W, badge_h_as), Image.LANCZOS)
+gp_resized = GOOGLEPLAY_BADGE.resize((BADGE_W, badge_h_gp), Image.LANCZOS)
 
-img.paste(qr_ios, (qr_left_x, qr_y), qr_ios)
-img.paste(qr_android, (qr_left_x + qr_size + qr_spacing + 30, qr_y), qr_android)
+badge_spacing = 120
+badges_total_w = BADGE_W * 2 + badge_spacing
+badges_x0 = (W - badges_total_w) // 2
+badge_row_h = max(badge_h_as, badge_h_gp)
 
-# Store QR bounding boxes for PDF hyperlinks (in pixels, poster coords)
+# Center both badges on same baseline
+as_y = y + (badge_row_h - badge_h_as) // 2
+gp_y = y + (badge_row_h - badge_h_gp) // 2
+
+img.paste(as_resized, (badges_x0, as_y), as_resized)
+img.paste(gp_resized, (badges_x0 + BADGE_W + badge_spacing, gp_y), gp_resized)
+
+# Define clickable regions for PDF hyperlinks
 QR_LINKS = [
-    (qr_left_x, qr_y, qr_left_x + qr_ios.size[0], qr_y + qr_ios.size[1], 'https://apps.apple.com/app/id6762443271'),
-    (qr_left_x + qr_size + qr_spacing + 30, qr_y, qr_left_x + qr_size + qr_spacing + 30 + qr_android.size[0], qr_y + qr_android.size[1], 'https://play.google.com/store/apps/details?id=com.ask.syr'),
+    (badges_x0, as_y, badges_x0 + BADGE_W, as_y + badge_h_as, 'https://apps.apple.com/app/id6762443271'),
+    (badges_x0 + BADGE_W + badge_spacing, gp_y, badges_x0 + BADGE_W + badge_spacing + BADGE_W, gp_y + badge_h_gp, 'https://play.google.com/store/apps/details?id=com.ask.syr'),
 ]
 
-f_qr_label = font('Playfair-Bold.ttf', 48)
-f_qr_label_ar = font('NotoNaskhArabic-Bold.ttf', 40)
+# URL text below badges
+y = y + badge_row_h + 30
+f_url = font('Inter-Regular.ttf', 28) if os.path.exists(os.path.join(FONTS, 'Inter-Regular.ttf')) and os.path.getsize(os.path.join(FONTS, 'Inter-Regular.ttf')) > 0 else font('/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf', 28)
 
-label_y = qr_y + qr_size + 35
+ios_url = 'apps.apple.com/app/id6762443271'
+gp_url = 'play.google.com/store/apps/details?id=com.ask.syr'
 
-def label_qr(x_start, title_en, title_ar):
-    bbox = draw.textbbox((0, 0), title_en, font=f_qr_label)
+# Center each URL under its badge
+def center_text_at(x_start, text, font_obj):
+    bbox = draw.textbbox((0, 0), text, font=font_obj)
     tw = bbox[2] - bbox[0]
-    draw.text((x_start + (qr_size + 30 - tw) // 2, label_y), title_en, font=f_qr_label, fill=COLOR_NAVY)
-    bbox2 = draw.textbbox((0, 0), title_ar, font=f_qr_label_ar)
-    tw2 = bbox2[2] - bbox2[0]
-    draw.text((x_start + (qr_size + 30 - tw2) // 2, label_y + 60), title_ar, font=f_qr_label_ar, fill=COLOR_GOLD_DARK)
+    draw.text((x_start + (BADGE_W - tw) // 2, y), text, font=font_obj, fill=COLOR_NAVY_SOFT)
 
-label_qr(qr_left_x, 'App Store', ar('للآيفون والآيباد'))
-label_qr(qr_left_x + qr_size + qr_spacing + 30, 'Google Play', ar('لأجهزة الأندرويد'))
+center_text_at(badges_x0, ios_url, f_url)
+center_text_at(badges_x0 + BADGE_W + badge_spacing, gp_url, f_url)
+y += 55
 
-y = label_y + 130
+draw_divider(draw, y, 0.5)
+y += 40
 
 # Signature
 f_sig_en = font('Playfair-Bold.ttf', 58)
