@@ -222,8 +222,8 @@ center_w = middle_x1 - middle_x0
 center_cx = (middle_x0 + middle_x1) // 2
 
 # Messages - larger, readable
-f_msg_ar = font('NotoNaskhArabic-Regular.ttf', 46)
-f_msg_en = font('Inter-Regular.ttf', 40) if os.path.exists(os.path.join(FONTS, 'Inter-Regular.ttf')) and os.path.getsize(os.path.join(FONTS, 'Inter-Regular.ttf')) > 0 else font('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf', 40)
+f_msg_ar = font('NotoNaskhArabic-Regular.ttf', 54)
+f_msg_en = font('Inter-Regular.ttf', 48) if os.path.exists(os.path.join(FONTS, 'Inter-Regular.ttf')) and os.path.getsize(os.path.join(FONTS, 'Inter-Regular.ttf')) > 0 else font('/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf', 48)
 
 msg_ar = ' أنا سورية سويدية عمري ٦٥ عاما، فكرت قبل أن أفارق هذا العالم أن أفرغ كل حبي وشغفي في الطبخ بخبرة ٥٠ عاما في تطبيق سهل يليق بمحبي تراث الطبخ السوري العريق، ولكي يصل لكل انحاء العالم أنتجته بثلاثة لغات العربية والانجليزية والسويدية عرفانا مني للسويد والجامعة البريطانية التي تخرجت منها وأهلي العرب. حملوا التطبيق من هذا الرابط وابدأوا بالاستمتاع بأطيب الوصفات في العالم'
 
@@ -231,8 +231,8 @@ msg_en = '"I am a Syrian-Swedish woman, 65 years old. Before I leave this world,
 
 msg_sv = '"Jag är en syrisk-svensk kvinna, 65 år gammal. Innan jag lämnar denna värld bestämde jag mig för att hälla all min kärlek och passion för matlagning — berikad av 50 års erfarenhet — i en lättanvänd app värdig varje älskare av det djupt rotade arvet av syrisk matkultur. För att den ska nå varje hörn av världen har jag skapat den på tre språk: arabiska, engelska och svenska — som en hyllning till Sverige, till det brittiska universitetet där jag tog min examen, och till min arabiska familj. Ladda ner appen via denna länk och börja njuta av de finaste recepten i världen."'
 
-line_sp_ar = 66
-line_sp_en = 56
+line_sp_ar = 76
+line_sp_en = 66
 
 cy = middle_top + 30
 
