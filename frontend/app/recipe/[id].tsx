@@ -570,15 +570,15 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoNaskhArabic_600SemiBold',
     color: '#8B6914',
   },
-  // --- New compact meta chips row (About · Time · Servings) ---
+  // --- New compact meta chips row (Favorite · About · Time · Servings) ---
   metaChipsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 4,
     marginTop: 6,
-    paddingHorizontal: SPACING.xs,
+    paddingHorizontal: 6,
   },
   metaChipsRowRTL: {
     flexDirection: 'row-reverse',
@@ -586,27 +586,30 @@ const styles = StyleSheet.create({
   metaChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
+    gap: 3,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
     backgroundColor: '#FFF8DC',
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E8C56B',
+    flexShrink: 1,
+    minWidth: 0,
   },
   metaChipIcon: {
-    fontSize: 13,
+    fontSize: 11,
   },
   metaChipText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: 'NotoNaskhArabic_600SemiBold',
     color: '#8B6914',
-    maxWidth: 120,
+    flexShrink: 1,
   },
   // Favorite chip: red heart + red border to distinguish from the "Favorites" tab
   metaChipFavorite: {
     backgroundColor: '#FFF0F0',
     borderColor: '#E74C3C',
+    flexShrink: 0,
   },
   metaChipTextFavorite: {
     color: '#C0392B',
