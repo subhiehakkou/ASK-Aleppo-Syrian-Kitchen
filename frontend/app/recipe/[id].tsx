@@ -302,58 +302,61 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
       {/* App Header with Logo */}
       <AppHeader showBack={true} onPrint={generatePDF} />
       
-      {/* Recipe Name & Favorite - centered */}
+      {/* Recipe Name - centered */}
       <View style={styles.recipeNameRow}>
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          onPress={() => {
-            const recipeId = recipe?.id || recipe?._id || id;
-            if (recipeId) toggleFavorite(recipeId as string);
-          }}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons 
-            name={isFavorite(recipe?.id || recipe?._id || id as string) ? "heart" : "heart-outline"} 
-            size={28} 
-            color={isFavorite(recipe?.id || recipe?._id || id as string) ? "#E74C3C" : COLORS.textPrimary} 
-          />
-        </TouchableOpacity>
         <View style={styles.titleWrap}>
           <Text style={styles.headerTitle} numberOfLines={2}>
             {getName()}
           </Text>
-          {/* Compact meta chips row: About · Time · Servings  */}
-          <View style={[styles.metaChipsRow, isRTL && styles.metaChipsRowRTL]}>
-            {getDescription() ? (
-              <TouchableOpacity
-                style={styles.metaChip}
-                onPress={toggleAbout}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.metaChipIcon}>📖</Text>
-                <Text style={styles.metaChipText} numberOfLines={1}>{t('about_dish')}</Text>
-                <Ionicons
-                  name={showAbout ? 'chevron-up' : 'chevron-down'}
-                  size={14}
-                  color="#8B6914"
-                />
-              </TouchableOpacity>
-            ) : null}
-            {getTime() ? (
-              <View style={styles.metaChip}>
-                <Text style={styles.metaChipIcon}>⏱️</Text>
-                <Text style={styles.metaChipText} numberOfLines={1}>{getTime()}</Text>
-              </View>
-            ) : null}
-            {getServings() ? (
-              <View style={styles.metaChip}>
-                <Text style={styles.metaChipIcon}>🍽️</Text>
-                <Text style={styles.metaChipText} numberOfLines={1}>{getServings()}</Text>
-              </View>
-            ) : null}
-          </View>
         </View>
-        <View style={{ width: 28 }} />
+      </View>
+      {/* Compact meta chips row: Favorite · About · Time · Servings */}
+      <View style={[styles.metaChipsRow, isRTL && styles.metaChipsRowRTL]}>
+        <TouchableOpacity
+          style={[styles.metaChip, styles.metaChipFavorite]}
+          onPress={() => {
+            const recipeId = recipe?.id || recipe?._id || id;
+            if (recipeId) toggleFavorite(recipeId as string);
+          }}
+          activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons
+            name={isFavorite(recipe?.id || recipe?._id || id as string) ? 'heart' : 'heart-outline'}
+            size={16}
+            color="#E74C3C"
+          />
+          <Text style={[styles.metaChipText, styles.metaChipTextFavorite]} numberOfLines={1}>
+            {language === 'ar' ? 'المفضلة' : language === 'sv' ? 'Favorit' : 'Favorite'}
+          </Text>
+        </TouchableOpacity>
+        {getDescription() ? (
+          <TouchableOpacity
+            style={styles.metaChip}
+            onPress={toggleAbout}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.metaChipIcon}>📖</Text>
+            <Text style={styles.metaChipText} numberOfLines={1}>{t('about_dish')}</Text>
+            <Ionicons
+              name={showAbout ? 'chevron-up' : 'chevron-down'}
+              size={14}
+              color="#8B6914"
+            />
+          </TouchableOpacity>
+        ) : null}
+        {getTime() ? (
+          <View style={styles.metaChip}>
+            <Text style={styles.metaChipIcon}>⏱️</Text>
+            <Text style={styles.metaChipText} numberOfLines={1}>{getTime()}</Text>
+          </View>
+        ) : null}
+        {getServings() ? (
+          <View style={styles.metaChip}>
+            <Text style={styles.metaChipIcon}>🍽️</Text>
+            <Text style={styles.metaChipText} numberOfLines={1}>{getServings()}</Text>
+          </View>
+        ) : null}
       </View>
       {/* Collapsible description panel */}
       {showAbout && getDescription() ? (
@@ -599,6 +602,14 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoNaskhArabic_600SemiBold',
     color: '#8B6914',
     maxWidth: 120,
+  },
+  // Favorite chip: red heart + red border to distinguish from the "Favorites" tab
+  metaChipFavorite: {
+    backgroundColor: '#FFF0F0',
+    borderColor: '#E74C3C',
+  },
+  metaChipTextFavorite: {
+    color: '#C0392B',
   },
   aboutPanel: {
     marginHorizontal: SPACING.lg,
