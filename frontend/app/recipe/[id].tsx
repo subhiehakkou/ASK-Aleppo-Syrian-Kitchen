@@ -322,22 +322,36 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           <Text style={styles.headerTitle} numberOfLines={2}>
             {getName()}
           </Text>
-          {/* Optional dropdown button for dish description */}
-          {getDescription() ? (
-            <TouchableOpacity
-              style={styles.aboutToggle}
-              onPress={toggleAbout}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.aboutToggleIcon}>📖</Text>
-              <Text style={styles.aboutToggleText}>{t('about_dish')}</Text>
-              <Ionicons
-                name={showAbout ? 'chevron-up' : 'chevron-down'}
-                size={16}
-                color="#8B6914"
-              />
-            </TouchableOpacity>
-          ) : null}
+          {/* Compact meta chips row: About · Time · Servings  */}
+          <View style={[styles.metaChipsRow, isRTL && styles.metaChipsRowRTL]}>
+            {getDescription() ? (
+              <TouchableOpacity
+                style={styles.metaChip}
+                onPress={toggleAbout}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.metaChipIcon}>📖</Text>
+                <Text style={styles.metaChipText} numberOfLines={1}>{t('about_dish')}</Text>
+                <Ionicons
+                  name={showAbout ? 'chevron-up' : 'chevron-down'}
+                  size={14}
+                  color="#8B6914"
+                />
+              </TouchableOpacity>
+            ) : null}
+            {getTime() ? (
+              <View style={styles.metaChip}>
+                <Text style={styles.metaChipIcon}>⏱️</Text>
+                <Text style={styles.metaChipText} numberOfLines={1}>{getTime()}</Text>
+              </View>
+            ) : null}
+            {getServings() ? (
+              <View style={styles.metaChip}>
+                <Text style={styles.metaChipIcon}>🍽️</Text>
+                <Text style={styles.metaChipText} numberOfLines={1}>{getServings()}</Text>
+              </View>
+            ) : null}
+          </View>
         </View>
         <View style={{ width: 28 }} />
       </View>
@@ -362,39 +376,6 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             resizeMode="cover"
           />
           <View style={styles.imageOverlay} />
-        </View>
-
-        {/* Recipe Info */}
-        <View style={styles.infoSection}>
-          <View style={[styles.metaRow, isRTL && styles.rtlRow]}>
-            {getTime() && (
-              <View style={styles.metaItem}>
-                <Text style={styles.metaEmoji}>⏱️</Text>
-                <Text style={styles.metaLabel}>{t('time')}</Text>
-                <Text style={styles.metaValue}>{getTime()}</Text>
-              </View>
-            )}
-            
-            {getServings() && (
-              <View style={styles.metaItem}>
-                <Text style={styles.metaEmoji}>🍽️</Text>
-                <Text style={styles.metaLabel}>{t('servings')}</Text>
-                <Text style={styles.metaValue}>{getServings()}</Text>
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* Cooking Tip Banner */}
-        <View style={styles.cookingTipBanner}>
-          <Text style={styles.cookingTipIcon}>💡</Text>
-          <Text style={[styles.cookingTipText, isRTL && styles.rtlText]}>
-            {language === 'ar'
-              ? 'في حال الرغبة بتقليل أو زيادة الكمية، يرجى مراعاة وقت النضج ومراقبة درجات الحرارة ومستوى السوائل في الطبخة'
-              : language === 'sv'
-                ? 'Om du vill minska eller öka mängden, var noga med att justera koktiden och övervaka temperaturen och vätskenivån i grytan'
-                : 'If you wish to reduce or increase the quantity, please adjust the cooking time and monitor the temperature and liquid level accordingly'}
-          </Text>
         </View>
 
         {/* Unified Cooking Tools Menu (replaces 3-button action bar) */}
@@ -585,6 +566,39 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'NotoNaskhArabic_600SemiBold',
     color: '#8B6914',
+  },
+  // --- New compact meta chips row (About · Time · Servings) ---
+  metaChipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 6,
+    paddingHorizontal: SPACING.xs,
+  },
+  metaChipsRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  metaChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: '#FFF8DC',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E8C56B',
+  },
+  metaChipIcon: {
+    fontSize: 13,
+  },
+  metaChipText: {
+    fontSize: 12,
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    color: '#8B6914',
+    maxWidth: 120,
   },
   aboutPanel: {
     marginHorizontal: SPACING.lg,
