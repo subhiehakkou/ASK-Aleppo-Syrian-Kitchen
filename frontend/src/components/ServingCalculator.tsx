@@ -103,8 +103,8 @@ export default function ServingCalculator({
   const factor = original > 0 ? target / original : 1;
 
   const adjusted = useMemo(
-    () => scaleIngredients(ingredientsText || '', factor),
-    [ingredientsText, factor]
+    () => scaleIngredients(ingredientsText || '', factor, language),
+    [ingredientsText, factor, language]
   );
 
   const adjustTarget = (delta: number) => {
