@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Vibration, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Vibration, Platform, AccessibilityInfo } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
+import * as Haptics from 'expo-haptics';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
 interface CookingTimerProps {
@@ -45,6 +46,7 @@ export default function CookingTimer({
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
       if (soundRef.current) {
         soundRef.current.unloadAsync();
       }
@@ -72,13 +74,47 @@ export default function CookingTimer({
     };
   }, [isRunning, isPaused]);
 
+  // Visual flash state when timer completes (for hearing-impaired users)
+  const [flashAlert, setFlashAlert] = useState(false);
+  const flashIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const onTimerComplete = useCallback(async () => {
-    // Vibrate
+    // 1) STRONG haptic feedback (uses iOS native taptic engine via expo-haptics)
     if (Platform.OS !== 'web') {
-      Vibration.vibrate([500, 500, 500, 500, 500], false);
+      try {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        // Repeat haptic for hearing-impaired users
+        for (let i = 0; i < 4; i++) {
+          await new Promise((r) => setTimeout(r, 600));
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        }
+      } catch {
+        // Fallback to standard vibration
+      }
+      // Long, attention-grabbing vibration pattern
+      Vibration.vibrate([0, 800, 300, 800, 300, 800, 300, 800], false);
     }
-    
-    // Play alert sound
+
+    // 2) VISUAL flash banner (alternates colors so it's impossible to miss)
+    setFlashAlert(true);
+    let toggle = false;
+    flashIntervalRef.current = setInterval(() => {
+      toggle = !toggle;
+      setFlashAlert(toggle);
+    }, 500);
+    setTimeout(() => {
+      if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
+      setFlashAlert(false);
+    }, 8000);
+
+    // 3) SCREEN-READER announcement (for blind users)
+    try {
+      AccessibilityInfo.announceForAccessibility(
+        isRTL ? 'انتهى وقت الطبخ! المؤقت توقف.' : "Time's up! Cooking timer finished."
+      );
+    } catch {}
+
+    // 4) Play alert sound
     try {
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
@@ -128,6 +164,8 @@ export default function CookingTimer({
 
   const resetTimer = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
+    if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
+    setFlashAlert(false);
     setIsRunning(false);
     setIsPaused(false);
     setTotalSeconds(0);
@@ -190,8 +228,23 @@ export default function CookingTimer({
         animationType="slide"
         onRequestClose={() => setIsVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View style={[styles.modalOverlay, flashAlert && styles.modalOverlayFlashRed]}>
+          <View style={[styles.modalContent, flashAlert && styles.modalContentFlash]}>
+            {/* Visual flash alert banner — appears prominently when time is up */}
+            {totalSeconds === 0 && !isRunning && initialTotal > 0 ? (
+              <View
+                style={[styles.flashBanner, flashAlert ? styles.flashBannerRed : styles.flashBannerYellow]}
+                accessible={true}
+                accessibilityLiveRegion="assertive"
+                accessibilityLabel={isRTL ? 'انتهى وقت الطبخ' : "Cooking time is up"}
+              >
+                <Text style={styles.flashBannerIcon}>🔔</Text>
+                <Text style={styles.flashBannerText}>
+                  {isRTL ? 'انتهى الوقت!' : "Time's up!"}
+                </Text>
+                <Text style={styles.flashBannerIcon}>🔔</Text>
+              </View>
+            ) : null}
             {/* Header */}
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, isRTL && styles.rtlText]}>
@@ -349,12 +402,48 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
+  modalOverlayFlashRed: {
+    backgroundColor: 'rgba(231, 76, 60, 0.45)', // visible red tint
+  },
   modalContent: {
     backgroundColor: '#FFFFF0',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingBottom: 40,
     maxHeight: '85%',
+  },
+  modalContentFlash: {
+    borderTopWidth: 6,
+    borderTopColor: '#E74C3C',
+  },
+  // --- Visual Alert Banner (for hearing-impaired users) ---
+  flashBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    gap: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: '#C0392B',
+  },
+  flashBannerRed: {
+    backgroundColor: '#E74C3C',
+  },
+  flashBannerYellow: {
+    backgroundColor: '#FFD700',
+  },
+  flashBannerIcon: {
+    fontSize: 32,
+  },
+  flashBannerText: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    textShadowColor: 'rgba(0,0,0,0.4)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   modalHeader: {
     flexDirection: 'row',

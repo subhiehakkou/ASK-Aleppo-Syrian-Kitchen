@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import ServingCalculator from './ServingCalculator';
 import CookingTimer from './CookingTimer';
@@ -78,14 +79,29 @@ export default function RecipeToolsMenu({
   const tr = T[language] || T.ar;
   const [activeTool, setActiveTool] = useState<ActiveTool>('none');
 
-  const openMenu = () => setActiveTool('menu');
+  const openMenu = () => {
+    if (Platform.OS !== 'web') {
+      try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
+    }
+    setActiveTool('menu');
+  };
   const closeMenu = () => setActiveTool('none');
 
-  const handleCalculator = () => setActiveTool('calculator');
-  const handleTimer = () => setActiveTool('timer');
+  const handleCalculator = () => {
+    if (Platform.OS !== 'web') {
+      try { Haptics.selectionAsync(); } catch {}
+    }
+    setActiveTool('calculator');
+  };
+  const handleTimer = () => {
+    if (Platform.OS !== 'web') {
+      try { Haptics.selectionAsync(); } catch {}
+    }
+    setActiveTool('timer');
+  };
   const handlePrint = () => {
     setActiveTool('none');
-    setTimeout(() => onPrint(), 250); // wait for modal close animation
+    setTimeout(() => onPrint(), 250);
   };
   const handleQR = () => {
     setActiveTool('none');
@@ -99,6 +115,10 @@ export default function RecipeToolsMenu({
         style={styles.triggerBtn}
         onPress={openMenu}
         activeOpacity={0.85}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={tr.button}
+        accessibilityHint={tr.subtitle}
       >
         <View style={styles.triggerInner}>
           <View style={styles.triggerIconWrap}>
@@ -232,6 +252,10 @@ function ToolCard({ icon, title, subtitle, color, bgColor, isRTL, onPress }: Too
       style={styles.toolCard}
       onPress={onPress}
       activeOpacity={0.75}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityHint={subtitle}
     >
       <View style={[styles.toolIconWrap, { backgroundColor: bgColor }]}>
         <Ionicons name={icon} size={28} color={color} />

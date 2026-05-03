@@ -320,6 +320,14 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           }}
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isFavorite(recipe?.id || recipe?._id || id as string)
+              ? (isRTL ? 'إزالة من المفضلة' : 'Remove from favorites')
+              : (isRTL ? 'إضافة إلى المفضلة' : 'Add to favorites')
+          }
+          accessibilityState={{ selected: isFavorite(recipe?.id || recipe?._id || id as string) }}
         >
           <Ionicons
             name={isFavorite(recipe?.id || recipe?._id || id as string) ? 'heart' : 'heart-outline'}
@@ -335,6 +343,14 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             style={styles.metaChip}
             onPress={toggleAbout}
             activeOpacity={0.7}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={
+              showAbout
+                ? (isRTL ? 'إخفاء وصف الطبق' : 'Hide dish description')
+                : (isRTL ? 'إظهار وصف الطبق' : 'Show dish description')
+            }
+            accessibilityState={{ expanded: showAbout }}
           >
             <Text style={styles.metaChipIcon}>📖</Text>
             <Text style={styles.metaChipText} numberOfLines={1}>{t('about_dish')}</Text>
@@ -346,13 +362,21 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           </TouchableOpacity>
         ) : null}
         {getTime() ? (
-          <View style={styles.metaChip}>
+          <View
+            style={styles.metaChip}
+            accessible={true}
+            accessibilityLabel={(isRTL ? 'وقت الطبخ: ' : 'Cooking time: ') + getTime()}
+          >
             <Text style={styles.metaChipIcon}>⏱️</Text>
             <Text style={styles.metaChipText} numberOfLines={1}>{getTime()}</Text>
           </View>
         ) : null}
         {getServings() ? (
-          <View style={styles.metaChip}>
+          <View
+            style={styles.metaChip}
+            accessible={true}
+            accessibilityLabel={(isRTL ? 'عدد الأشخاص: ' : 'Servings: ') + getServings()}
+          >
             <Text style={styles.metaChipIcon}>🍽️</Text>
             <Text style={styles.metaChipText} numberOfLines={1}>{getServings()}</Text>
           </View>
@@ -377,6 +401,13 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             source={getImageSource(getRecipeImage(recipe))}
             style={styles.recipeImage}
             resizeMode="cover"
+            accessible={true}
+            accessibilityRole="image"
+            accessibilityLabel={
+              (isRTL ? 'صورة طبق ' : 'Photo of ') +
+              (getName() || '') +
+              (getDescription() ? '. ' + getDescription() : '')
+            }
           />
           <View style={styles.imageOverlay} />
         </View>

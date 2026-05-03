@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -112,6 +113,11 @@ export default function ServingCalculator({
       const next = prev + delta;
       if (next < MIN_SERVINGS) return MIN_SERVINGS;
       if (next > MAX_SERVINGS) return MAX_SERVINGS;
+      // Announce the new value for screen-reader users
+      try {
+        const personLbl = next === 1 ? tr.person : tr.persons;
+        AccessibilityInfo.announceForAccessibility(`${tr.target}: ${next} ${personLbl}`);
+      } catch {}
       return next;
     });
   };
@@ -121,6 +127,10 @@ export default function ServingCalculator({
       const next = prev + delta;
       if (next < MIN_SERVINGS) return MIN_SERVINGS;
       if (next > MAX_SERVINGS) return MAX_SERVINGS;
+      try {
+        const personLbl = next === 1 ? tr.person : tr.persons;
+        AccessibilityInfo.announceForAccessibility(`${tr.original}: ${next} ${personLbl}`);
+      } catch {}
       return next;
     });
   };
@@ -174,10 +184,18 @@ export default function ServingCalculator({
                   onPress={() => adjustOriginal(-1)}
                   style={styles.stepperBtn}
                   activeOpacity={0.7}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={isRTL ? `إنقاص ${tr.original}` : `Decrease ${tr.original}`}
                 >
                   <Ionicons name="remove" size={28} color={COLORS.goldDark} />
                 </TouchableOpacity>
-                <View style={styles.stepperValueWrap}>
+                <View
+                  style={styles.stepperValueWrap}
+                  accessible={true}
+                  accessibilityRole="text"
+                  accessibilityLabel={`${tr.original}: ${original} ${original === 1 ? tr.person : tr.persons}`}
+                >
                   <Text style={styles.stepperValue}>{original}</Text>
                   <Text style={styles.stepperUnit}>{personLabel(original)}</Text>
                 </View>
@@ -185,6 +203,9 @@ export default function ServingCalculator({
                   onPress={() => adjustOriginal(1)}
                   style={styles.stepperBtn}
                   activeOpacity={0.7}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={isRTL ? `زيادة ${tr.original}` : `Increase ${tr.original}`}
                 >
                   <Ionicons name="add" size={28} color={COLORS.goldDark} />
                 </TouchableOpacity>
@@ -214,10 +235,18 @@ export default function ServingCalculator({
                   onPress={() => adjustTarget(-1)}
                   style={[styles.stepperBtn, styles.stepperBtnLarge]}
                   activeOpacity={0.7}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={isRTL ? `إنقاص ${tr.target}` : `Decrease ${tr.target}`}
                 >
                   <Ionicons name="remove" size={32} color="#FFF" />
                 </TouchableOpacity>
-                <View style={styles.stepperValueWrap}>
+                <View
+                  style={styles.stepperValueWrap}
+                  accessible={true}
+                  accessibilityRole="text"
+                  accessibilityLabel={`${tr.target}: ${target} ${target === 1 ? tr.person : tr.persons}. ${tr.multiplier}: ${formatScaled(factor)}`}
+                >
                   <Text style={[styles.stepperValue, styles.stepperValueHighlight]}>
                     {target}
                   </Text>
@@ -229,6 +258,9 @@ export default function ServingCalculator({
                   onPress={() => adjustTarget(1)}
                   style={[styles.stepperBtn, styles.stepperBtnLarge]}
                   activeOpacity={0.7}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={isRTL ? `زيادة ${tr.target}` : `Increase ${tr.target}`}
                 >
                   <Ionicons name="add" size={32} color="#FFF" />
                 </TouchableOpacity>
