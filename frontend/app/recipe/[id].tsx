@@ -10,7 +10,7 @@ import { getRecipe, Recipe } from '../../src/services/api';
 import { getRecipeImage, getImageSource } from '../../src/utils/imageHelper';
 import AppHeader from '../../src/components/AppHeader';
 import BottomTabBar from '../../src/components/BottomTabBar';
-import CookingTimer from '../../src/components/CookingTimer';
+import RecipeToolsMenu from '../../src/components/RecipeToolsMenu';
 import QRCode from 'react-native-qrcode-svg';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -397,29 +397,16 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           </Text>
         </View>
 
-        {/* Action Buttons: Print + QR + Timer */}
-        <View style={styles.actionBar}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => {
-              console.log('Print button pressed directly in recipe page');
-              generatePDF();
-            }}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="print-outline" size={20} color="#3A3A3A" />
-            <Text style={styles.actionButtonText}>{isRTL ? 'طباعة' : 'Print'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => setShowQR(!showQR)}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="qr-code-outline" size={20} color="#3A3A3A" />
-            <Text style={styles.actionButtonText}>QR Code</Text>
-          </TouchableOpacity>
-          <CookingTimer isRTL={isRTL} />
-        </View>
+        {/* Unified Cooking Tools Menu (replaces 3-button action bar) */}
+        <RecipeToolsMenu
+          isRTL={isRTL}
+          language={language as 'ar' | 'en' | 'sv'}
+          ingredientsText={getIngredients() || ''}
+          servingsText={getServings()}
+          recipeName={getName()}
+          onPrint={generatePDF}
+          onShowQR={() => setShowQR(true)}
+        />
 
         {/* QR Code Section */}
         {showQR && (

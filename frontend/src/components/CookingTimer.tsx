@@ -6,10 +6,30 @@ import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/the
 
 interface CookingTimerProps {
   isRTL: boolean;
+  /** When provided, parent controls modal visibility (no standalone button rendered). */
+  externalVisible?: boolean;
+  /** Called when user dismisses the modal in controlled mode. */
+  onExternalClose?: () => void;
+  /** Hide the standalone action-bar button (used inside the unified Tools menu). */
+  hideButton?: boolean;
 }
 
-export default function CookingTimer({ isRTL }: CookingTimerProps) {
-  const [isVisible, setIsVisible] = useState(false);
+export default function CookingTimer({
+  isRTL,
+  externalVisible,
+  onExternalClose,
+  hideButton = false,
+}: CookingTimerProps) {
+  const isControlled = typeof externalVisible === 'boolean';
+  const [internalVisible, setInternalVisible] = useState(false);
+  const isVisible = isControlled ? !!externalVisible : internalVisible;
+  const setIsVisible = (v: boolean) => {
+    if (isControlled) {
+      if (!v && onExternalClose) onExternalClose();
+    } else {
+      setInternalVisible(v);
+    }
+  };
   const [minutes, setMinutes] = useState(10);
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -146,17 +166,19 @@ export default function CookingTimer({ isRTL }: CookingTimerProps) {
 
   return (
     <>
-      {/* Timer Button in Action Bar */}
-      <TouchableOpacity
-        style={styles.actionButton}
-        onPress={() => setIsVisible(true)}
-        activeOpacity={0.7}
-      >
-        <Ionicons name="timer-outline" size={20} color="#3A3A3A" />
-        <Text style={styles.actionButtonText}>
-          {isRunning ? formatTime(totalSeconds) : (isRTL ? 'مؤقت' : 'Timer')}
-        </Text>
-      </TouchableOpacity>
+      {/* Timer Button in Action Bar (hidden when used inside Tools menu) */}
+      {!hideButton && (
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => setIsVisible(true)}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="timer-outline" size={20} color="#3A3A3A" />
+          <Text style={styles.actionButtonText}>
+            {isRunning ? formatTime(totalSeconds) : (isRTL ? 'مؤقت' : 'Timer')}
+          </Text>
+        </TouchableOpacity>
+      )}
 
       {/* Floating Mini Timer */}
       {renderMiniTimer()}
