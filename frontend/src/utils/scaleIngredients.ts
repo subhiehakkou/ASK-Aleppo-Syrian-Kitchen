@@ -90,6 +90,8 @@ function formatArabic(n: number): string {
     { value: 0.75, word: 'ثلاثة أرباع' },
     { value: 1 / 3, word: 'ثلث' },
     { value: 2 / 3, word: 'ثلثي' },
+    { value: 0.125, word: 'ثمن' },
+    { value: 0.2, word: 'خمس' },
   ];
 
   for (const { value, word } of namedFractions) {
@@ -149,16 +151,28 @@ function isIntegerUnitAfter(textAfter: string): boolean {
 
 // --- Main regex (single-pass, no cascade) ----------------------------------
 
-const NUMBER_RE = new RegExp(
-  [
-    '\\d+\\s+\\d+\\/\\d+',                                         // "1 1/2"
-    '\\d+\\s*[\u00BD\u00BC\u00BE\u2150-\u215E]',                    // "2 ½"
-    '\\d+\\/\\d+',                                                  // "1/2"
-    '\\d+(?:\\.\\d+)?',                                            // "3.5" or "10"
-    '[\u00BD\u00BC\u00BE\u2150-\u215E]',                            // "½"
-  ].join('|'),
-  'g'
-);
+// Escape special regex chars in Arabic words
+const escapeRe = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Build a combined regex that matches BOTH numeric tokens AND Arabic fraction
+// words in a SINGLE pass — this guarantees we never re-scan a replacement and
+// never scale the same value twice (which was the cause of the
+// "نصف → ربع → 0.1" cascading bug).
+const AR_FRAC_RE_SRC = AR_FRAC_WORDS.map((w) => escapeRe(w.word)).join('|');
+const NUMBER_RE_SRC = [
+  '\\d+\\s+\\d+\\/\\d+', // "1 1/2"
+  '\\d+\\s*[\u00BD\u00BC\u00BE\u2150-\u215E]', // "2 ½"
+  '\\d+\\/\\d+', // "1/2"
+  '\\d+(?:\\.\\d+)?', // "3.5" or "10"
+  '[\u00BD\u00BC\u00BE\u2150-\u215E]', // "½"
+].join('|');
+
+// IMPORTANT: Arabic fraction words FIRST, so longer words get matched before
+// they could be misinterpreted as something else.
+const COMBINED_RE = new RegExp(`(${AR_FRAC_RE_SRC})|(${NUMBER_RE_SRC})`, 'g');
+
+// Old-style export kept for backwards compatibility (used elsewhere).
+const NUMBER_RE = new RegExp(NUMBER_RE_SRC, 'g');
 
 function tokenToValue(tok: string): number | null {
   const t = tok.trim();
@@ -184,51 +198,51 @@ function tokenToValue(tok: string): number | null {
 /**
  * Scale a single line of ingredient text by a factor.
  * `lang` controls the fraction formatting style (Arabic avoids Unicode glyphs).
+ *
+ * Implementation note: ALL number tokens AND Arabic fraction words are matched
+ * in a SINGLE pass with a combined regex. This guarantees we never re-scan a
+ * replacement and never scale the same value twice (which previously caused
+ * the cascading "نصف → ربع → 0.1" bug).
  */
 export function scaleLine(line: string, factor: number, lang: Lang = 'ar'): string {
   if (!line || factor === 1) return line;
 
   // 1) Normalise Arabic-Indic digits to Western
-  let s = toWestern(line);
+  const original = toWestern(line);
 
-  // 2) Scale all numeric tokens in ONE pass.  Inspect text after each match to
-  //    decide: integer-forced (grams/ml) vs. fraction-friendly.
-  s = s.replace(NUMBER_RE, (match, ...args) => {
+  // 2) Build lookup for Arabic fraction words → value
+  const fracWordValue: Record<string, number> = {};
+  for (const { word, value } of AR_FRAC_WORDS) {
+    fracWordValue[word] = value;
+  }
+
+  // 3) SINGLE-pass replacement covering both Arabic words and numeric tokens.
+  return original.replace(COMBINED_RE, (match, fracWord, numToken, ...args) => {
+    // last two args are: offset, full string
     const offset = args[args.length - 2] as number;
     const fullStr = args[args.length - 1] as string;
 
-    const v = tokenToValue(match);
+    let v: number | null = null;
+    if (fracWord) {
+      v = fracWordValue[fracWord] ?? null;
+    } else if (numToken) {
+      v = tokenToValue(numToken);
+    }
     if (v === null) return match;
     if (v >= 1900) return match; // skip years / codes
 
     const scaled = v * factor;
-
     // Peek at the next ~25 chars (skipping whitespace/punct) to detect unit
-    const after = fullStr.substring(offset + match.length).replace(/^[\s,.\(\):\-]+/, '').slice(0, 25);
+    const after = fullStr
+      .substring(offset + match.length)
+      .replace(/^[\s,.\(\):\-]+/, '')
+      .slice(0, 25);
+
     if (isIntegerUnitAfter(after)) {
       return formatInteger(scaled);
     }
     return formatScaled(scaled, lang);
   });
-
-  // 3) Replace Arabic fraction words (longest first)
-  for (const { word, value } of AR_FRAC_WORDS) {
-    if (s.includes(word)) {
-      const scaled = value * factor;
-      // Check: is this word next to an integer-unit? search for the word's position
-      let idx = 0;
-      while ((idx = s.indexOf(word, idx)) !== -1) {
-        const after = s.substring(idx + word.length).replace(/^[\s,.\(\):\-]+/, '').slice(0, 25);
-        const replacement = isIntegerUnitAfter(after)
-          ? formatInteger(scaled)
-          : formatScaled(scaled, lang);
-        s = s.substring(0, idx) + replacement + s.substring(idx + word.length);
-        idx += replacement.length;
-      }
-    }
-  }
-
-  return s;
 }
 
 /**

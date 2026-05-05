@@ -10,6 +10,7 @@ import {
   AccessibilityInfo,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { scaleIngredients, parseServings, formatScaled, scaleCookingTime } from '../utils/scaleIngredients';
 
@@ -24,8 +25,11 @@ interface ServingCalculatorProps {
   timeText?: string;
 }
 
-const MIN_SERVINGS = 1;
+const ABSOLUTE_MIN = 1;
 const MAX_SERVINGS = 50;
+// Minimum scaling floor — the user designed recipes for 8 ppl, so going below
+// 25% (~2 ppl for an 8-ppl recipe) breaks the spice balance & becomes silly.
+const MIN_SERVING_RATIO = 0.25;
 
 const T = {
   ar: {
@@ -45,6 +49,7 @@ const T = {
     cookingTime: 'وقت الطهي المُعدَّل',
     cookingTimeHint: '⏱️ يُحسب بقاعدة 80/20 (الطهي لا يتضاعف خطّياً)',
     originalTime: 'الأصلي',
+    minReached: '🍳 هذه أقل كمية يمكن تطبيقها عملياً لهذه الوصفة. الكميات أقل من ذلك تُفسد توازن النكهات.',
   },
   en: {
     title: '🧮 Serving Calculator',
@@ -63,6 +68,7 @@ const T = {
     cookingTime: 'Adjusted cooking time',
     cookingTimeHint: '⏱️ Calculated with the 80/20 rule (cooking time doesn\'t scale linearly)',
     originalTime: 'Original',
+    minReached: '🍳 This is the smallest practical portion for this recipe. Smaller amounts will break the flavour balance.',
   },
   sv: {
     title: '🧮 Portionsräknare',
@@ -81,6 +87,7 @@ const T = {
     cookingTime: 'Justerad tillagningstid',
     cookingTimeHint: '⏱️ Beräknas med 80/20-regeln (tillagningstiden skalas inte linjärt)',
     originalTime: 'Original',
+    minReached: '🍳 Detta är den minsta praktiska portionen för detta recept. Mindre mängder förstör smakbalansen.',
   },
 } as const;
 
@@ -112,7 +119,21 @@ export default function ServingCalculator({
     }
   }, [visible, detectedOriginal]);
 
+  // If user lowers the "original" servings, the floor goes up — clamp target.
+  useEffect(() => {
+    const floor = Math.max(ABSOLUTE_MIN, Math.ceil(original * MIN_SERVING_RATIO));
+    setTarget((prev) => (prev < floor ? floor : prev));
+  }, [original]);
+
   const factor = original > 0 ? target / original : 1;
+
+  // Dynamic minimum target — based on a 1/4 floor of the original servings.
+  // For an 8-ppl recipe → min = 2. For a 4-ppl → min = 1. For a 6-ppl → min = 2.
+  const minTarget = useMemo(
+    () => Math.max(ABSOLUTE_MIN, Math.ceil(original * MIN_SERVING_RATIO)),
+    [original]
+  );
+  const atMinimum = target <= minTarget;
 
   const adjusted = useMemo(
     () => scaleIngredients(ingredientsText || '', factor, language),
@@ -128,7 +149,15 @@ export default function ServingCalculator({
   const adjustTarget = (delta: number) => {
     setTarget((prev) => {
       const next = prev + delta;
-      if (next < MIN_SERVINGS) return MIN_SERVINGS;
+      // Going DOWN below the minimum floor — reject + give haptic warning
+      if (delta < 0 && next < minTarget) {
+        if (Platform.OS !== 'web') {
+          try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); } catch {}
+        }
+        try { AccessibilityInfo.announceForAccessibility(tr.minReached); } catch {}
+        return prev;
+      }
+      if (next < ABSOLUTE_MIN) return ABSOLUTE_MIN;
       if (next > MAX_SERVINGS) return MAX_SERVINGS;
       // Announce the new value for screen-reader users
       try {
@@ -142,7 +171,7 @@ export default function ServingCalculator({
   const adjustOriginal = (delta: number) => {
     setOriginal((prev) => {
       const next = prev + delta;
-      if (next < MIN_SERVINGS) return MIN_SERVINGS;
+      if (next < ABSOLUTE_MIN) return ABSOLUTE_MIN;
       if (next > MAX_SERVINGS) return MAX_SERVINGS;
       try {
         const personLbl = next === 1 ? tr.person : tr.persons;
@@ -250,13 +279,19 @@ export default function ServingCalculator({
               <View style={styles.stepperRow}>
                 <TouchableOpacity
                   onPress={() => adjustTarget(-1)}
-                  style={[styles.stepperBtn, styles.stepperBtnLarge]}
-                  activeOpacity={0.7}
+                  style={[
+                    styles.stepperBtn,
+                    styles.stepperBtnLarge,
+                    atMinimum && styles.stepperBtnDisabled,
+                  ]}
+                  activeOpacity={atMinimum ? 1 : 0.7}
+                  disabled={atMinimum}
                   accessible={true}
                   accessibilityRole="button"
+                  accessibilityState={{ disabled: atMinimum }}
                   accessibilityLabel={isRTL ? `إنقاص ${tr.target}` : `Decrease ${tr.target}`}
                 >
-                  <Ionicons name="remove" size={32} color="#FFF" />
+                  <Ionicons name="remove" size={32} color={atMinimum ? '#BDB8A0' : '#FFF'} />
                 </TouchableOpacity>
                 <View
                   style={styles.stepperValueWrap}
@@ -283,6 +318,16 @@ export default function ServingCalculator({
                 </TouchableOpacity>
               </View>
             </View>
+
+            {/* Minimum reached warning */}
+            {atMinimum ? (
+              <View style={styles.minWarn} accessible={true} accessibilityRole="alert">
+                <Ionicons name="information-circle" size={20} color={COLORS.goldDark} />
+                <Text style={[styles.minWarnText, isRTL && styles.rtlText]}>
+                  {tr.minReached}
+                </Text>
+              </View>
+            ) : null}
 
             {/* Ingredients Result */}
             <View style={styles.resultCard}>
@@ -465,6 +510,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.gold,
     borderColor: COLORS.goldDark,
   },
+  stepperBtnDisabled: {
+    backgroundColor: COLORS.ivoryDark,
+    borderColor: '#D8D2BD',
+    opacity: 0.6,
+  },
   stepperValueWrap: {
     flex: 1,
     alignItems: 'center',
@@ -505,6 +555,27 @@ const styles = StyleSheet.create({
     color: COLORS.goldDark,
     fontWeight: '700',
     paddingHorizontal: SPACING.sm,
+  },
+
+  // ---- Minimum reached warning banner ----
+  minWarn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    backgroundColor: COLORS.goldLight,
+    borderWidth: 1.5,
+    borderColor: COLORS.gold,
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    marginTop: SPACING.sm,
+  },
+  minWarnText: {
+    flex: 1,
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontSize: 13,
+    color: COLORS.goldDeep,
+    lineHeight: 20,
   },
 
   resultCard: {
