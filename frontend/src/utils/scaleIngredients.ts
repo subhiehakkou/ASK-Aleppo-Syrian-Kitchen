@@ -231,10 +231,13 @@ export function scaleLine(line: string, factor: number, lang: Lang = 'ar'): stri
     if (v === null) return match;
     if (v >= 1900) return match; // skip years / codes
 
+    // Skip percentages (e.g. "دهن 20%" — 20% is a fat ratio, not a quantity)
+    const afterRaw = fullStr.substring(offset + match.length);
+    if (/^\s*%/.test(afterRaw) || /^\s*٪/.test(afterRaw)) return match;
+
     const scaled = v * factor;
     // Peek at the next ~25 chars (skipping whitespace/punct) to detect unit
-    const after = fullStr
-      .substring(offset + match.length)
+    const after = afterRaw
       .replace(/^[\s,.\(\):\-]+/, '')
       .slice(0, 25);
 
