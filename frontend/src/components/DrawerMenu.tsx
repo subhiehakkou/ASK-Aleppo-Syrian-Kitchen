@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLanguage } from '../context/LanguageContext';
 import { FONTS, SPACING, BORDER_RADIUS } from '../constants/theme';
+import { openStorePage } from '../utils/reviewTracker';
 
 const APP_LOGO = require('../../assets/images/logo.png');
 
@@ -52,6 +53,14 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
       icon: 'shield-checkmark-outline',
       route: '/privacy',
     },
+    {
+      id: 'rate',
+      label_ar: 'ادعمي المطبخ الحلبي بتقييمكِ',
+      label_en: 'Support us with your review',
+      label_sv: 'Stöd oss med din recension',
+      icon: 'star-outline',
+      route: '__rate__', // Special — opens store URL instead of navigating
+    },
   ];
 
   const getLabel = (item: typeof menuItems[0]) => {
@@ -63,6 +72,12 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
   };
 
   const handleNavigation = (route: string) => {
+    if (route === '__rate__') {
+      onClose();
+      // Slight delay so drawer closes smoothly before opening external URL
+      setTimeout(() => { openStorePage(); }, 200);
+      return;
+    }
     onClose();
     router.push(route as any);
   };
@@ -87,19 +102,38 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
         </LinearGradient>
 
         <ScrollView style={styles.menuList}>
-          {menuItems.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={[styles.menuItem, isRTL && styles.menuItemRTL]}
-              onPress={() => handleNavigation(item.route)}
-              activeOpacity={0.7}
-            >
-              <Ionicons name={item.icon as any} size={24} color="#DAA520" />
-              <Text style={[styles.menuLabel, isRTL && styles.menuLabelRTL]}>
-                {getLabel(item)}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {menuItems.map((item) => {
+            const isRate = item.id === 'rate';
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.menuItem,
+                  isRTL && styles.menuItemRTL,
+                  isRate && styles.rateItem,
+                ]}
+                onPress={() => handleNavigation(item.route)}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={getLabel(item)}
+              >
+                <Ionicons
+                  name={item.icon as any}
+                  size={isRate ? 26 : 24}
+                  color={isRate ? '#B8860B' : '#DAA520'}
+                />
+                <Text
+                  style={[
+                    styles.menuLabel,
+                    isRTL && styles.menuLabelRTL,
+                    isRate && styles.rateLabel,
+                  ]}
+                >
+                  {getLabel(item)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
 
         <View style={styles.footer}>
@@ -198,6 +232,19 @@ const styles = StyleSheet.create({
   menuLabelRTL: {
     marginLeft: 0,
     marginRight: SPACING.lg,
+  },
+  rateItem: {
+    backgroundColor: '#FFF8DC',
+    marginHorizontal: SPACING.md,
+    marginVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1.5,
+    borderColor: '#E8C56B',
+    borderBottomWidth: 1.5,
+  },
+  rateLabel: {
+    fontWeight: '700',
+    color: '#B8860B',
   },
   footer: {
     padding: SPACING.lg,

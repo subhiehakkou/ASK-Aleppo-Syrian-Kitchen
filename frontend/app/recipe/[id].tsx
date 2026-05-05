@@ -11,6 +11,10 @@ import { getRecipeImage, getImageSource } from '../../src/utils/imageHelper';
 import AppHeader from '../../src/components/AppHeader';
 import BottomTabBar from '../../src/components/BottomTabBar';
 import RecipeToolsMenu from '../../src/components/RecipeToolsMenu';
+import RatingPrompt from '../../src/components/RatingPrompt';
+import TranslationViewer from '../../src/components/TranslationViewer';
+import { recordRecipeView } from '../../src/utils/reviewTracker';
+import * as Haptics from 'expo-haptics';
 import QRCode from 'react-native-qrcode-svg';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -31,6 +35,10 @@ export default function RecipeDetailScreen() {
   const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions' | 'tips'>('ingredients');
   const [showQR, setShowQR] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showRating, setShowRating] = useState(false);
+  const [translationField, setTranslationField] = useState<
+    null | 'ingredients' | 'instructions' | 'tips' | 'secrets'
+  >(null);
 
   // Enable LayoutAnimation on Android
   useEffect(() => {
@@ -156,6 +164,16 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
   useEffect(() => {
     if (id) {
       loadRecipe();
+      // Track view & possibly trigger rating prompt (after 3rd distinct view)
+      (async () => {
+        try {
+          const shouldShow = await recordRecipeView(String(id));
+          if (shouldShow) {
+            // Small delay so the recipe content shows first
+            setTimeout(() => setShowRating(true), 2500);
+          }
+        } catch {}
+      })();
     }
   }, [id]);
 
@@ -179,6 +197,28 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
   };
 
   const getName = () => recipe ? getLocalizedValue(recipe.name_ar, recipe.name_en, recipe.name_sv) : '';
+
+  // Helper to grab a field's value in a SPECIFIC language (used by the
+  // long-press 3-language comparison popup). Falls back gracefully.
+  const getInLang = (field: 'ingredients' | 'instructions' | 'tips' | 'secrets' | 'decoration', lang: 'ar' | 'en' | 'sv'): string => {
+    if (!recipe) return '';
+    const r = recipe as any;
+    const map: Record<string, string> = {
+      ingredients: 'ingredients',
+      instructions: 'instructions',
+      tips: 'pro_tips',
+      secrets: 'secrets',
+      decoration: 'decoration',
+    };
+    return r[`${map[field]}_${lang}`] || '';
+  };
+
+  const onLongPressField = (field: 'ingredients' | 'instructions' | 'tips' | 'secrets') => {
+    if (Platform.OS !== 'web') {
+      try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); } catch {}
+    }
+    setTranslationField(field);
+  };
   const getDescription = () => recipe ? getLocalizedValue((recipe as any).description_ar, (recipe as any).description_en, (recipe as any).description_sv) : '';
   const getTime = () => recipe ? getLocalizedValue(recipe.time_ar, recipe.time_en, recipe.time_sv) : '';
   const getServings = () => recipe ? getLocalizedValue(recipe.servings_ar, recipe.servings_en, recipe.servings_sv) : '';
@@ -231,7 +271,11 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
       case 'ingredients':
         return (
           <View style={[styles.tabContent, { backgroundColor: tabStyle.bg }]}>
-            <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
+            <Text
+              style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}
+              onLongPress={() => onLongPressField('ingredients')}
+              accessibilityHint={isRTL ? 'اضغطي مطوّلاً لمشاهدة بثلاث لغات' : 'Long-press to view in 3 languages'}
+            >
               {getIngredients() || '-'}
             </Text>
           </View>
@@ -239,7 +283,11 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
       case 'instructions':
         return (
           <View style={[styles.tabContent, { backgroundColor: tabStyle.bg }]}>
-            <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
+            <Text
+              style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}
+              onLongPress={() => onLongPressField('instructions')}
+              accessibilityHint={isRTL ? 'اضغطي مطوّلاً لمشاهدة بثلاث لغات' : 'Long-press to view in 3 languages'}
+            >
               {getInstructions() || '-'}
             </Text>
             
@@ -422,6 +470,24 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           timeText={getTime()}
           onPrint={generatePDF}
           onShowQR={() => setShowQR(true)}
+        />
+
+        <RatingPrompt
+          visible={showRating}
+          onClose={() => setShowRating(false)}
+          language={language as 'ar' | 'en' | 'sv'}
+          isRTL={isRTL}
+          recipeName={getName()}
+        />
+
+        <TranslationViewer
+          visible={translationField !== null}
+          onClose={() => setTranslationField(null)}
+          title={getName()}
+          ar={translationField ? getInLang(translationField, 'ar') : ''}
+          en={translationField ? getInLang(translationField, 'en') : ''}
+          sv={translationField ? getInLang(translationField, 'sv') : ''}
+          currentLanguage={language as 'ar' | 'en' | 'sv'}
         />
 
         {/* QR Code Section */}

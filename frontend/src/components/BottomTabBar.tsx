@@ -1,26 +1,62 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import { useLanguage } from '../context/LanguageContext';
 
 const FLAG_SY = { uri: 'https://flagcdn.com/w80/sy.png' };
 const FLAG_GB = { uri: 'https://flagcdn.com/w80/gb.png' };
 const FLAG_SE = { uri: 'https://flagcdn.com/w80/se.png' };
 
 interface BottomTabBarProps {
+  /** Optional override; otherwise auto-detected from current language. */
   activeTab?: 'ar' | 'en' | 'sv' | 'fav';
 }
 
+// Routes that act as "home" for each language. On these screens we navigate
+// (because each language has its own home file). Anywhere else we just swap
+// the language in context and let the current screen re-render in place.
+const LANGUAGE_HOME_ROUTES = new Set(['/', '/english', '/svenska']);
+
 export default function BottomTabBar({ activeTab }: BottomTabBarProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const { language, setLanguage } = useLanguage();
+
+  const currentTab: 'ar' | 'en' | 'sv' | 'fav' =
+    activeTab ?? (pathname === '/favorites' ? 'fav' : language);
 
   const tabs = [
-    { key: 'ar', label: 'العربية', route: '/', icon: FLAG_SY, type: 'flag' },
-    { key: 'en', label: 'English', route: '/english', icon: FLAG_GB, type: 'flag' },
-    { key: 'sv', label: 'Svenska', route: '/svenska', icon: FLAG_SE, type: 'flag' },
-    { key: 'fav', label: 'Favorite', route: '/favorites', icon: 'heart', type: 'icon' },
+    { key: 'ar' as const, label: 'العربية', route: '/', icon: FLAG_SY, type: 'flag' as const },
+    { key: 'en' as const, label: 'English', route: '/english', icon: FLAG_GB, type: 'flag' as const },
+    { key: 'sv' as const, label: 'Svenska', route: '/svenska', icon: FLAG_SE, type: 'flag' as const },
+    { key: 'fav' as const, label: 'Favorite', route: '/favorites', icon: 'heart', type: 'icon' as const },
   ];
+
+  const onTabPress = (tab: (typeof tabs)[number]) => {
+    if (Platform.OS !== 'web') {
+      try { Haptics.selectionAsync(); } catch {}
+    }
+    if (tab.key === 'fav') {
+      router.push('/favorites');
+      return;
+    }
+    // Language flag pressed
+    const lang = tab.key as 'ar' | 'en' | 'sv';
+    const onLanguageHome = LANGUAGE_HOME_ROUTES.has(pathname);
+    if (onLanguageHome) {
+      // We're on a home screen — navigate to the matching language home.
+      // (Each home file forces its own language on focus.)
+      router.replace(tab.route as any);
+    } else {
+      // We're INSIDE a recipe/category/search/etc — keep the user where they
+      // are and just swap the language. The screen reads `language` from the
+      // context so it will re-render in place.
+      setLanguage(lang);
+    }
+  };
 
   return (
     <LinearGradient
@@ -30,13 +66,16 @@ export default function BottomTabBar({ activeTab }: BottomTabBarProps) {
       style={styles.container}
     >
       {tabs.map((tab) => {
-        const isActive = activeTab === tab.key;
+        const isActive = currentTab === tab.key;
         return (
           <TouchableOpacity
             key={tab.key}
             style={styles.tab}
-            onPress={() => router.replace(tab.route as any)}
+            onPress={() => onTabPress(tab)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={tab.label}
+            accessibilityState={{ selected: isActive }}
           >
             {tab.type === 'flag' ? (
               <Image
