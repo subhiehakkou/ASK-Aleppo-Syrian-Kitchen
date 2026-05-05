@@ -69,6 +69,14 @@ const imageMap: Record<string, any> = {
   'Tanboura.jpg': require('../../assets/recipe-images/Tanboura.jpg'),
   'Yabraa.jpg': require('../../assets/recipe-images/Yabraa.jpg'),
   'Yalanji.jpg': require('../../assets/recipe-images/Yalanji.jpg'),
+  // v1.2.0 — 7 new recipe images
+  'Ades_Bhamod.jpg': require('../../assets/recipe-images/Ades_Bhamod.jpg'),
+  'Burghul_Banadoura.jpg': require('../../assets/recipe-images/Burghul_Banadoura.jpg'),
+  'Makhlouta.jpg': require('../../assets/recipe-images/Makhlouta.jpg'),
+  'Mnazzalet_Zahra.jpg': require('../../assets/recipe-images/Mnazzalet_Zahra.jpg'),
+  'Mosaqaa_Batinjan.jpg': require('../../assets/recipe-images/Mosaqaa_Batinjan.jpg'),
+  'Wyka_Bamia.jpg': require('../../assets/recipe-images/Wyka_Bamia.jpg'),
+  'Yahoodi_Msafer.jpg': require('../../assets/recipe-images/Yahoodi_Msafer.jpg'),
 };
 
 export default imageMap;

@@ -19,6 +19,7 @@ interface RecipeToolsMenuProps {
   ingredientsText: string;
   servingsText?: string;
   recipeName?: string;
+  timeText?: string;
   onPrint: () => void;
   onShowQR: () => void;
 }
@@ -73,6 +74,7 @@ export default function RecipeToolsMenu({
   ingredientsText,
   servingsText,
   recipeName,
+  timeText,
   onPrint,
   onShowQR,
 }: RecipeToolsMenuProps) {
@@ -177,8 +179,8 @@ export default function RecipeToolsMenu({
                 icon="calculator"
                 title={tr.calculator}
                 subtitle={tr.calculatorSub}
-                color="#E91E63"
-                bgColor="#FFE0EC"
+                color={COLORS.goldDark}
+                bgColor={COLORS.goldLight}
                 isRTL={isRTL}
                 onPress={handleCalculator}
               />
@@ -186,8 +188,8 @@ export default function RecipeToolsMenu({
                 icon="timer"
                 title={tr.timer}
                 subtitle={tr.timerSub}
-                color="#FF6F00"
-                bgColor="#FFE5CC"
+                color={COLORS.goldDark}
+                bgColor={COLORS.goldLight}
                 isRTL={isRTL}
                 onPress={handleTimer}
               />
@@ -195,8 +197,8 @@ export default function RecipeToolsMenu({
                 icon="print"
                 title={tr.print}
                 subtitle={tr.printSub}
-                color="#1976D2"
-                bgColor="#D6EAFA"
+                color={COLORS.goldDark}
+                bgColor={COLORS.goldLight}
                 isRTL={isRTL}
                 onPress={handlePrint}
               />
@@ -204,8 +206,8 @@ export default function RecipeToolsMenu({
                 icon="qr-code"
                 title={tr.qr}
                 subtitle={tr.qrSub}
-                color="#388E3C"
-                bgColor="#DDF2DC"
+                color={COLORS.goldDark}
+                bgColor={COLORS.goldLight}
                 isRTL={isRTL}
                 onPress={handleQR}
               />
@@ -223,6 +225,7 @@ export default function RecipeToolsMenu({
         ingredientsText={ingredientsText}
         servingsText={servingsText}
         recipeName={recipeName}
+        timeText={timeText}
       />
 
       {/* Cooking Timer (controlled, button hidden) */}
@@ -384,10 +387,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SPACING.sm + 2,
     paddingHorizontal: SPACING.md,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.ivoryLight,
     borderRadius: BORDER_RADIUS.lg,
     borderWidth: 1,
-    borderColor: '#E8C56B33',
+    borderColor: COLORS.borderGold,
     gap: SPACING.sm,
     ...SHADOWS.small,
   },
@@ -397,6 +400,8 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: COLORS.gold,
   },
   toolTextWrap: {
     flex: 1,

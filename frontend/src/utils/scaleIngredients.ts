@@ -240,6 +240,102 @@ export function scaleIngredients(text: string, factor: number, lang: Lang = 'ar'
 }
 
 /**
+ * Scale cooking time using the 80/20 rule:
+ *   newTime = oldTime * (0.8 + 0.2 * factor)
+ *
+ * - factor 1.0  → 1.00× (no change)
+ * - factor 2.0  → 1.20× (+20% time)
+ * - factor 0.5  → 0.90× (−10% time)
+ * - factor 4.0  → 1.60×
+ *
+ * Cooking time does NOT scale linearly with quantity — a larger pot
+ * needs slightly more heat-up time but not proportionally more.
+ *
+ * Returns formatted time text in the same language as the input,
+ * or null if the time string can't be parsed.
+ */
+export function scaleCookingTime(
+  timeText: string | undefined | null,
+  factor: number,
+  lang: Lang = 'ar'
+): string | null {
+  if (!timeText || !isFinite(factor) || factor <= 0) return null;
+
+  const w = toWestern(String(timeText)).trim();
+  // Match number (decimal allowed) followed by an hour/minute unit
+  const re = /(\d+(?:\.\d+)?)\s*(hours?|hour|h|ساعات|ساعة|tim|timmar|minutes?|min|m|دقيقة|دقائق|minuter)/i;
+  const m = w.match(re);
+  if (!m) return null;
+
+  const value = parseFloat(m[1]);
+  if (!isFinite(value)) return null;
+  const unitRaw = m[2].toLowerCase();
+
+  // Detect unit type (hour vs minute)
+  const isHour =
+    /^(h|hour|hours|ساعة|ساعات|tim|timmar)$/i.test(unitRaw);
+
+  // Convert to total minutes for math
+  const baseMinutes = isHour ? value * 60 : value;
+  const scaleMul = 0.8 + 0.2 * factor;
+  let scaledMin = baseMinutes * scaleMul;
+  // Round to a sensible number (5-min granularity for >= 30 min)
+  if (scaledMin >= 30) {
+    scaledMin = Math.round(scaledMin / 5) * 5;
+  } else {
+    scaledMin = Math.max(1, Math.round(scaledMin));
+  }
+
+  // Format back to original unit family (hour if >= 60 min, else minutes)
+  const labels = {
+    ar: { h_one: 'ساعة', h_two: 'ساعتان', h_many: 'ساعات', m: 'دقيقة', mPl: 'دقيقة' },
+    en: { h_one: 'hour', h_two: 'hours', h_many: 'hours', m: 'minute', mPl: 'minutes' },
+    sv: { h_one: 'timme', h_two: 'timmar', h_many: 'timmar', m: 'minut', mPl: 'minuter' },
+  } as const;
+  const L = labels[lang] || labels.ar;
+
+  if (scaledMin >= 60 && scaledMin % 60 === 0) {
+    const hours = scaledMin / 60;
+    let unit: string = L.h_many;
+    if (lang === 'ar') {
+      if (hours === 1) unit = L.h_one;
+      else if (hours === 2) unit = L.h_two;
+      else unit = L.h_many;
+    } else {
+      unit = hours === 1 ? L.h_one : L.h_two;
+    }
+    if (lang === 'ar' && hours === 2) {
+      return unit; // "ساعتان"
+    }
+    const numStr = Number.isInteger(hours) ? String(hours) : hours.toFixed(1).replace(/\.0$/, '');
+    return `${numStr} ${unit}`;
+  }
+
+  if (scaledMin >= 60) {
+    const hours = Math.floor(scaledMin / 60);
+    const mins = Math.round(scaledMin - hours * 60);
+    const hUnit =
+      lang === 'ar'
+        ? hours === 1
+          ? L.h_one
+          : hours === 2
+          ? L.h_two
+          : L.h_many
+        : hours === 1
+        ? L.h_one
+        : L.h_two;
+    const mUnit = lang === 'en' || lang === 'sv' ? (mins === 1 ? L.m : L.mPl) : L.m;
+    if (lang === 'ar' && hours === 2) {
+      return `${hUnit} و${mins} ${mUnit}`;
+    }
+    return `${hours} ${hUnit} ${mins} ${mUnit}`;
+  }
+
+  const minLabel = lang === 'en' || lang === 'sv' ? (scaledMin === 1 ? L.m : L.mPl) : L.m;
+  return `${Math.round(scaledMin)} ${minLabel}`;
+}
+
+/**
  * Try to extract a number of servings from a "servings" field.
  */
 export function parseServings(servingsText: string | undefined | null): number | null {

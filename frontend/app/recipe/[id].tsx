@@ -419,6 +419,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
           ingredientsText={getIngredients() || ''}
           servingsText={getServings()}
           recipeName={getName()}
+          timeText={getTime()}
           onPrint={generatePDF}
           onShowQR={() => setShowQR(true)}
         />
@@ -535,15 +536,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: SPACING.sm,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: FONTS.sizes.lg,
-    fontFamily: 'NotoNaskhArabic_700Bold',
-    fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
-    textAlign: 'center',
-    marginHorizontal: SPACING.md,
   },
   placeholder: {
     width: 40,

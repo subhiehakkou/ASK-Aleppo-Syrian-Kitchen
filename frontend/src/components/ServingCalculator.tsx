@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
-import { scaleIngredients, parseServings, formatScaled } from '../utils/scaleIngredients';
+import { scaleIngredients, parseServings, formatScaled, scaleCookingTime } from '../utils/scaleIngredients';
 
 interface ServingCalculatorProps {
   visible: boolean;
@@ -21,6 +21,7 @@ interface ServingCalculatorProps {
   ingredientsText: string;
   servingsText?: string;
   recipeName?: string;
+  timeText?: string;
 }
 
 const MIN_SERVINGS = 1;
@@ -41,6 +42,9 @@ const T = {
     noServings: 'لم يتم تحديد عدد الحصص الأصلي للوصفة. يمكنكِ تعيينه يدوياً:',
     setOriginal: 'حدّدي الحصص الأصلية',
     hint: '✨ الكميات تتعدّل تلقائياً عند تغيير العدد',
+    cookingTime: 'وقت الطهي المُعدَّل',
+    cookingTimeHint: '⏱️ يُحسب بقاعدة 80/20 (الطهي لا يتضاعف خطّياً)',
+    originalTime: 'الأصلي',
   },
   en: {
     title: '🧮 Serving Calculator',
@@ -56,6 +60,9 @@ const T = {
     noServings: 'Original serving size not set for this recipe. You can set it manually:',
     setOriginal: 'Set original servings',
     hint: '✨ Quantities update automatically as you change the serving size',
+    cookingTime: 'Adjusted cooking time',
+    cookingTimeHint: '⏱️ Calculated with the 80/20 rule (cooking time doesn\'t scale linearly)',
+    originalTime: 'Original',
   },
   sv: {
     title: '🧮 Portionsräknare',
@@ -71,6 +78,9 @@ const T = {
     noServings: 'Originalantal portioner är inte angivet. Du kan ställa in det manuellt:',
     setOriginal: 'Ange originalportioner',
     hint: '✨ Mängderna uppdateras automatiskt när du ändrar antalet',
+    cookingTime: 'Justerad tillagningstid',
+    cookingTimeHint: '⏱️ Beräknas med 80/20-regeln (tillagningstiden skalas inte linjärt)',
+    originalTime: 'Original',
   },
 } as const;
 
@@ -82,6 +92,7 @@ export default function ServingCalculator({
   ingredientsText,
   servingsText,
   recipeName,
+  timeText,
 }: ServingCalculatorProps) {
   const tr = T[language] || T.ar;
 
@@ -106,6 +117,12 @@ export default function ServingCalculator({
   const adjusted = useMemo(
     () => scaleIngredients(ingredientsText || '', factor, language),
     [ingredientsText, factor, language]
+  );
+
+  // 80/20 rule cooking time scaling — only when factor != 1
+  const scaledTime = useMemo(
+    () => (timeText && factor !== 1 ? scaleCookingTime(timeText, factor, language) : null),
+    [timeText, factor, language]
   );
 
   const adjustTarget = (delta: number) => {
@@ -279,6 +296,44 @@ export default function ServingCalculator({
                 {adjusted}
               </Text>
             </View>
+
+            {/* Adjusted Cooking Time (80/20 rule) */}
+            {scaledTime ? (
+              <View style={styles.timeCard}>
+                <View style={[styles.resultHeader, isRTL && styles.rowRTL]}>
+                  <Ionicons name="time" size={20} color={COLORS.goldDark} />
+                  <Text style={[styles.timeTitle, isRTL && styles.rtlText]}>
+                    {tr.cookingTime}
+                  </Text>
+                </View>
+                <View style={[styles.timeRow, isRTL && styles.rowRTL]}>
+                  <View style={styles.timeColumn}>
+                    <Text style={[styles.timeLabelSmall, isRTL && styles.rtlText]}>
+                      {tr.originalTime}
+                    </Text>
+                    <Text style={[styles.timeValueOriginal, isRTL && styles.rtlText]}>
+                      {timeText}
+                    </Text>
+                  </View>
+                  <Ionicons
+                    name={isRTL ? 'arrow-back' : 'arrow-forward'}
+                    size={22}
+                    color={COLORS.goldDark}
+                  />
+                  <View style={styles.timeColumn}>
+                    <Text style={[styles.timeLabelSmall, isRTL && styles.rtlText]}>
+                      ×{formatScaled(factor)}
+                    </Text>
+                    <Text style={[styles.timeValueScaled, isRTL && styles.rtlText]}>
+                      {scaledTime}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={[styles.timeHint, isRTL && styles.rtlText]}>
+                  {tr.cookingTimeHint}
+                </Text>
+              </View>
+            ) : null}
 
             <Text style={[styles.hint, isRTL && styles.rtlText]}>{tr.hint}</Text>
           </ScrollView>
@@ -481,6 +536,61 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: COLORS.textPrimary,
     lineHeight: 26,
+  },
+
+  // ---- Cooking time card (80/20 rule) ----
+  timeCard: {
+    backgroundColor: COLORS.goldLight,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.md,
+    marginTop: SPACING.md,
+    borderWidth: 2,
+    borderColor: COLORS.gold,
+  },
+  timeTitle: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 15,
+    color: COLORS.goldDark,
+    fontWeight: '700',
+    flex: 1,
+  },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: SPACING.xs,
+    gap: SPACING.sm,
+  },
+  timeColumn: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  timeLabelSmall: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 12,
+    color: COLORS.textLight,
+    marginBottom: 4,
+  },
+  timeValueOriginal: {
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontSize: 16,
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+  },
+  timeValueScaled: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 18,
+    color: COLORS.goldDark,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  timeHint: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 11,
+    color: COLORS.textLight,
+    textAlign: 'center',
+    marginTop: SPACING.xs,
+    fontStyle: 'italic',
   },
 
   hint: {
