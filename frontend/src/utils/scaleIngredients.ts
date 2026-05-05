@@ -64,6 +64,53 @@ const INTEGER_UNIT_PREFIXES = [
   'gr ', 'gram',
 ];
 
+// Discrete / non-divisible units — items that come as INDIVIDUAL pieces and
+// can NEVER be a fraction in real cooking.  Examples: bay leaves, cinnamon
+// sticks, cardamom pods, garlic cloves, dried limes, whole onions, tomatoes.
+// Output is forced to an INTEGER ≥ 1 (you can't have ¼ of a bay leaf).
+const WHOLE_UNIT_PREFIXES = [
+  // Arabic — leaves
+  'ورقة', 'ورق', 'ورقات', 'أوراق', 'اوراق',
+  // Arabic — sticks
+  'عود', 'أعواد', 'اعواد', 'عودان', 'عيدان',
+  // Arabic — whole pods / seeds / grains
+  'حبة', 'حبات', 'حبتان',
+  // Arabic — garlic / spice cloves
+  'فص', 'فصوص', 'فصان', 'مسمار', 'مسامير',
+  // Arabic — whole vegetables / fruits
+  'بصلة', 'بصلات', 'بصلتان',
+  'بندورة', 'بندورات', 'بندورتان',
+  'ليمونة', 'ليمونات', 'ليمونتان', 'لومية', 'لوميات',
+  'ثمرة', 'ثمار', 'ثمرتان',
+
+  // English — leaves
+  'leaf', 'leaves',
+  // English — sticks
+  'stick', 'sticks',
+  // English — whole pods / seeds
+  'pod', 'pods',
+  // English — cloves (when used as a count, not "tablespoon")
+  'clove', 'cloves',
+  // English — whole produce
+  'onion', 'onions',
+  'tomato', 'tomatoes',
+  'lemon', 'lemons',
+  'whole',
+
+  // Swedish — leaves
+  'blad', 'lagerblad',
+  // Swedish — sticks
+  'stång', 'stänger', 'kanelstång',
+  // Swedish — pods / capsules
+  'kapsel', 'kapslar',
+  // Swedish — cloves (garlic)
+  'klyfta', 'klyftor', 'vitlöksklyfta', 'vitlöksklyftor',
+  // Swedish — whole produce
+  'lök', 'lökar',
+  'tomat', 'tomater',
+  'citron', 'citroner',
+];
+
 // Units where a "minimum quarter" floor applies — going below ¼ of a
 // spoon/cup makes no culinary sense and breaks Syrian-cuisine spice balance.
 // (Spices, salt and similar small-quantity ingredients are always measured
@@ -182,6 +229,32 @@ function isQuarterFloorUnitAfter(textAfter: string): boolean {
   return false;
 }
 
+/** Returns true if `textAfter` begins with a discrete / non-divisible unit
+ *  (bay leaf, cinnamon stick, garlic clove, whole onion …). For these,
+ *  output MUST be an integer ≥ 1.
+ *
+ *  We scan the FIRST FEW WORDS of `textAfter` because the unit noun often
+ *  comes after one or two adjectives, e.g. "bay leaves", "cinnamon sticks",
+ *  "stora lökar", "ورقة غار كبيرة", etc.
+ */
+function isWholeUnitAfter(textAfter: string): boolean {
+  const t = textAfter.toLowerCase();
+  // Tokenise the first ~6 words so we catch the unit noun itself
+  const words = t.split(/[\s,.\-:;()/]+/).filter(Boolean).slice(0, 6);
+  if (words.length === 0) return false;
+
+  for (const u of WHOLE_UNIT_PREFIXES) {
+    const lower = u.toLowerCase();
+    for (const w of words) {
+      if (w === lower) return true;
+      // also match plural ↔ singular drift (e.g. "kanelstänger" contains "stänger")
+      if (w.length > lower.length && w.endsWith(lower)) return true;
+      if (lower.length > w.length && lower.endsWith(w) && w.length >= 3) return true;
+    }
+  }
+  return false;
+}
+
 // --- Main regex (single-pass, no cascade) ----------------------------------
 
 // Escape special regex chars in Arabic words
@@ -280,6 +353,14 @@ export function scaleLine(line: string, factor: number, lang: Lang = 'ar'): stri
     const after = afterRaw
       .replace(/^[\s,.\(\):\-]+/, '')
       .slice(0, 25);
+
+    // ★ Highest-priority guard: indivisible / countable units (bay leaves,
+    //    cinnamon sticks, garlic cloves, whole onions/tomatoes, cardamom
+    //    pods…). These can NEVER be a fraction. Force integer ≥ 1.
+    if (isWholeUnitAfter(after)) {
+      const rounded = Math.max(1, Math.round(scaled));
+      return String(rounded);
+    }
 
     // Spice / salt floor: a spoon-or-cup-measured ingredient must never drop
     // below ¼ of the unit. Quarter spoon of salt is the smallest practical
