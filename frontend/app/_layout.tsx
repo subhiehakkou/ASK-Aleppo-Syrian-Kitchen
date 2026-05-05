@@ -10,6 +10,7 @@ import { useFonts } from 'expo-font';
 import { Cairo_400Regular, Cairo_600SemiBold, Cairo_700Bold } from '@expo-google-fonts/cairo';
 import { NotoNaskhArabic_400Regular, NotoNaskhArabic_500Medium, NotoNaskhArabic_600SemiBold, NotoNaskhArabic_700Bold } from '@expo-google-fonts/noto-naskh-arabic';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomeScreen from '../src/components/WelcomeScreen';
 
 export default function RootLayout() {
@@ -23,16 +24,30 @@ export default function RootLayout() {
     NotoNaskhArabic_700Bold,
   });
   const [timedOut, setTimedOut] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(true);
+  // showWelcome starts as null = "still loading from storage"
+  // → after first load: true (show welcome) or false (skip - user has launched before)
+  const [showWelcome, setShowWelcome] = useState<boolean | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setTimedOut(true), 5000);
     return () => clearTimeout(timer);
   }, []);
 
+  // Check if user has launched the app before. If yes, skip welcome screen.
+  useEffect(() => {
+    (async () => {
+      try {
+        const launched = await AsyncStorage.getItem('app_has_launched_once');
+        setShowWelcome(launched !== 'yes');
+      } catch {
+        setShowWelcome(true);
+      }
+    })();
+  }, []);
+
   const ready = fontsLoaded || timedOut;
 
-  if (!ready) {
+  if (!ready || showWelcome === null) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FFDA47" />
@@ -44,7 +59,12 @@ export default function RootLayout() {
     return (
       <SafeAreaProvider>
         <StatusBar style="light" backgroundColor="#1A1A2E" />
-        <WelcomeScreen onContinue={() => setShowWelcome(false)} />
+        <WelcomeScreen
+          onContinue={async () => {
+            try { await AsyncStorage.setItem('app_has_launched_once', 'yes'); } catch {}
+            setShowWelcome(false);
+          }}
+        />
       </SafeAreaProvider>
     );
   }

@@ -1,31 +1,42 @@
 export const COLORS = {
-  // Primary colors - Syrian heritage theme (24K Gold Bar inspired)
-  ivory: '#FFFFF0',
-  ivoryDark: '#F5F5DC',
-  gold: '#FFE14D',
-  goldDark: '#FFD700',
-  goldLight: '#FFF4CC',
-  goldDeep: '#DAA520',
+  // Primary colors — Syrian heritage theme (24K Gold Bar inspired)
+  // Lighter, warmer ivory for easier reading
+  ivory: '#FFFDF2',                 // (was #FFFFF0) — slightly warmer & lighter
+  ivoryLight: '#FFFEFA',            // even lighter for content backgrounds
+  ivoryDark: '#FAF5E6',             // (was #F5F5DC) — softer card edges
   
-  // Gradient colors for header/footer (24K gold bar sheen)
-  goldGradientStart: '#FFDA47',
-  goldGradientMiddle: '#FFD700',
-  goldGradientEnd: '#E0B000',
+  // Gold — shimmering 24K with subtle highlights
+  gold: '#FFD700',                  // primary gold for active buttons
+  goldDark: '#B8860B',              // darker gold for borders/text accents
+  goldLight: '#FFF4CC',             // light gold backgrounds
+  goldDeep: '#9C7A0B',              // deepest gold (accent only)
+  
+  // Gold gradient (shimmering 24K bar reflection — header/footer/buttons)
+  goldGradientStart: '#FFEC8B',     // bright top highlight (lighter)
+  goldGradientMiddle: '#FFD700',    // pure gold mid
+  goldGradientEnd: '#C9A227',       // darker shadow at edges
+  // Reverse gradient for buttons (subtle shine top-down)
+  goldButtonStart: '#FFE875',
+  goldButtonEnd: '#D9B043',
+  
+  // Navy — primary text accent (matches welcome screen)
+  navy: '#1A1A2E',
+  navyLight: '#3A3A5E',
   
   // Text colors
-  textPrimary: '#1A1A1A',
-  textSecondary: '#4A4A4A',
+  textPrimary: '#1A1A2E',           // navy for body text (was #1A1A1A)
+  textSecondary: '#3A3A5E',
   textLight: '#6A6A6A',
   textWhite: '#FFFFFF',
   textGold: '#B8860B',
   
   // Background colors
-  background: '#FFFFF0',
-  cardBackground: '#FFFFF0',
-  cardShadow: 'rgba(0, 0, 0, 0.1)',
+  background: '#FFFDF2',            // lightened ivory
+  cardBackground: '#FFFEFA',        // even lighter for content cards
+  cardShadow: 'rgba(0, 0, 0, 0.08)',
   
   // Accent colors
-  accent: '#8B4513', // Saddle brown for Syrian touch
+  accent: '#8B4513',
   accentLight: '#A0522D',
   
   // Status colors
@@ -33,12 +44,12 @@ export const COLORS = {
   error: '#F44336',
   warning: '#FFC107',
   
-  // Favorite
+  // Favorite (only for filled state — outline uses navy/gold to match theme)
   favoriteRed: '#E74C3C',
   
   // Border colors
-  border: '#E0E0E0',
-  borderGold: '#FFD54F',
+  border: '#E8DFC8',                // softer ivory-toned border
+  borderGold: '#E8C56B',
 };
 
 export const FONTS = {

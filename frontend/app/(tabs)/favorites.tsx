@@ -8,8 +8,7 @@ import { FONTS, SPACING, COLORS, SHADOWS, BORDER_RADIUS } from '../../src/consta
 import { useFavorites } from '../../src/context/FavoritesContext';
 import { getRecipeImage, getImageSource } from '../../src/utils/imageHelper';
 import { shareApp } from '../../src/utils/shareHelper';
-
-const API_BASE = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+import localRecipes from '../../src/data/recipes.json';
 
 export default function FavoritesScreen() {
   const { favorites, toggleFavorite, clearFavorites } = useFavorites();
@@ -24,12 +23,14 @@ export default function FavoritesScreen() {
     }
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/api/recipes`);
-      const allRecipes = await response.json();
-      const favRecipes = allRecipes.filter((r: any) => favorites.includes(r.id || r._id));
+      // Use local offline-first JSON data (backend may have different IDs)
+      const allRecipes = localRecipes as any[];
+      const favRecipes = allRecipes.filter(
+        (r: any) => favorites.includes(r.id) || favorites.includes(r._id) || favorites.includes(r.recipe_id)
+      );
       setRecipes(favRecipes);
     } catch (error) {
-      console.error('Error fetching favorites:', error);
+      console.error('Error loading favorites:', error);
     } finally {
       setLoading(false);
     }

@@ -108,7 +108,10 @@ export const getCategory = async (catId: string): Promise<Category> => {
 export const getRecipes = async (categoryId?: string): Promise<Recipe[]> => {
   const recipes = localRecipes as Recipe[];
   if (categoryId) {
-    return recipes.filter(r => r.category_id === categoryId);
+    return recipes.filter(r => 
+      r.category_id === categoryId ||
+      (Array.isArray((r as any).category_ids) && (r as any).category_ids.includes(categoryId))
+    );
   }
   return recipes;
 };
