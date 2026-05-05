@@ -127,13 +127,14 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
   },
   label: {
-    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontSize: 11,
-    fontWeight: '600',
-    color: 'rgba(58, 58, 58, 0.6)',
+    fontWeight: '700',
+    color: '#1A1A1A',
     marginTop: 4,
   },
   labelActive: {
-    color: '#3A3A3A',
+    color: '#000000',
+    fontWeight: '900',
   },
 });

@@ -696,7 +696,7 @@ const styles = StyleSheet.create({
   doneBtnText: {
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontSize: 16,
-    color: '#FFFFFF',
+    color: COLORS.textPrimary,
     fontWeight: '700',
   },
 });
