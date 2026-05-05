@@ -116,30 +116,36 @@ export default function CookingTimer({
 
     // 4) Play alert sound
     try {
+      // Configure audio mode — critical for sound to play on real devices,
+      // especially when phone is in silent mode (iOS) or low volume.
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
         shouldDuckAndroid: false,
+        staysActiveInBackground: false,
+        allowsRecordingIOS: false,
       });
-      
+
       const { sound } = await Audio.Sound.createAsync(
         require('../../assets/timer-alarm.wav'),
-        { shouldPlay: true, isLooping: false }
+        { shouldPlay: true, isLooping: false, volume: 1.0 }
       );
       soundRef.current = sound;
-      
-      // Auto unload after 5 seconds
+      // Explicitly start playback (some Android devices need this even with shouldPlay)
+      try { await sound.playAsync(); } catch {}
+
+      // Auto unload after 6 seconds
       setTimeout(async () => {
         if (soundRef.current) {
-          await soundRef.current.stopAsync();
-          await soundRef.current.unloadAsync();
+          try { await soundRef.current.stopAsync(); } catch {}
+          try { await soundRef.current.unloadAsync(); } catch {}
           soundRef.current = null;
         }
-      }, 5000);
+      }, 6000);
     } catch (e) {
       console.log('Timer sound error:', e);
-      // Fallback: vibrate more
+      // Fallback: vibrate more aggressively as a sound substitute
       if (Platform.OS !== 'web') {
-        Vibration.vibrate([1000, 500, 1000, 500, 1000], false);
+        Vibration.vibrate([0, 800, 400, 800, 400, 800, 400, 800], false);
       }
     }
   }, []);

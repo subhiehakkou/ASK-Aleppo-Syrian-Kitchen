@@ -108,22 +108,17 @@ export default function ServingCalculator({
     [servingsText]
   );
 
-  const [original, setOriginal] = useState<number>(detectedOriginal);
+  // Original is FIXED — derived from the recipe data only. The user only
+  // changes "target". Reset returns target to detectedOriginal.
+  const original = detectedOriginal;
   const [target, setTarget] = useState<number>(detectedOriginal);
 
-  // Reset to detected values whenever the modal opens or recipe changes
+  // Reset target whenever the modal opens or recipe changes
   useEffect(() => {
     if (visible) {
-      setOriginal(detectedOriginal);
       setTarget(detectedOriginal);
     }
   }, [visible, detectedOriginal]);
-
-  // If user lowers the "original" servings, the floor goes up — clamp target.
-  useEffect(() => {
-    const floor = Math.max(ABSOLUTE_MIN, Math.ceil(original * MIN_SERVING_RATIO));
-    setTarget((prev) => (prev < floor ? floor : prev));
-  }, [original]);
 
   const factor = original > 0 ? target / original : 1;
 
@@ -168,17 +163,8 @@ export default function ServingCalculator({
     });
   };
 
-  const adjustOriginal = (delta: number) => {
-    setOriginal((prev) => {
-      const next = prev + delta;
-      if (next < ABSOLUTE_MIN) return ABSOLUTE_MIN;
-      if (next > MAX_SERVINGS) return MAX_SERVINGS;
-      try {
-        const personLbl = next === 1 ? tr.person : tr.persons;
-        AccessibilityInfo.announceForAccessibility(`${tr.original}: ${next} ${personLbl}`);
-      } catch {}
-      return next;
-    });
+  const adjustOriginal = (_delta: number) => {
+    /* deprecated — original is now read-only */
   };
 
   const reset = () => {
@@ -220,58 +206,15 @@ export default function ServingCalculator({
             contentContainerStyle={{ paddingBottom: SPACING.xl }}
             showsVerticalScrollIndicator={false}
           >
-            {/* Original Servings */}
-            <View style={styles.card}>
-              <Text style={[styles.cardLabel, isRTL && styles.rtlText]}>
-                {tr.original}
+            {/* Original servings — small read-only chip */}
+            <View style={[styles.originalChip, isRTL && styles.rowRTL]}>
+              <Ionicons name="people-outline" size={16} color={COLORS.textSecondary} />
+              <Text style={[styles.originalChipText, isRTL && styles.rtlText]}>
+                {tr.original}: <Text style={styles.originalChipBold}>{original} {personLabel(original)}</Text>
               </Text>
-              <View style={styles.stepperRow}>
-                <TouchableOpacity
-                  onPress={() => adjustOriginal(-1)}
-                  style={styles.stepperBtn}
-                  activeOpacity={0.7}
-                  accessible={true}
-                  accessibilityRole="button"
-                  accessibilityLabel={isRTL ? `إنقاص ${tr.original}` : `Decrease ${tr.original}`}
-                >
-                  <Ionicons name="remove" size={28} color={COLORS.goldDark} />
-                </TouchableOpacity>
-                <View
-                  style={styles.stepperValueWrap}
-                  accessible={true}
-                  accessibilityRole="text"
-                  accessibilityLabel={`${tr.original}: ${original} ${original === 1 ? tr.person : tr.persons}`}
-                >
-                  <Text style={styles.stepperValue}>{original}</Text>
-                  <Text style={styles.stepperUnit}>{personLabel(original)}</Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => adjustOriginal(1)}
-                  style={styles.stepperBtn}
-                  activeOpacity={0.7}
-                  accessible={true}
-                  accessibilityRole="button"
-                  accessibilityLabel={isRTL ? `زيادة ${tr.original}` : `Increase ${tr.original}`}
-                >
-                  <Ionicons name="add" size={28} color={COLORS.goldDark} />
-                </TouchableOpacity>
-              </View>
             </View>
 
-            {/* Arrow */}
-            <View style={styles.arrowRow}>
-              <Ionicons
-                name={isRTL ? 'arrow-up' : 'arrow-up'}
-                size={22}
-                color={COLORS.gold}
-              />
-              <Text style={styles.factorText}>
-                × {formatScaled(factor)}
-              </Text>
-              <Ionicons name="arrow-down" size={22} color={COLORS.gold} />
-            </View>
-
-            {/* Target Servings */}
+            {/* Target Servings — the only stepper */}
             <View style={[styles.card, styles.cardHighlight]}>
               <Text style={[styles.cardLabel, styles.cardLabelHighlight, isRTL && styles.rtlText]}>
                 {tr.target}
@@ -291,7 +234,7 @@ export default function ServingCalculator({
                   accessibilityState={{ disabled: atMinimum }}
                   accessibilityLabel={isRTL ? `إنقاص ${tr.target}` : `Decrease ${tr.target}`}
                 >
-                  <Ionicons name="remove" size={32} color={atMinimum ? '#BDB8A0' : '#FFF'} />
+                  <Ionicons name="remove" size={32} color={atMinimum ? '#A8A29A' : COLORS.textPrimary} />
                 </TouchableOpacity>
                 <View
                   style={styles.stepperValueWrap}
@@ -314,9 +257,14 @@ export default function ServingCalculator({
                   accessibilityRole="button"
                   accessibilityLabel={isRTL ? `زيادة ${tr.target}` : `Increase ${tr.target}`}
                 >
-                  <Ionicons name="add" size={32} color="#FFF" />
+                  <Ionicons name="add" size={32} color={COLORS.textPrimary} />
                 </TouchableOpacity>
               </View>
+              {factor !== 1 && (
+                <Text style={[styles.factorBadge, isRTL && styles.rtlText]}>
+                  × {formatScaled(factor)}
+                </Text>
+              )}
             </View>
 
             {/* Minimum reached warning */}
@@ -555,6 +503,44 @@ const styles = StyleSheet.create({
     color: COLORS.goldDark,
     fontWeight: '700',
     paddingHorizontal: SPACING.sm,
+  },
+
+  // ---- New: read-only chip showing the original recipe size ----
+  originalChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    alignSelf: 'flex-start',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 0,
+    paddingVertical: SPACING.xs,
+    marginBottom: SPACING.sm,
+  },
+  originalChipText: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+  originalChipBold: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+  },
+
+  // ---- New: factor pill shown under the target stepper ----
+  factorBadge: {
+    fontFamily: 'Playfair_700Bold',
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.goldDark,
+    textAlign: 'center',
+    marginTop: SPACING.sm,
+    backgroundColor: 'rgba(255, 215, 0, 0.15)',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 4,
+    borderRadius: BORDER_RADIUS.md,
+    alignSelf: 'center',
+    overflow: 'hidden',
   },
 
   // ---- Minimum reached warning banner ----

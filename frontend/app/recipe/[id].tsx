@@ -271,6 +271,18 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
       case 'ingredients':
         return (
           <View style={[styles.tabContent, { backgroundColor: tabStyle.bg }]}>
+            <TouchableOpacity
+              style={[styles.translateHint, isRTL && styles.rtlRow]}
+              onPress={() => onLongPressField('ingredients')}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={isRTL ? 'مقارنة بثلاث لغات' : 'Compare in 3 languages'}
+            >
+              <Ionicons name="language" size={16} color={tabStyle.text} />
+              <Text style={[styles.translateHintText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
+                {isRTL ? 'ترجمة' : language === 'sv' ? 'Översätt' : 'Translate'}
+              </Text>
+            </TouchableOpacity>
             <Text
               style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}
               onLongPress={() => onLongPressField('ingredients')}
@@ -283,6 +295,18 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
       case 'instructions':
         return (
           <View style={[styles.tabContent, { backgroundColor: tabStyle.bg }]}>
+            <TouchableOpacity
+              style={[styles.translateHint, isRTL && styles.rtlRow]}
+              onPress={() => onLongPressField('instructions')}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={isRTL ? 'مقارنة بثلاث لغات' : 'Compare in 3 languages'}
+            >
+              <Ionicons name="language" size={16} color={tabStyle.text} />
+              <Text style={[styles.translateHintText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
+                {isRTL ? 'ترجمة' : language === 'sv' ? 'Översätt' : 'Translate'}
+              </Text>
+            </TouchableOpacity>
             <Text
               style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}
               onLongPress={() => onLongPressField('instructions')}
@@ -852,6 +876,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderGold,
     ...SHADOWS.small,
+  },
+  translateHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-end',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: 'rgba(184, 134, 11, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(184, 134, 11, 0.3)',
+    marginBottom: SPACING.sm,
+  },
+  translateHintText: {
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontSize: 12,
+    fontWeight: '600',
   },
   contentText: {
     fontFamily: 'NotoNaskhArabic_400Regular',

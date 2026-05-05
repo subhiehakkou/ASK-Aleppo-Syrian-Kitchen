@@ -153,15 +153,16 @@ export default function RatingPrompt({
                   <TouchableOpacity
                     key={n}
                     onPress={() => handleStarPress(n)}
-                    activeOpacity={0.6}
+                    activeOpacity={0.5}
                     style={styles.starBtn}
+                    hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
                     accessibilityRole="button"
                     accessibilityLabel={`${n} ${language === 'ar' ? 'نجوم' : language === 'sv' ? 'stjärnor' : 'stars'}`}
                   >
                     <Ionicons
                       name={n <= rating ? 'star' : 'star-outline'}
                       size={42}
-                      color={n <= rating ? COLORS.gold : '#D8D2BD'}
+                      color={n <= rating ? COLORS.gold : '#A8A29A'}
                     />
                   </TouchableOpacity>
                 ))}
