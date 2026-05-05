@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>ملف الإكسل النظيف - ASK</title>
+<style>
+  body {
+    font-family: 'Segoe UI', 'Tahoma', sans-serif;
+    background: linear-gradient(135deg, #FFF8DC, #FFFDF2);
+    margin: 0; padding: 24px;
+    min-height: 100vh; color: #1a1a2e;
+  }
+  .card {
+    background: #fff; border: 2px solid #E8C56B;
+    border-radius: 16px; padding: 28px;
+    max-width: 720px; margin: 24px auto;
+    box-shadow: 0 6px 24px rgba(184,134,11,.18);
+  }
+  h1 { color: #B8860B; margin: 0 0 8px; font-size: 26px; }
+  .sub { color: #6A6A6A; margin-bottom: 20px; }
+  .btn {
+    display: block; text-decoration: none; text-align: center;
+    background: #B8860B; color: #fff; font-weight: 700;
+    padding: 16px 24px; border-radius: 12px;
+    font-size: 17px; margin: 12px 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    transition: transform .15s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.alt { background: #1A1A2E; }
+  .btn.txt { background: #6B7280; font-size: 14px; padding: 12px 18px; }
+  .stat {
+    display: inline-block; background: #FFF0F0;
+    color: #C0392B; padding: 6px 14px; border-radius: 20px;
+    margin: 4px 4px 4px 0; font-size: 13px; font-weight: 600;
+    border: 1px solid #E74C3C30;
+  }
+  .stat.gold { background: #FFF8DC; color: #B8860B; border-color: #E8C56B; }
+  .footer { text-align: center; color: #6A6A6A; font-size: 13px; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>📊 ملف الإكسل النظيف</h1>
+  <div class="sub">Aleppo Syrian Kitchen — v1.2.0</div>
+
+  <div>
+    <span class="stat">80 وصفة</span>
+    <span class="stat gold">12 تصنيف موحّد</span>
+    <span class="stat">4 وصفات بتصنيف مزدوج</span>
+    <span class="stat">47 وقت تحضير صُحّح</span>
+    <span class="stat gold">77 استبدال Kebbe</span>
+    <span class="stat">146 خطأ طباعي</span>
+  </div>
+
+  <a class="btn" href="ASK_recipes_CLEANED.xlsx" download>
+    📥 تحميل ملف الإكسل النظيف (.xlsx)
+  </a>
+
+  <a class="btn alt" href="ASK_recipes_REPORT.txt" target="_blank">
+    📄 عرض تقرير التغييرات الكامل
+  </a>
+
+  <div class="footer">
+    صنع بحب لـ المطبخ الحلبي السوري · صوفيا عكّو · أم سامر 🌹
+  </div>
+</div>
+</body>
+</html>
