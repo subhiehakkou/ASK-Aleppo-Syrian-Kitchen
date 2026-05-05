@@ -64,6 +64,28 @@ const INTEGER_UNIT_PREFIXES = [
   'gr ', 'gram',
 ];
 
+// Units where a "minimum quarter" floor applies — going below ¼ of a
+// spoon/cup makes no culinary sense and breaks Syrian-cuisine spice balance.
+// (Spices, salt and similar small-quantity ingredients are always measured
+//  by spoons or cups; clamp the scaled value to 0.25 if it would go lower.)
+const QUARTER_FLOOR_UNIT_PREFIXES = [
+  // Arabic — spoons
+  'ملعقة', 'ملاعق',
+  // Arabic — cups
+  'كوب', 'أكواب', 'اكواب',
+  // English — spoons
+  'tbsp', 'tsp', 'tablespoon', 'teaspoon',
+  'tablespoons', 'teaspoons', 'Tbsp', 'Tsp',
+  // English — cups
+  'cup', 'cups',
+  // Swedish — spoons
+  'msk', 'tsk', 'matsked', 'tesked',
+  'matskedar', 'teskedar',
+  // Swedish — cups
+  'kopp', 'koppar',
+];
+const QUARTER_FLOOR = 0.25;
+
 // Units where fractions feel natural (cups, spoons, pieces …).
 // These keep fraction display (with language-aware formatting).
 // (All other units fall here by default.)
@@ -146,6 +168,17 @@ function isIntegerUnitAfter(textAfter: string): boolean {
   }
   // Special case: unit ends with bare "g" followed by space/punct (avoid matching "garlic")
   // Only when numeric value right before, keep tight: the cases above already cover most.
+  return false;
+}
+
+/** Returns true if `textAfter` begins with a unit (spoon / cup) where the
+ *  scaled quantity must NEVER drop below ¼ — Syrian-cuisine spice / salt
+ *  balance becomes meaningless below that. */
+function isQuarterFloorUnitAfter(textAfter: string): boolean {
+  const t = textAfter.toLowerCase();
+  for (const u of QUARTER_FLOOR_UNIT_PREFIXES) {
+    if (t.startsWith(u.toLowerCase())) return true;
+  }
   return false;
 }
 
@@ -235,11 +268,23 @@ export function scaleLine(line: string, factor: number, lang: Lang = 'ar'): stri
     const afterRaw = fullStr.substring(offset + match.length);
     if (/^\s*%/.test(afterRaw) || /^\s*٪/.test(afterRaw)) return match;
 
-    const scaled = v * factor;
+    let scaled = v * factor;
     // Peek at the next ~25 chars (skipping whitespace/punct) to detect unit
     const after = afterRaw
       .replace(/^[\s,.\(\):\-]+/, '')
       .slice(0, 25);
+
+    // Spice / salt floor: a spoon-or-cup-measured ingredient must never drop
+    // below ¼ of the unit. Quarter spoon of salt is the smallest practical
+    // measure in Syrian cooking — anything less ruins the flavour balance.
+    if (
+      isQuarterFloorUnitAfter(after) &&
+      scaled > 0 &&
+      scaled < QUARTER_FLOOR &&
+      v >= QUARTER_FLOOR // never raise a value the recipe set lower than ¼
+    ) {
+      scaled = QUARTER_FLOOR;
+    }
 
     if (isIntegerUnitAfter(after)) {
       return formatInteger(scaled);
