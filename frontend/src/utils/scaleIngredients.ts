@@ -74,7 +74,7 @@ const WHOLE_UNIT_PREFIXES = [
   // Arabic — sticks
   'عود', 'أعواد', 'اعواد', 'عودان', 'عيدان',
   // Arabic — whole pods / seeds / grains
-  'حبة', 'حبات', 'حبتان',
+  'حبة', 'حبات', 'حبتان', 'حب',
   // Arabic — garlic / spice cloves
   'فص', 'فصوص', 'فصان', 'مسمار', 'مسامير',
   // Arabic — whole vegetables / fruits
@@ -167,6 +167,22 @@ function formatArabic(n: number): string {
     if (Math.abs(frac - value) < 0.03) {
       return whole > 0 ? `${whole} و${word}` : word;
     }
+  }
+
+  // Wider second pass — pick the CLOSEST friendly fraction within 0.07.
+  // This turns ugly decimals like 0.375 (≈ ⅓) or 0.5625 (≈ ½) into nice
+  // Arabic words instead of "0.4" / "0.6".
+  let bestWord: string | null = null;
+  let bestDist = 0.07;
+  for (const { value, word } of namedFractions) {
+    const d = Math.abs(frac - value);
+    if (d < bestDist) {
+      bestDist = d;
+      bestWord = word;
+    }
+  }
+  if (bestWord) {
+    return whole > 0 ? `${whole} و${bestWord}` : bestWord;
   }
 
   // Fallback: plain decimal with 1 digit (no fraction glyphs in Arabic)
@@ -318,10 +334,40 @@ export function scaleLine(line: string, factor: number, lang: Lang = 'ar'): stri
   //    Swedish translation (which uses commas) is parsed as a single number
   //    rather than two separate tokens. We only convert a comma that sits
   //    BETWEEN two digits — protecting list separators ("salt, sugar").
-  const original = toWestern(line)
+  let original = toWestern(line)
     .replace(/(\d),(\d)/g, '$1.$2')
     // Arabic decimal separator ٫ (rare but possible) → dot
     .replace(/(\d)\u066B(\d)/g, '$1.$2');
+
+  // 1b) Pre-merge Arabic compound expressions like "1 كيلو ونص" or
+  //     "2 ملعقة ونصف" into a single decimal number so they scale as one
+  //     value instead of two independent tokens (which produced nonsense
+  //     output like "0.4 كيلو وخمس" when the recipe scaled down).
+  //
+  //     Note: JavaScript `\b` doesn't work with Arabic letters, so we use an
+  //     explicit lookahead for whitespace, end-of-string or punctuation.
+  const FRAC_END = `(?=$|[\\s,.\\-:;()،])`;
+  for (const { word: fracWord, value: fracVal } of AR_FRAC_WORDS) {
+    const escaped = fracWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Pattern A: "<num> <unit_word> و<frac>" → "<combined> <unit_word>"
+    const reA = new RegExp(
+      `(\\d+(?:\\.\\d+)?)\\s+(\\S+)\\s*و\\s*${escaped}${FRAC_END}`,
+      'g'
+    );
+    original = original.replace(reA, (_m, num, unit) => {
+      const v = parseFloat(num) + fracVal;
+      return `${v} ${unit}`;
+    });
+    // Pattern B: "<num> و<frac>" (no unit between)  → "<combined>"
+    const reB = new RegExp(
+      `(\\d+(?:\\.\\d+)?)\\s*و\\s*${escaped}${FRAC_END}`,
+      'g'
+    );
+    original = original.replace(reB, (_m, num) => {
+      const v = parseFloat(num) + fracVal;
+      return String(v);
+    });
+  }
 
   // 2) Build lookup for Arabic fraction words → value
   const fracWordValue: Record<string, number> = {};
