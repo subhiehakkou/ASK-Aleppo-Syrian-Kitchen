@@ -1,0 +1,75 @@
+======================================================================
+ASK Recipe Excel Cleanup Report
+======================================================================
+
+Row 2 (الكبة المقلية): time fixed  AR '3 ساعات'→'3 ساعات' | EN '3 1 hours'→'3 hours' | SV '3 timmar'→'3 timmar'
+Row 3 (الكبة المشوية): time fixed  AR '3 ساعات'→'3 ساعات' | EN '3 1 hours'→'3 hours' | SV '3 timmar'→'3 timmar'
+Row 4 (الكبة اللبنية، 
+أكلات باللبن الزبادي): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 1 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 5 (الكبة السفرجلية): time fixed  AR '3 ساعات'→'3 ساعات' | EN '3 1 hours'→'3 hours' | SV '3 timmar'→'3 timmar'
+Row 6 (كبة اليقطين): time fixed  AR '3 ساعات'→'3 ساعات' | EN '3 1 hours'→'3 hours' | SV '3 timmar'→'3 timmar'
+Row 7 (الكبة السماقية): time fixed  AR '3 ساعات'→'3 ساعات' | EN '3 1 hours'→'3 hours' | SV '3 timmar'→'3 timmar'
+Row 8 (الكبة المبرومة): time fixed  AR '3 ساعات'→'3 ساعات' | EN '3 1 hours'→'3 hours' | SV '3 timmar'→'3 timmar'
+Row 12 (فاصوليا خضرا باللحمة القطع والبندورة 
+
+): time fixed  AR '1.30 ساعة'→'1.5 ساعة' | EN '1.5 1 hour'→'1.5 hours' | SV '1.5 timme'→'1.5 timmar'
+Row 13 (فاصوليا بعبها محشي): time fixed  AR '1.30 ساعة '→'1.5 ساعة' | EN '2.5 1 hours'→'1.5 hours' | SV '2.5 timme'→'1.5 timmar'
+Row 14 (باميا خضراء): time fixed  AR '1.30 ساعة'→'1.5 ساعة' | EN '1.5 1 hour'→'1.5 hours' | SV '1.5 timme'→'1.5 timmar'
+Row 15 (لحمة بالفرن): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 1 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 16 (كباب هندي): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 1 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 17 (داوود باشا): time fixed  AR '1.30 ساعة'→'1.5 ساعة' | EN '1.5 1 hour'→'1.5 hours' | SV '1.5 timme'→'1.5 timmar'
+Row 18 (الطنبورة ( سلق باللوبيا )): time fixed  AR '1.30 ساعة'→'1.5 ساعة' | EN '1.5 1 hour'→'1.5 hours' | SV '1.5 timme'→'1.5 timmar'
+Row 20 (أرمان باللبن (شاكرية)): category cleaned   'أكلات باللبن الزبادي…' → 'أكلات باللبن (الزبادي)'
+Row 20 (أرمان باللبن (شاكرية)): time fixed  AR '3 ساعات'→'3 ساعات' | EN ' 1 hours'→'3 hours' | SV '3 timmar'→'3 timmar'
+Row 21 (شيخ المحشي): category cleaned   'المحاشي, أكلات باللبن الزبادي…' → 'المحاشي, أكلات باللبن (الزبادي)'
+Row 21 (شيخ المحشي): time fixed  AR '1.30 ساعة ف'→'1.5 ساعة' | EN '2.5 hours'→'1.5 hours' | SV '2.5 timme'→'1.5 timmar'
+Row 22 (شيخ المحشي بكر مفروم): category cleaned   'المحاشي, أكلات باللبن الزبادي…' → 'المحاشي, أكلات باللبن (الزبادي)'
+Row 22 (شيخ المحشي بكر مفروم): time fixed  AR '1.30 ساعة'→'1.5 ساعة' | EN '1.5 hour'→'1.5 hours' | SV '1.5 timme'→'1.5 timmar'
+Row 23 (حراق اصبعو): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 24 (مفركة البطاطا): time fixed  AR '1 ساعة'→'1 ساعة' | EN '1 hour'→'1 hour' | SV ' 1 timme '→'1 timme'
+Row 29 (فريكة ورز): category cleaned   'أكلات متنوعة…' → 'متنوعات'
+Row 30 (سندوانات/فوارغ/سجقات): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 34 (مقلوبة باتنجان/ زهرة): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 41 (باميا بالزيت): time fixed  AR '1 ساعة '→'1 ساعة' | EN 'None'→'1 hour' | SV '1 timme'→'1 timme'
+Row 45 (لحم بعجين أسود أو بدبس الرمان البلدي)): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 46 (لحم بعجين بالخضار العنتابي)): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 48 (كباب حلبي بالصينية في الفرن): time fixed  AR '30 دقيقة'→'30 دقيقة' | EN '1.5 hour'→'30 minutes' | SV '1.30 timme'→'30 minuter'
+Row 49 (كباب بالصينية مع البندورة والفليفلة): time fixed  AR '1 ساعة'→'1 ساعة' | EN 'None'→'1 hour' | SV '1 timme'→'1 timme'
+Row 52 (سلطة السلق باللبن والتوم): category cleaned   'مقبلات…' → 'المقبلات'
+Row 52 (سلطة السلق باللبن والتوم): time fixed  AR '30.0'→'30 دقيقة' | EN '1.5 hour'→'30 minutes' | SV '1.30 timme'→'30 minuter'
+Row 53 (ملفوف محشي): time fixed  AR '3 ساعات'→'3 ساعات' | EN '3 1 hours'→'3 hours' | SV '3 timmar'→'3 timmar'
+Row 54 (حمص بالطحينة): time fixed  AR '30 دقيقة'→'30 دقيقة' | EN '1.5 hour'→'30 minutes' | SV '1.30 timme'→'30 minuter'
+Row 55 (تبولة): time fixed  AR '1 ساعة'→'1 ساعة' | EN '1 hour'→'1 hour' | SV ' 1 timme'→'1 timme'
+Row 57 (سلطة الملفوف): time fixed  AR '30 دقيقة'→'30 دقيقة' | EN '1.5 hour'→'30 minutes' | SV '1.30 timme'→'30 minuter'
+Row 58 (المايونيز): time fixed  AR '15 دقيقة'→'15 دقيقة' | EN '1.15 hour'→'15 minutes' | SV '15 minuter'→'15 minuter'
+Row 60 (بابا غنوج): category cleaned   'المقبلات , أكلات باللبن الزبادي…' → 'المقبلات, أكلات باللبن (الزبادي)'
+Row 62 (فول مدمس بطحينة الخلطة الحلبية): time fixed  AR '15 دقيقة'→'15 دقيقة' | EN '1.15 hour'→'15 minutes' | SV '15 minuter'→'15 minuter'
+Row 63 (فول مدمس  الخلطة الشامية): time fixed  AR '15 دقيقة'→'15 دقيقة' | EN '1.15 hour'→'15 minutes' | SV '15 minuter'→'15 minuter'
+Row 64 (المحمرة الحلبية): time fixed  AR '15 دقيقة'→'15 دقيقة' | EN '1.15 hour'→'15 minutes' | SV '15 minuter'→'15 minuter'
+Row 65 (سلطة خيار باللبن): time fixed  AR '15 دقيقة'→'15 دقيقة' | EN '30 Min'→'15 minutes' | SV '15 minuter'→'15 minuter'
+Row 66 (فتة الحمص): category cleaned   'أكلات متنوعة, أكلات باللبن الزبادي…' → 'متنوعات, أكلات باللبن (الزبادي)'
+Row 66 (فتة الحمص): time fixed  AR '1 ساعة'→'1 ساعة' | EN '1 hour'→'1 hour' | SV '1 timmer'→'1 timme'
+Row 68 (الرز بشعيرية): category was unrecognised (أكلة شعبية تراثية نباتية بالكامل برغل وب…) → defaulted to 'متنوعات'
+Row 68 (الرز بشعيرية): category forced to 'أكلات الحبوب'
+Row 68 (الرز بشعيرية): time fixed  AR '30 دقيقة'→'30 دقيقة' | EN '1.5 hour'→'30 minutes' | SV '1.30 timme'→'30 minuter'
+Row 69 (فاصولياء بيضاء حب): time fixed  AR '1.30 ساعة'→'1.5 ساعة' | EN '1.5 hour'→'1.5 hours' | SV '1.5 timme'→'1.5 timmar'
+Row 70 (الكبدة المقلية بزيت الزيتون): time fixed  AR '30 دقيقة'→'30 دقيقة' | EN '1.5 hour'→'30 minutes' | SV '1.30 timme'→'30 minuter'
+Row 71 (شيشبرك باللبن): time fixed  AR '30 دقيقة'→'30 دقيقة' | EN '1.5 hour'→'30 minutes' | SV '1.30 timme'→'30 minuter'
+Row 72 (الكبسة الخليجية): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 73 (صرر الاوزي): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 74 (دجاج مسالا الهندي): time fixed  AR '2 ساعة '→'2 ساعة' | EN '2 hours'→'2 hours' | SV '2 timmar'→'2 timmar'
+Row 75 (يهودي مسافر): time fixed  AR 'ساعة'→'1 ساعة' | EN '1 hour'→'1 hour' | SV '1 timme'→'1 timme'
+Row 76 (منزلة الزهرة): time fixed  AR '1.30 ساعة'→'1.5 ساعة' | EN '1.5 hour'→'1.5 hours' | SV '1.5 timme'→'1.5 timmar'
+Row 77 (المخلوطة): time fixed  AR '1 ساعة'→'1 ساعة' | EN ' 1 hour'→'1 hour' | SV '1 timme'→'1 timme'
+
+======================================================================
+Summary
+======================================================================
+  rows_processed        : 80
+  cat_fixed             : 8
+  multi_cat             : 4
+  salads_fixed          : 5
+  time_fixed            : 47
+  kebbe_replaced        : 77
+  typo_fixed            : 146
+  row_68_fixed          : True
