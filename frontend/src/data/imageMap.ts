@@ -29,6 +29,7 @@ const imageMap: Record<string, any> = {
   'Kabseh.jpg': require('../../assets/recipe-images/Kabseh.jpg'),
   'Kebab_Hendi.jpeg': require('../../assets/recipe-images/Kebab_Hendi.jpeg'),
   'Kebbe_Mabroumeh.jpg': require('../../assets/recipe-images/Kebbe_Mabroumeh.jpg'),
+  'Kebbe_Raw1.jpeg': require('../../assets/recipe-images/Kebbe_Raw1.jpeg'),
   'Kebbe_Meqleyeh.jpg': require('../../assets/recipe-images/Kebbe_Meqleyeh.jpg'),
   'Kebbe_Meshweyeh.jpeg': require('../../assets/recipe-images/Kebbe_Meshweyeh.jpeg'),
   'Kebbe_Safarjaleieh.jpg': require('../../assets/recipe-images/Kebbe_Safarjaleieh.jpg'),
