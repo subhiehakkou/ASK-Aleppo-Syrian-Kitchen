@@ -241,7 +241,14 @@ export function scaleLine(line: string, factor: number, lang: Lang = 'ar'): stri
   if (!line || factor === 1) return line;
 
   // 1) Normalise Arabic-Indic digits to Western
-  const original = toWestern(line);
+  //    AND normalise European-style decimal commas ("0,5" → "0.5") so the
+  //    Swedish translation (which uses commas) is parsed as a single number
+  //    rather than two separate tokens. We only convert a comma that sits
+  //    BETWEEN two digits — protecting list separators ("salt, sugar").
+  const original = toWestern(line)
+    .replace(/(\d),(\d)/g, '$1.$2')
+    // Arabic decimal separator ٫ (rare but possible) → dot
+    .replace(/(\d)\u066B(\d)/g, '$1.$2');
 
   // 2) Build lookup for Arabic fraction words → value
   const fracWordValue: Record<string, number> = {};
