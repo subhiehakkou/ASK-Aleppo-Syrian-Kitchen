@@ -3235,13 +3235,15 @@
     "secrets_ar": "ذوّبي ملعقة سمن بلدي في الشوربة قبل التقديم — ستعطيها نكهة غنية مميزة لا تنسى.",
     "secrets_en": "Melt a tablespoon of ghee into the soup just before serving — it gives a rich, unforgettable flavour.",
     "secrets_sv": "Smält en matsked ghee i soppan precis innan servering — det ger en rik och oförglömlig smak.",
-    "image_path": "images/Shourba_Ades.jpg",
+    "image_path": "Shourba_Ades.jpg",
     "video_url": "",
     "pro_tips_ar": "",
     "pro_tips_en": "",
     "pro_tips_sv": "",
     "where_to_buy_ar": "",
     "where_to_buy_en": "",
-    "where_to_buy_sv": ""
+    "where_to_buy_sv": "",
+    "image_url": "Shourba_Ades.jpg",
+    "image": "Shourba_Ades.jpg"
   }
 ]
