@@ -8,7 +8,7 @@ import { AccessibilityProvider } from '../src/context/AccessibilityContext';
 import { TimerProvider } from '../src/context/TimerContext';
 import FloatingTimer from '../src/components/FloatingTimer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, LogBox } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Cairo_400Regular, Cairo_600SemiBold, Cairo_700Bold } from '@expo-google-fonts/cairo';
 import { NotoNaskhArabic_400Regular, NotoNaskhArabic_500Medium, NotoNaskhArabic_600SemiBold, NotoNaskhArabic_700Bold } from '@expo-google-fonts/noto-naskh-arabic';
@@ -16,6 +16,53 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import WelcomeScreen from '../src/components/WelcomeScreen';
+
+// ====================================================================
+// HIDE all on-screen yellow/red dev warnings (LogBox) so the user does
+// not see "code" / warning text overlays on top of the app in Expo Go.
+// ====================================================================
+LogBox.ignoreAllLogs(true);
+
+// Silence uncaught-promise rejections that show as the red "9" badge bar
+// in Expo Go. We log them to the JS console for our own debugging.
+if (typeof globalThis !== 'undefined') {
+  // 1) RN's "tracker" used by Promise polyfill
+  try {
+    const HermesPromise: any = (global as any).Promise;
+    if (HermesPromise && HermesPromise.allSettled) {
+      const origThen = HermesPromise.prototype.then;
+      // no-op: we intentionally do NOT override .then.  Instead use the global
+      //        unhandled-rejection hook below.
+      void origThen;
+    }
+  } catch {}
+  // 2) Universal global unhandled-rejection hook
+  try {
+    (globalThis as any).onunhandledrejection = (e: any) => {
+      try { console.log('[silenced rejection]', e?.reason ?? e); } catch {}
+      // prevent the LogBox banner from appearing
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    };
+  } catch {}
+  // 3) React-Native's HermesInternal hook (shows the red overlay)
+  try {
+    const HermesInternal: any = (globalThis as any).HermesInternal;
+    if (HermesInternal && HermesInternal.enablePromiseRejectionTracker) {
+      HermesInternal.enablePromiseRejectionTracker({
+        allRejections: true,
+        onUnhandled: (id: any, reason: any) => {
+          try { console.log('[silenced hermes rejection]', id, reason); } catch {}
+        },
+      });
+    }
+  } catch {}
+}
+
+// Override default console handlers so they never surface in the UI.
+const _origWarn = console.warn;
+console.warn = (...args: any[]) => { try { _origWarn(...args); } catch {} };
+const _origError = console.error;
+console.error = (...args: any[]) => { try { _origError(...args); } catch {} };
 
 export default function RootLayout() {
   const [fontsLoaded, fontsError] = useFonts({

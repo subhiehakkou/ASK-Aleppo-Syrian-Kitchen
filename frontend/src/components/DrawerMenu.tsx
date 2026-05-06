@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Switch, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Switch, Platform, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -24,8 +24,6 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
   const [submittingRating, setSubmittingRating] = useState(false);
 
   if (!isVisible) return null;
-
-  // ----- Localized strings -----
   const L = {
     ar: {
       seniorMode: 'وضع كبار السن',
@@ -152,8 +150,15 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
   const scale = (s: number) => Math.round(s * fontScale);
 
   return (
-    <View style={styles.overlay}>
-      <TouchableOpacity style={styles.backdrop} onPress={onClose} activeOpacity={1} />
+    <Modal
+      visible={isVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
+      <View style={styles.overlay}>
+        <TouchableOpacity style={styles.backdrop} onPress={onClose} activeOpacity={1} />
 
       <View style={[styles.drawer, isRTL ? styles.drawerRTL : styles.drawerLTR]}>
         <LinearGradient
@@ -263,7 +268,8 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
           <Text style={[styles.footerText, { fontSize: scale(FONTS.sizes.sm) }]}>© 2026 ASK</Text>
         </View>
       </View>
-    </View>
+      </View>
+    </Modal>
   );
 }
 

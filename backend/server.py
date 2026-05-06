@@ -673,6 +673,35 @@ if POSTERS_DIR.exists():
     logger.info(f"Posters mounted from {POSTERS_DIR}")
 
 
+# ---- Force-download endpoint -----------------------------------------------
+# Plain static mounts let browsers preview the file inline. This route returns
+# the same files but with Content-Disposition: attachment so any laptop browser
+# will save the file to disk directly.
+from fastapi.responses import FileResponse
+
+@app.get("/api/download/{filename:path}")
+async def force_download(filename: str):
+    """Stream a file from the posters dir as a forced download (browser save dialog)."""
+    safe = filename.replace("..", "").lstrip("/")
+    target = POSTERS_DIR / safe
+    if not target.exists() or not target.is_file():
+        # Fallback to images dir
+        target = IMAGES_DIR / safe
+        if not target.exists() or not target.is_file():
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(
+        path=str(target),
+        filename=target.name,
+        media_type='application/octet-stream',
+        headers={
+            'Content-Disposition': f'attachment; filename="{target.name}"',
+            'Cache-Control': 'no-cache',
+        },
+    )
+# ---------------------------------------------------------------------------
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

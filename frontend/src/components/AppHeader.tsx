@@ -84,8 +84,16 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
             <Ionicons name="arrow-back" size={22} color="#3A3A3A" />
           </TouchableOpacity>
         ) : showMenu && onMenuPress ? (
-          <TouchableOpacity style={styles.iconBtn} onPress={onMenuPress}>
-            <Ionicons name="menu" size={24} color="#3A3A3A" />
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={onMenuPress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel="menu"
+          >
+            {/* Use a Unicode hamburger glyph so it renders even if the
+                Ionicons font fails to load on Expo Go */}
+            <Text style={styles.menuGlyph}>☰</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.iconBtn} />
@@ -156,6 +164,13 @@ const styles = StyleSheet.create({
     height: 34,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  menuGlyph: {
+    fontSize: 26,
+    lineHeight: 30,
+    color: '#3A3A3A',
+    fontWeight: '700',
+    includeFontPadding: false,
   },
   nameBlock: {
     flexDirection: 'row',

@@ -81,6 +81,16 @@ export default function ContactScreen() {
 
         {/* Info Section */}
         <View style={styles.infoSection}>
+          <View style={styles.infoIntro}>
+            <Text style={[styles.infoIntroTitle, isRTL && styles.rtlText]} numberOfLines={2}>
+              {language === 'ar'
+                ? 'تستطيعون سؤالنا عن الأشياء التالية أو أي سؤال آخر'
+                : language === 'sv'
+                  ? 'Du kan fråga oss om följande, eller vad du vill'
+                  : 'You can ask us about the following, or anything else'}
+            </Text>
+          </View>
+
           <View style={styles.infoItem}>
             <View style={styles.infoIcon}>
               <Ionicons name="chatbubble-ellipses-outline" size={24} color={COLORS.gold} />
@@ -242,6 +252,23 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.lg,
     ...SHADOWS.small,
+  },
+  infoIntro: {
+    backgroundColor: '#FFF8DC',
+    paddingVertical: SPACING.sm + 2,
+    paddingHorizontal: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.md,
+    borderWidth: 1.5,
+    borderColor: COLORS.gold,
+  },
+  infoIntroTitle: {
+    fontSize: 15,
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+    lineHeight: 22,
   },
   infoItem: {
     flexDirection: 'row',
