@@ -104,7 +104,7 @@ export default function HomeScreen() {
               <TouchableOpacity
                 key={category.id}
                 style={styles.categoryCard}
-                onPress={() => router.push(`/category/${category.cat_id}`)}
+                onPress={() => router.push(`/category/${category.cat_id || category.id}`)}
                 activeOpacity={0.8}
               >
                 <View style={styles.categoryImageContainer}>

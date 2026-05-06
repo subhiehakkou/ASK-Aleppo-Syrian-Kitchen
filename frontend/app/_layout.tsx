@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LanguageProvider } from '../src/context/LanguageContext';
 import { FavoritesProvider } from '../src/context/FavoritesContext';
 import { AdminProvider } from '../src/context/AdminContext';
+import { AccessibilityProvider } from '../src/context/AccessibilityContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -11,10 +12,11 @@ import { Cairo_400Regular, Cairo_600SemiBold, Cairo_700Bold } from '@expo-google
 import { NotoNaskhArabic_400Regular, NotoNaskhArabic_500Medium, NotoNaskhArabic_600SemiBold, NotoNaskhArabic_700Bold } from '@expo-google-fonts/noto-naskh-arabic';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import WelcomeScreen from '../src/components/WelcomeScreen';
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontsError] = useFonts({
     Cairo_400Regular,
     Cairo_600SemiBold,
     Cairo_700Bold,
@@ -22,6 +24,10 @@ export default function RootLayout() {
     NotoNaskhArabic_500Medium,
     NotoNaskhArabic_600SemiBold,
     NotoNaskhArabic_700Bold,
+    // Pre-load Ionicons explicitly — fixes the
+    // "Font file for ionicons is empty" error that appears on Expo Go
+    // when the icon font is requested over a flaky tunnel.
+    ...(Ionicons.font as any),
   });
   const [timedOut, setTimedOut] = useState(false);
   // showWelcome starts as null = "still loading from storage"
@@ -71,28 +77,30 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <LanguageProvider>
-        <FavoritesProvider>
-          <AdminProvider>
-            <StatusBar style="dark" backgroundColor="#FFDA47" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: '#FFFFF0' },
-                animation: 'slide_from_right',
-              }}
-            >
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="category/[id]" />
-              <Stack.Screen name="recipe/[id]" />
-              <Stack.Screen name="contact" />
-              <Stack.Screen name="about" />
-              <Stack.Screen name="search" />
-              <Stack.Screen name="qrcodes" />
-            </Stack>
-          </AdminProvider>
-        </FavoritesProvider>
-      </LanguageProvider>
+      <AccessibilityProvider>
+        <LanguageProvider>
+          <FavoritesProvider>
+            <AdminProvider>
+              <StatusBar style="dark" backgroundColor="#FFDA47" />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: '#FFFFF0' },
+                  animation: 'slide_from_right',
+                }}
+              >
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="category/[id]" />
+                <Stack.Screen name="recipe/[id]" />
+                <Stack.Screen name="contact" />
+                <Stack.Screen name="about" />
+                <Stack.Screen name="search" />
+                <Stack.Screen name="qrcodes" />
+              </Stack>
+            </AdminProvider>
+          </FavoritesProvider>
+        </LanguageProvider>
+      </AccessibilityProvider>
     </GestureHandlerRootView>
   );
 }
