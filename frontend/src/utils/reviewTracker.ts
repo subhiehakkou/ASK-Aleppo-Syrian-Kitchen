@@ -14,7 +14,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Linking, Platform } from 'react-native';
+import { Linking, Platform, Alert } from 'react-native';
 
 const STORAGE_KEY = '@ask:review_tracker_v1';
 
@@ -108,6 +108,41 @@ export async function markRated(): Promise<void> {
   const s = await readState();
   s.rated = true;
   await writeState(s);
+}
+
+/** Show a friendly Thank-You alert with options.
+ *  This avoids the "empty store page" confusion if the app's listing is not
+ *  yet populated, and lets the user choose what to do next. */
+export function showThankYouDialog(language: 'ar' | 'en' | 'sv' = 'ar') {
+  const tr =
+    language === 'ar'
+      ? {
+          title: '🌹 شكراً يا ست الكل',
+          msg: 'تقييمكِ غالٍ علينا.\nهل تحبين فتح المتجر للتقييم العام أو مشاركة التطبيق مع صديقاتكِ؟',
+          store: 'فتح المتجر',
+          share: 'مشاركة التطبيق',
+          close: 'إغلاق',
+        }
+      : language === 'sv'
+        ? {
+            title: '🌹 Tack!',
+            msg: 'Ditt betyg betyder mycket för oss.\nVill du öppna butiken för att ge ett offentligt betyg, eller dela appen med dina vänner?',
+            store: 'Öppna butiken',
+            share: 'Dela appen',
+            close: 'Stäng',
+          }
+        : {
+            title: '🌹 Thank you!',
+            msg: 'Your rating means a lot to us.\nWould you like to open the store to leave a public review, or share the app with friends?',
+            store: 'Open store',
+            share: 'Share app',
+            close: 'Close',
+          };
+  Alert.alert(tr.title, tr.msg, [
+    { text: tr.close, style: 'cancel' },
+    { text: tr.share, onPress: () => { try { /* delegated by caller */ } catch {} } },
+    { text: tr.store, onPress: async () => { await openStorePage(); } },
+  ]);
 }
 
 /** Open the appropriate store page for the user's platform.
