@@ -168,7 +168,6 @@ export default function ServingCalculator({
   };
 
   const reset = () => {
-    setOriginal(detectedOriginal);
     setTarget(detectedOriginal);
   };
 
@@ -242,9 +241,16 @@ export default function ServingCalculator({
                   accessibilityRole="text"
                   accessibilityLabel={`${tr.target}: ${target} ${target === 1 ? tr.person : tr.persons}. ${tr.multiplier}: ${formatScaled(factor)}`}
                 >
-                  <Text style={[styles.stepperValue, styles.stepperValueHighlight]}>
-                    {target}
-                  </Text>
+                  <View style={styles.numberRow}>
+                    <Text style={[styles.stepperValue, styles.stepperValueHighlight]}>
+                      {target}
+                    </Text>
+                    {factor !== 1 ? (
+                      <Text style={styles.factorInline} numberOfLines={1}>
+                        × {formatScaled(factor)}
+                      </Text>
+                    ) : null}
+                  </View>
                   <Text style={[styles.stepperUnit, styles.stepperUnitHighlight]}>
                     {personLabel(target)}
                   </Text>
@@ -260,11 +266,6 @@ export default function ServingCalculator({
                   <Ionicons name="add" size={32} color={COLORS.textPrimary} />
                 </TouchableOpacity>
               </View>
-              {factor !== 1 && (
-                <Text style={[styles.factorBadge, isRTL && styles.rtlText]}>
-                  × {formatScaled(factor)}
-                </Text>
-              )}
             </View>
 
             {/* Minimum reached warning */}
@@ -413,8 +414,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    marginVertical: SPACING.xs,
+    padding: SPACING.sm,
+    marginVertical: 4,
     borderWidth: 1,
     borderColor: '#E8C56B66',
     ...SHADOWS.small,
@@ -426,25 +427,25 @@ const styles = StyleSheet.create({
   },
   cardLabel: {
     fontFamily: 'NotoNaskhArabic_600SemiBold',
-    fontSize: 14,
+    fontSize: 13,
     color: COLORS.textLight,
-    marginBottom: SPACING.sm,
+    marginBottom: 4,
     textAlign: 'center',
   },
   cardLabelHighlight: {
     color: COLORS.goldDark,
-    fontSize: 15,
+    fontSize: 14,
   },
   stepperRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.sm,
   },
   stepperBtn: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: '#FFF8DC',
     borderWidth: 2,
     borderColor: COLORS.gold,
@@ -452,9 +453,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   stepperBtnLarge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: COLORS.gold,
     borderColor: COLORS.goldDark,
   },
@@ -467,27 +468,45 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  // NEW: number + factor on one inline row to save vertical space
+  numberRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  factorInline: {
+    fontFamily: 'Playfair_700Bold',
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.goldDark,
+    backgroundColor: 'rgba(255, 215, 0, 0.18)',
+    paddingHorizontal: 8,
+    paddingVertical: 1,
+    borderRadius: BORDER_RADIUS.sm,
+    overflow: 'hidden',
+  },
   stepperValue: {
     fontFamily: 'Playfair_700Bold',
-    fontSize: 42,
+    fontSize: 38,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    lineHeight: 48,
+    lineHeight: 44,
   },
   stepperValueHighlight: {
     color: COLORS.goldDark,
-    fontSize: 52,
-    lineHeight: 58,
+    fontSize: 44,
+    lineHeight: 50,
   },
   stepperUnit: {
     fontFamily: 'NotoNaskhArabic_400Regular',
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.textLight,
-    marginTop: 2,
+    marginTop: 0,
   },
   stepperUnitHighlight: {
     color: COLORS.goldDark,
-    fontSize: 14,
+    fontSize: 13,
   },
 
   arrowRow: {
@@ -567,8 +586,8 @@ const styles = StyleSheet.create({
   resultCard: {
     backgroundColor: '#FFFEF7',
     borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    marginTop: SPACING.md,
+    padding: SPACING.sm,
+    marginTop: SPACING.sm,
     borderWidth: 1,
     borderColor: '#E8C56B66',
   },
@@ -576,37 +595,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
-    marginBottom: SPACING.sm,
-    paddingBottom: SPACING.xs,
+    marginBottom: 4,
+    paddingBottom: 2,
     borderBottomWidth: 1,
     borderBottomColor: '#E8C56B33',
   },
   resultTitle: {
     fontFamily: 'NotoNaskhArabic_700Bold',
-    fontSize: 15,
+    fontSize: 14,
     color: COLORS.gold,
     fontWeight: '700',
     flex: 1,
   },
   ingredientsText: {
     fontFamily: 'NotoNaskhArabic_400Regular',
-    fontSize: 15,
+    fontSize: 14,
     color: COLORS.textPrimary,
-    lineHeight: 26,
+    lineHeight: 22,
   },
 
-  // ---- Cooking time card (80/20 rule) ----
+  // ---- Cooking time card (80/20 rule) — compact ----
   timeCard: {
     backgroundColor: COLORS.goldLight,
     borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    marginTop: SPACING.md,
+    padding: SPACING.sm,
+    marginTop: SPACING.sm,
     borderWidth: 2,
     borderColor: COLORS.gold,
   },
   timeTitle: {
     fontFamily: 'NotoNaskhArabic_700Bold',
-    fontSize: 15,
+    fontSize: 14,
     color: COLORS.goldDark,
     fontWeight: '700',
     flex: 1,
@@ -615,8 +634,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: SPACING.xs,
-    gap: SPACING.sm,
+    paddingVertical: 2,
+    gap: SPACING.xs,
   },
   timeColumn: {
     flex: 1,

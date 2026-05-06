@@ -64,7 +64,23 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
       {/* Row 1: Action Buttons */}
       <View style={styles.iconsRow}>
         {showBack ? (
-          <TouchableOpacity style={styles.iconBtn} onPress={() => router.back()}>
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => {
+              try {
+                if (router.canGoBack && router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace('/');
+                }
+              } catch {
+                try { router.replace('/'); } catch {}
+              }
+            }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel="back"
+          >
             <Ionicons name="arrow-back" size={22} color="#3A3A3A" />
           </TouchableOpacity>
         ) : showMenu && onMenuPress ? (
@@ -79,9 +95,6 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
 
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/search')}>
           <Ionicons name="search-outline" size={20} color="#3A3A3A" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/qrcodes')} accessibilityLabel="qr-guide">
-          <Ionicons name="qr-code-outline" size={20} color="#3A3A3A" />
         </TouchableOpacity>
         {onPrint ? (
           <TouchableOpacity style={styles.iconBtn} onPress={handlePrint}>

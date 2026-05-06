@@ -71,19 +71,18 @@ export default function EnglishScreen() {
         </View>
 
         <View style={styles.categoriesSection}>
-          {/* Journal Card */}
+          {/* Compact Journal Card */}
           <TouchableOpacity
             style={styles.journalCard}
             onPress={() => router.push('/journal')}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
           >
             <View style={styles.journalCardContent}>
-              <Ionicons name="book" size={28} color={COLORS.goldDark} />
-              <View style={styles.journalCardText}>
-                <Text style={styles.journalCardTitle}>Tell us what you cooked today</Text>
-                <Text style={styles.journalCardSubtitle}>Build your cookbook here</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={22} color={COLORS.goldDark} />
+              <Ionicons name="book" size={20} color={COLORS.goldDark} />
+              <Text style={styles.journalCardTitle} numberOfLines={1}>
+                Tell us what you cooked today
+              </Text>
+              <Ionicons name="chevron-forward" size={18} color={COLORS.goldDark} />
             </View>
           </TouchableOpacity>
 
@@ -233,28 +232,33 @@ const styles = StyleSheet.create({
   },
   mottoSection: {
     alignItems: 'center',
-    paddingVertical: SPACING.xl,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
     paddingHorizontal: SPACING.lg,
     backgroundColor: '#FFFFF0',
   },
   mottoText: {
-    fontSize: FONTS.sizes.xl,
+    fontSize: 13,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     textAlign: 'center',
-    lineHeight: 32,
+    lineHeight: 18,
+    fontStyle: 'italic',
   },
   categoriesSection: {
-    padding: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: 4,
+    paddingBottom: SPACING.sm,
     backgroundColor: '#FFFFF0',
   },
   sectionTitle: {
-    fontSize: FONTS.sizes.xxl,
+    fontSize: FONTS.sizes.lg,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
-    marginBottom: SPACING.lg,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.sm,
   },
   categoriesGrid: {
     flexDirection: 'row',
@@ -263,14 +267,14 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     width: '48%',
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.md,
     alignItems: 'center',
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.xs,
   },
   categoryImageContainer: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
     overflow: 'hidden',
     backgroundColor: '#F5F5DC',
     borderWidth: 3,
@@ -289,10 +293,11 @@ const styles = StyleSheet.create({
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
     textAlign: 'center',
-    marginTop: SPACING.sm,
+    marginTop: 4,
   },
   contactSection: {
-    padding: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
     alignItems: 'center',
     backgroundColor: '#FFFFF0',
   },
@@ -303,39 +308,41 @@ const styles = StyleSheet.create({
   askKitchenGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.md,
-    paddingHorizontal: SPACING.xxl,
-    paddingVertical: SPACING.lg,
+    gap: SPACING.sm,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.sm + 2,
   },
   askKitchenText: {
-    fontSize: FONTS.sizes.lg,
+    fontSize: FONTS.sizes.md,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: '#3A3A3A',
   },
   bottomPadding: {
-    height: 20,
+    height: 8,
   },
   journalCard: {
-    backgroundColor: '#FFF',
-    borderRadius: BORDER_RADIUS.lg,
-    marginBottom: SPACING.lg,
-    borderWidth: 2,
+    backgroundColor: COLORS.goldLight,
+    borderRadius: BORDER_RADIUS.md,
+    marginTop: 0,
+    marginBottom: SPACING.sm,
+    borderWidth: 1.5,
     borderColor: COLORS.goldDark,
     overflow: 'hidden',
   },
   journalCardContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: SPACING.lg,
-    gap: SPACING.md,
-    backgroundColor: COLORS.goldLight,
+    paddingVertical: SPACING.xs + 2,
+    paddingHorizontal: SPACING.md,
+    gap: SPACING.sm,
   },
   journalCardText: {
     flex: 1,
   },
   journalCardTitle: {
-    fontSize: FONTS.sizes.lg,
+    flex: 1,
+    fontSize: FONTS.sizes.md,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,

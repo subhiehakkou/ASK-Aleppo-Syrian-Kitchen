@@ -26,6 +26,10 @@ export const APP_STORE_URL =
   'https://apps.apple.com/app/id6762443271';
 export const PLAY_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.ask.syr';
+// Native deep-link variants — try these first so we open the actual store
+// app (avoids "play.google.com is blocked" errors on some networks/proxies).
+const APP_STORE_DEEPLINK = 'itms-apps://itunes.apple.com/app/id6762443271';
+const PLAY_STORE_DEEPLINK = 'market://details?id=com.ask.syr';
 
 interface TrackerState {
   /** Set of distinct recipe IDs the user has viewed (kept as array for JSON). */
@@ -106,11 +110,24 @@ export async function markRated(): Promise<void> {
   await writeState(s);
 }
 
-/** Open the appropriate store page for the user's platform. */
+/** Open the appropriate store page for the user's platform.
+ *  Tries the native deep-link first (market://… or itms-apps://…) which opens
+ *  the actual store app and avoids "play.google.com is blocked" proxy errors,
+ *  then falls back to the public web URL. */
 export async function openStorePage(): Promise<boolean> {
-  const url = Platform.OS === 'ios' ? APP_STORE_URL : PLAY_STORE_URL;
+  const deepLink = Platform.OS === 'ios' ? APP_STORE_DEEPLINK : PLAY_STORE_DEEPLINK;
+  const webUrl = Platform.OS === 'ios' ? APP_STORE_URL : PLAY_STORE_URL;
+  // 1) Try the native deep-link
   try {
-    await Linking.openURL(url);
+    const can = await Linking.canOpenURL(deepLink);
+    if (can) {
+      await Linking.openURL(deepLink);
+      return true;
+    }
+  } catch {}
+  // 2) Fall back to the regular web URL
+  try {
+    await Linking.openURL(webUrl);
     return true;
   } catch {
     return false;
