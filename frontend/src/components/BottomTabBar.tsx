@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -24,6 +25,7 @@ export default function BottomTabBar({ activeTab }: BottomTabBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { language, setLanguage } = useLanguage();
+  const insets = useSafeAreaInsets();
 
   const currentTab: 'ar' | 'en' | 'sv' | 'fav' =
     activeTab ?? (pathname === '/favorites' ? 'fav' : language);
@@ -63,7 +65,13 @@ export default function BottomTabBar({ activeTab }: BottomTabBarProps) {
       colors={['#FFDA47', '#FFD700', '#E0B000']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={styles.container}
+      style={[
+        styles.container,
+        // Add the device's bottom safe-area inset so the bar sits ABOVE the
+        // Android system gesture pill / iOS home indicator. Min 16 px so
+        // tap targets never collide with system controls.
+        { paddingBottom: Math.max(insets.bottom, 16) + 4 },
+      ]}
     >
       {tabs.map((tab) => {
         const isActive = currentTab === tab.key;
@@ -105,9 +113,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingTop: 4,
-    paddingBottom: Platform.OS === 'ios' ? 16 : 6,
-    height: Platform.OS === 'ios' ? 58 : 50,
+    paddingTop: 6,
+    // paddingBottom and total height now driven dynamically by safe-area
+    // insets in the component above, so the bar lifts above the Android
+    // gesture pill / iOS home indicator on every device.
+    minHeight: 50,
   },
   tab: {
     alignItems: 'center',
