@@ -219,11 +219,13 @@ export default function CookingJournalScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <AppHeader showBack={true} />
 
-      {/* Hero Section */}
-      <View style={styles.hero}>
-        <Ionicons name="book" size={40} color={COLORS.goldDark} />
-        <Text style={[styles.heroTitle, isRTL && styles.rtlText]}>{L.title}</Text>
-        <Text style={[styles.heroSubtitle, isRTL && styles.rtlText]}>{L.subtitle}</Text>
+      {/* Hero Section — compact, single row */}
+      <View style={[styles.hero, isRTL && styles.rtlRow]}>
+        <Ionicons name="book" size={22} color={COLORS.goldDark} />
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.heroTitle, isRTL && styles.rtlText]} numberOfLines={1}>{L.title}</Text>
+          <Text style={[styles.heroSubtitle, isRTL && styles.rtlText]} numberOfLines={1}>{L.subtitle}</Text>
+        </View>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -276,13 +278,15 @@ export default function CookingJournalScreen() {
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      {/* FAB - Add Button */}
+      {/* FAB - Add Button — vibrant gold with bulletproof Unicode "+" glyph */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => { resetForm(); setShowAddModal(true); }}
-        activeOpacity={0.8}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={L.addEntry}
       >
-        <Ionicons name="add" size={32} color="#FFF" />
+        <Text style={styles.fabPlus}>+</Text>
       </TouchableOpacity>
 
       {/* Add Entry Modal */}
@@ -441,27 +445,26 @@ export default function CookingJournalScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   hero: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: SPACING.lg,
-    paddingHorizontal: SPACING.lg,
+    gap: SPACING.sm,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
     backgroundColor: COLORS.goldLight,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1.5,
     borderBottomColor: COLORS.goldDark,
   },
   heroTitle: {
-    fontSize: FONTS.sizes.xl,
+    fontSize: FONTS.sizes.md,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
-    marginTop: SPACING.sm,
-    textAlign: 'center',
   },
   heroSubtitle: {
-    fontSize: FONTS.sizes.md,
+    fontSize: 12,
     fontFamily: 'NotoNaskhArabic_400Regular',
     color: COLORS.textSecondary,
-    marginTop: 4,
-    textAlign: 'center',
+    marginTop: 1,
   },
   scrollView: { flex: 1, paddingHorizontal: SPACING.lg, paddingTop: SPACING.lg },
   emptyState: { alignItems: 'center', paddingTop: 60 },
@@ -540,14 +543,24 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 80,
     right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: COLORS.goldDark,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.gold,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2.5,
+    borderColor: COLORS.goldDark,
     ...SHADOWS.large,
     zIndex: 100,
+  },
+  fabPlus: {
+    fontSize: 38,
+    lineHeight: 42,
+    fontWeight: '900',
+    color: '#1A1A2E',
+    includeFontPadding: false,
+    textAlign: 'center',
   },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalContent: {

@@ -234,17 +234,25 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
                 <TouchableOpacity
                   key={n}
                   onPress={() => handleStarTap(n)}
-                  hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
+                  hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
                   style={styles.starBtn}
                   activeOpacity={0.6}
                   accessibilityRole="button"
                   accessibilityLabel={`${n} ${language === 'ar' ? 'نجوم' : language === 'sv' ? 'stjärnor' : 'stars'}`}
                 >
-                  <Ionicons
-                    name={n <= inlineRating ? 'star' : 'star-outline'}
-                    size={scale(28)}
-                    color={n <= inlineRating ? '#FFD700' : '#A8A29A'}
-                  />
+                  {/* Use Unicode star glyphs — bulletproof even if the
+                      Ionicons font fails to load on Expo Go */}
+                  <Text
+                    style={{
+                      fontSize: scale(34),
+                      lineHeight: scale(38),
+                      color: n <= inlineRating ? '#FFD700' : '#C8C2B0',
+                      includeFontPadding: false,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {n <= inlineRating ? '★' : '☆'}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -257,8 +265,9 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
               disabled={inlineRating === 0 || submittingRating}
               activeOpacity={0.85}
             >
-              <Text style={[styles.submitRatingText, { fontSize: scale(13) }]}>
+              <Text style={[styles.submitRatingText, { fontSize: scale(14), color: inlineRating === 0 ? '#9C9580' : '#1A1A2E' }]}>
                 {submittingRating ? tr.thanks : tr.rateSubmit}
+                {inlineRating === 0 ? '' : ` (${inlineRating}/5)`}
               </Text>
             </TouchableOpacity>
           </View>

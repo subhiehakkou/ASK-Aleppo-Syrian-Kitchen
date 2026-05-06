@@ -115,7 +115,7 @@ export default function AboutScreen() {
                   <Ionicons name="book-outline" size={20} color={COLORS.gold} />
                 </View>
                 <Text style={[styles.featureText, isRTL && styles.rtlText]}>
-                  {isRTL ? '75+ وصفة حلبية أصيلة' : language === 'sv' ? '75+ autentiska Aleppo-recept' : '75+ authentic Aleppo recipes'}
+                  {isRTL ? '81+ وصفة حلبية أصيلة' : language === 'sv' ? '81+ autentiska Aleppo-recept' : '81+ authentic Aleppo recipes'}
                 </Text>
               </View>
               
