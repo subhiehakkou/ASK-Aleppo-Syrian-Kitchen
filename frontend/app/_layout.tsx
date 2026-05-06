@@ -73,10 +73,11 @@ export default function RootLayout() {
     NotoNaskhArabic_500Medium,
     NotoNaskhArabic_600SemiBold,
     NotoNaskhArabic_700Bold,
-    // Pre-load Ionicons explicitly — fixes the
-    // "Font file for ionicons is empty" error that appears on Expo Go
-    // when the icon font is requested over a flaky tunnel.
-    ...(Ionicons.font as any),
+    // NOTE: Ionicons.font deliberately NOT loaded here — it consistently
+    // fails on Expo Go ("Font file for ionicons is empty") and was
+    // causing the app to hang forever on the splash logo. Critical icons
+    // in the UI are rendered using Unicode glyphs (☰, +, ★, ☆) so the
+    // missing font is no longer a blocker.
   });
   const [timedOut, setTimedOut] = useState(false);
   // showWelcome starts as null = "still loading from storage"
@@ -84,7 +85,9 @@ export default function RootLayout() {
   const [showWelcome, setShowWelcome] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setTimedOut(true), 5000);
+    // Reduced from 5s → 2s. Even if fonts somehow stall, the app will
+    // continue rendering with the system font fallback after 2 seconds.
+    const timer = setTimeout(() => setTimedOut(true), 2000);
     return () => clearTimeout(timer);
   }, []);
 
