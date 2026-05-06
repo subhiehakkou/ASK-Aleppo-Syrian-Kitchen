@@ -131,55 +131,22 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
       if (Platform.OS !== 'web') {
         try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); } catch {}
       }
-      // 1-3 stars → silent feedback email (private, no public review).
-      // 4-5 stars → friendly Thank-You alert with three clear options
-      //             (Open store / Share with friends / Close) instead of
-      //             jumping straight to a possibly-empty store page.
+      // Slight delay so the user sees the gold "Thank you" flash on the
+      // submit button before we leave the drawer.
+      // 4-5 stars → store page (after publish, opens the live listing).
+      // 1-3 stars → silent feedback email.
       setTimeout(async () => {
-        if (inlineRating >= 4) {
-          const lang = (language as 'ar' | 'en' | 'sv') || 'ar';
-          const tr =
-            lang === 'ar'
-              ? {
-                  title: '🌹 شكراً يا ست الكل',
-                  msg: 'تقييمكِ الجميل غالٍ علينا!\n\nهل تحبين أن نفتح لكِ صفحة التطبيق على المتجر لتركي تقييماً علنياً، أو تشاركي التطبيق مع صديقاتكِ؟',
-                  store: 'فتح المتجر',
-                  share: 'مشاركة مع صديقاتي',
-                  close: 'إغلاق',
-                }
-              : lang === 'sv'
-                ? {
-                    title: '🌹 Tack!',
-                    msg: 'Ditt fina betyg betyder mycket!\n\nVill du att vi öppnar appens sida i butiken så du kan lämna en offentlig recension, eller dela appen med dina vänner?',
-                    store: 'Öppna butiken',
-                    share: 'Dela med vänner',
-                    close: 'Stäng',
-                  }
-                : {
-                    title: '🌹 Thank you!',
-                    msg: 'Your kind rating means a lot to us!\n\nWould you like us to open the app page on the store so you can leave a public review, or share the app with your friends?',
-                    store: 'Open store',
-                    share: 'Share with friends',
-                    close: 'Close',
-                  };
-          Alert.alert(tr.title, tr.msg, [
-            { text: tr.close, style: 'cancel', onPress: () => { setInlineRating(0); setSubmittingRating(false); onClose(); } },
-            { text: tr.share, onPress: async () => {
-                try { await shareApp(); } catch {}
-                setInlineRating(0); setSubmittingRating(false); onClose();
-              } },
-            { text: tr.store, onPress: async () => {
-                try { await openStorePage(); } catch {}
-                setInlineRating(0); setSubmittingRating(false); onClose();
-              } },
-          ]);
-        } else {
-          await openFeedbackEmail(inlineRating, language as 'ar' | 'en' | 'sv');
-          setInlineRating(0);
-          setSubmittingRating(false);
-          onClose();
-        }
-      }, 350);
+        try {
+          if (inlineRating >= 4) {
+            await openStorePage();
+          } else {
+            await openFeedbackEmail(inlineRating, language as 'ar' | 'en' | 'sv');
+          }
+        } catch {}
+        setInlineRating(0);
+        setSubmittingRating(false);
+        onClose();
+      }, 800);
     } catch {
       setSubmittingRating(false);
     }
