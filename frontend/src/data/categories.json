@@ -1,74 +1,86 @@
 [
   {
     "id": "Keb",
+    "cat_id": "Keb",
     "name_ar": "الكبب الحلبية",
     "name_en": "Aleppo Kebbe",
     "name_sv": "Aleppo-kebbe"
   },
   {
-    "id": "Mah",
-    "name_ar": "المحاشي",
-    "name_en": "Stuffed Vegetables",
-    "name_sv": "Fyllda grönsaker"
-  },
-  {
-    "id": "Mea",
-    "name_ar": "اللحوم",
-    "name_en": "Meat Dishes",
-    "name_sv": "Kötträtter"
-  },
-  {
-    "id": "Veg",
-    "name_ar": "الخضار",
-    "name_en": "Vegetable Dishes",
-    "name_sv": "Grönsaksrätter"
-  },
-  {
-    "id": "Sal",
-    "name_ar": "السلطات",
-    "name_en": "Salads",
-    "name_sv": "Sallader"
-  },
-  {
-    "id": "Sop",
-    "name_ar": "الشوربات",
-    "name_en": "Soups",
-    "name_sv": "Soppor"
-  },
-  {
-    "id": "App",
-    "name_ar": "المقبلات",
-    "name_en": "Appetizers",
-    "name_sv": "Förrätter"
-  },
-  {
     "id": "Yog",
-    "name_ar": "أكلات باللبن (الزبادي)",
+    "cat_id": "Yog",
+    "name_ar": "أكلات باللبن الزبادي",
     "name_en": "Yogurt Dishes",
     "name_sv": "Yoghurträtter"
   },
   {
     "id": "Grn",
+    "cat_id": "Grn",
     "name_ar": "أكلات الحبوب",
     "name_en": "Grain Dishes",
     "name_sv": "Spannmålsrätter"
   },
   {
-    "id": "Vgn",
+    "id": "Ass",
+    "cat_id": "Ass",
+    "name_ar": "أكلات متنوعة",
+    "name_en": "Assorted Dishes",
+    "name_sv": "Diverse rätter"
+  },
+  {
+    "id": "Oil",
+    "cat_id": "Oil",
     "name_ar": "أكلات نباتية",
     "name_en": "Vegetarian Dishes",
     "name_sv": "Vegetariska rätter"
   },
   {
-    "id": "Pas",
+    "id": "Veg",
+    "cat_id": "Veg",
+    "name_ar": "الخضار",
+    "name_en": "Vegetable Dishes",
+    "name_sv": "Grönsaksrätter"
+  },
+  {
+    "id": "Met",
+    "cat_id": "Met",
+    "name_ar": "اللحوم",
+    "name_en": "Meat Dishes",
+    "name_sv": "Kötträtter"
+  },
+  {
+    "id": "Stf",
+    "cat_id": "Stf",
+    "name_ar": "المحاشي",
+    "name_en": "Stuffed Vegetables",
+    "name_sv": "Fyllda grönsaker"
+  },
+  {
+    "id": "App",
+    "cat_id": "App",
+    "name_ar": "المقبلات",
+    "name_en": "Appetizers",
+    "name_sv": "Förrätter"
+  },
+  {
+    "id": "Sld",
+    "cat_id": "Sld",
+    "name_ar": "السلطات",
+    "name_en": "Salads",
+    "name_sv": "Sallader"
+  },
+  {
+    "id": "Pat",
+    "cat_id": "Pat",
     "name_ar": "المعجنات",
     "name_en": "Pastries",
     "name_sv": "Bakverk"
   },
   {
-    "id": "Var",
-    "name_ar": "متنوعات",
-    "name_en": "Various Dishes",
-    "name_sv": "Diverse rätter"
+    "id": "Sop",
+    "cat_id": "Sop",
+    "name_ar": "الشوربات",
+    "name_en": "Soups",
+    "name_sv": "Soppor"
   }
 ]

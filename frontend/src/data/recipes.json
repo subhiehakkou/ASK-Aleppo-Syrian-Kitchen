@@ -564,7 +564,7 @@
     "recipe_id": "15",
     "category_id": "Mea",
     "category_ids": [
-      "Mea"
+      "Met"
     ],
     "name_ar": "كباب هندي",
     "name_en": "Kabab Hindi",
@@ -604,7 +604,7 @@
     "recipe_id": "16",
     "category_id": "Mea",
     "category_ids": [
-      "Mea"
+      "Met"
     ],
     "name_ar": "داوود باشا",
     "name_en": "Daoud Pasha",
@@ -764,7 +764,7 @@
     "recipe_id": "20",
     "category_id": "Mah",
     "category_ids": [
-      "Mah",
+      "Stf",
       "Yog"
     ],
     "name_ar": "شيخ المحشي",
@@ -805,7 +805,7 @@
     "recipe_id": "21",
     "category_id": "Mah",
     "category_ids": [
-      "Mah",
+      "Stf",
       "Yog"
     ],
     "name_ar": "شيخ المحشي بكر مفروم",
@@ -1086,7 +1086,7 @@
     "recipe_id": "28",
     "category_id": "Var",
     "category_ids": [
-      "Var"
+      "Ass"
     ],
     "name_ar": "فريكة ورز",
     "name_en": "Freekeh and rice",
@@ -1126,7 +1126,7 @@
     "recipe_id": "29",
     "category_id": "Mah",
     "category_ids": [
-      "Mah"
+      "Stf"
     ],
     "name_ar": "سندوانات/فوارغ/سجقات",
     "name_en": "Fawaregh, Sosage stuffed with rice",
@@ -1166,7 +1166,7 @@
     "recipe_id": "30",
     "category_id": "Mah",
     "category_ids": [
-      "Mah"
+      "Stf"
     ],
     "name_ar": "ورق عنب باللحم",
     "name_en": "Yabraa (Dolma)",
@@ -1206,7 +1206,7 @@
     "recipe_id": "31",
     "category_id": "Mah",
     "category_ids": [
-      "Mah"
+      "Stf"
     ],
     "name_ar": "يالنجي (ورق عنب بزيت الزيتون والخضار)",
     "name_en": "Yalangi",
@@ -1246,7 +1246,7 @@
     "recipe_id": "32",
     "category_id": "Mah",
     "category_ids": [
-      "Mah"
+      "Stf"
     ],
     "name_ar": "محاشي كوسا وباتنجان وفليفلة وبطاطا وأي اضافات أخرى",
     "name_en": "Mehshi Kousa and Batinjan and other veg",
@@ -1446,7 +1446,7 @@
     "recipe_id": "37",
     "category_id": "Vgn",
     "category_ids": [
-      "Vgn"
+      "Oil"
     ],
     "name_ar": "فول مقلى بالزيت",
     "name_en": "Fried Broad beans",
@@ -1486,7 +1486,7 @@
     "recipe_id": "38",
     "category_id": "Vgn",
     "category_ids": [
-      "Vgn"
+      "Oil"
     ],
     "name_ar": "لوبيا بالزيت",
     "name_en": "black-eyed peasin in oil",
@@ -1526,7 +1526,7 @@
     "recipe_id": "39",
     "category_id": "Vgn",
     "category_ids": [
-      "Vgn"
+      "Oil"
     ],
     "name_ar": "فاصوليا بالزيت",
     "name_en": "Green Beans in oil",
@@ -1566,7 +1566,7 @@
     "recipe_id": "40",
     "category_id": "Vgn",
     "category_ids": [
-      "Vgn"
+      "Oil"
     ],
     "name_ar": "باميا بالزيت",
     "name_en": "Green Okra in oil",
@@ -1606,7 +1606,7 @@
     "recipe_id": "41",
     "category_id": "Mea",
     "category_ids": [
-      "Mea"
+      "Met"
     ],
     "name_ar": "كباب حلبي مشوي",
     "name_en": "Kabab Halab Meshwi",
@@ -1646,7 +1646,7 @@
     "recipe_id": "42",
     "category_id": "Pas",
     "category_ids": [
-      "Pas"
+      "Pat"
     ],
     "name_ar": "عش البلبل",
     "name_en": "Esh Elbobol (Aswad)",
@@ -1686,7 +1686,7 @@
     "recipe_id": "43",
     "category_id": "Pas",
     "category_ids": [
-      "Pas"
+      "Pat"
     ],
     "name_ar": "عش البلبل عنتابي ( أحمر)",
     "name_en": "Antep Elbolbol (Red)",
@@ -1726,7 +1726,7 @@
     "recipe_id": "44",
     "category_id": "Pas",
     "category_ids": [
-      "Pas"
+      "Pat"
     ],
     "name_ar": "لحم بعجين أسود أو بدبس الرمان البلدي)",
     "name_en": "Lahm Beajeen (Aswad)",
@@ -1766,7 +1766,7 @@
     "recipe_id": "45",
     "category_id": "Pas",
     "category_ids": [
-      "Pas"
+      "Pat"
     ],
     "name_ar": "لحم بعجين بالخضار العنتابي)",
     "name_en": "Lahm Beajeen (Ahmar)",
@@ -1806,7 +1806,7 @@
     "recipe_id": "46",
     "category_id": "Mea",
     "category_ids": [
-      "Mea"
+      "Met"
     ],
     "name_ar": "كباب باتنجان في الفرن أو شوي على الفحم",
     "name_en": "Kabab Batinjan Fahm",
@@ -1846,7 +1846,7 @@
     "recipe_id": "47",
     "category_id": "Mea",
     "category_ids": [
-      "Mea"
+      "Met"
     ],
     "name_ar": "كباب حلبي بالصينية في الفرن",
     "name_en": "Kabab Batinjan in oven",
@@ -1886,7 +1886,7 @@
     "recipe_id": "48",
     "category_id": "Mea",
     "category_ids": [
-      "Mea"
+      "Met"
     ],
     "name_ar": "كباب بالصينية مع البندورة والفليفلة",
     "name_en": "Kabab Bessainiyh with Tomato",
@@ -1926,7 +1926,7 @@
     "recipe_id": "49",
     "category_id": "Mah",
     "category_ids": [
-      "Mah"
+      "Stf"
     ],
     "name_ar": "سلق محشي",
     "name_en": "Selq Meshi",
@@ -1966,7 +1966,7 @@
     "recipe_id": "50",
     "category_id": "Vgn",
     "category_ids": [
-      "Vgn"
+      "Oil"
     ],
     "name_ar": "سلق مقلى بزيت الزيتون",
     "name_en": "Selq Mqallah in olive oil",
@@ -2046,7 +2046,7 @@
     "recipe_id": "52",
     "category_id": "Mah",
     "category_ids": [
-      "Mah"
+      "Stf"
     ],
     "name_ar": "ملفوف محشي",
     "name_en": "Malfouf Meshi",
@@ -2126,7 +2126,7 @@
     "recipe_id": "54",
     "category_id": "Sal",
     "category_ids": [
-      "Sal"
+      "Sld"
     ],
     "name_ar": "تبولة",
     "name_en": "Tabbouleh",
@@ -2166,7 +2166,7 @@
     "recipe_id": "55",
     "category_id": "Sal",
     "category_ids": [
-      "Sal"
+      "Sld"
     ],
     "name_ar": "فتوش",
     "name_en": "Fattoush",
@@ -2206,7 +2206,7 @@
     "recipe_id": "56",
     "category_id": "Sal",
     "category_ids": [
-      "Sal"
+      "Sld"
     ],
     "name_ar": "سلطة الملفوف",
     "name_en": "Malfouf salad",
@@ -2246,7 +2246,7 @@
     "recipe_id": "57",
     "category_id": "Var",
     "category_ids": [
-      "Var"
+      "Ass"
     ],
     "name_ar": "المايونيز",
     "name_en": "mayonnaise",
@@ -2286,7 +2286,7 @@
     "recipe_id": "58",
     "category_id": "Sal",
     "category_ids": [
-      "Sal"
+      "Sld"
     ],
     "name_ar": "سلطة الخضار بالمايونيز",
     "name_en": "Vegetable salad with mayonnaise",
@@ -2527,7 +2527,7 @@
     "recipe_id": "64",
     "category_id": "Sal",
     "category_ids": [
-      "Sal"
+      "Sld"
     ],
     "name_ar": "سلطة خيار باللبن",
     "name_en": "Cucumber salad with yogurt",
@@ -2567,7 +2567,7 @@
     "recipe_id": "65",
     "category_id": "Var",
     "category_ids": [
-      "Var",
+      "Ass",
       "Yog"
     ],
     "name_ar": "فتة الحمص",
@@ -2728,7 +2728,7 @@
     "recipe_id": "69",
     "category_id": "Mea",
     "category_ids": [
-      "Mea"
+      "Met"
     ],
     "name_ar": "الكبدة المقلية بزيت الزيتون",
     "name_en": "Fried liver in olive oil",
@@ -2888,7 +2888,7 @@
     "recipe_id": "73",
     "category_id": "Mea",
     "category_ids": [
-      "Mea"
+      "Met"
     ],
     "name_ar": "دجاج مسالا الهندي",
     "name_en": "Indian Chicken Masala",
