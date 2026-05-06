@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../../src/context/LanguageContext';
 import { useFavorites } from '../../src/context/FavoritesContext';
+import { useAccessibility } from '../../src/context/AccessibilityContext';
 import { COLORS, FONTS, SPACING, SHADOWS, BORDER_RADIUS } from '../../src/constants/theme';
 import { getRecipe, Recipe } from '../../src/services/api';
 import { getRecipeImage, getImageSource } from '../../src/utils/imageHelper';
@@ -29,6 +30,7 @@ export default function RecipeDetailScreen() {
   const router = useRouter();
   const { language, t, isRTL } = useLanguage();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { fontScale } = useAccessibility();
   
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
@@ -267,6 +269,8 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
 
   const renderTabContent = () => {
     const tabStyle = TAB_STYLES[activeTab];
+    const scaledFont = Math.round(FONTS.sizes.md * fontScale);
+    const scaledLine = Math.round(24 * fontScale);
     switch (activeTab) {
       case 'ingredients':
         return (
@@ -284,7 +288,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
               </Text>
             </TouchableOpacity>
             <Text
-              style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}
+              style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text, fontSize: scaledFont, lineHeight: scaledLine }]}
               onLongPress={() => onLongPressField('ingredients')}
               accessibilityHint={isRTL ? 'اضغطي مطوّلاً لمشاهدة بثلاث لغات' : 'Long-press to view in 3 languages'}
             >
@@ -308,7 +312,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
               </Text>
             </TouchableOpacity>
             <Text
-              style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}
+              style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text, fontSize: scaledFont, lineHeight: scaledLine }]}
               onLongPress={() => onLongPressField('instructions')}
               accessibilityHint={isRTL ? 'اضغطي مطوّلاً لمشاهدة بثلاث لغات' : 'Long-press to view in 3 languages'}
             >
@@ -323,7 +327,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
                     {t('decoration')}
                   </Text>
                 </View>
-                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
+                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text, fontSize: scaledFont, lineHeight: scaledLine }]}>
                   {getDecoration()}
                 </Text>
               </View>
@@ -341,7 +345,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
                     {t('secrets')}
                   </Text>
                 </View>
-                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
+                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text, fontSize: scaledFont, lineHeight: scaledLine }]}>
                   {getSecrets()}
                 </Text>
               </View>
@@ -355,7 +359,7 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
                     {t('pro_tips')}
                   </Text>
                 </View>
-                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text }]}>
+                <Text style={[styles.contentText, isRTL && styles.rtlText, { color: tabStyle.text, fontSize: scaledFont, lineHeight: scaledLine }]}>
                   {getProTips()}
                 </Text>
               </View>
@@ -374,18 +378,13 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
       {/* App Header with Logo */}
       <AppHeader showBack={true} onPrint={generatePDF} />
       
-      {/* Recipe Name - centered */}
-      <View style={styles.recipeNameRow}>
-        <View style={styles.titleWrap}>
-          <Text style={styles.headerTitle} numberOfLines={2}>
-            {getName()}
-          </Text>
-        </View>
-      </View>
-      {/* Compact meta chips row: Favorite · About · Time · Servings */}
-      <View style={[styles.metaChipsRow, isRTL && styles.metaChipsRowRTL]}>
+      {/* Title row — symmetrical layout:
+         RTL (AR): [❤️ Favorite]   Title   [📖 About]
+         LTR (EN/SV): [📖 About]   Title   [❤️ Favorite] */}
+      <View style={[styles.titleRow, isRTL && styles.titleRowRTL]}>
+        {/* LEFT slot — Favorite (in RTL) or About (in LTR) */}
         <TouchableOpacity
-          style={[styles.metaChip, styles.metaChipFavorite]}
+          style={[styles.cornerChip, styles.cornerChipFav]}
           onPress={() => {
             const recipeId = recipe?.id || recipe?._id || id;
             if (recipeId) toggleFavorite(recipeId as string);
@@ -403,18 +402,28 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
         >
           <Ionicons
             name={isFavorite(recipe?.id || recipe?._id || id as string) ? 'heart' : 'heart-outline'}
-            size={16}
+            size={20}
             color="#E74C3C"
           />
-          <Text style={[styles.metaChipText, styles.metaChipTextFavorite]} numberOfLines={1}>
-            {language === 'ar' ? 'المفضلة' : language === 'sv' ? 'Favorit' : 'Favorite'}
+          <Text style={[styles.cornerChipText, styles.cornerChipTextFav]} numberOfLines={1}>
+            {language === 'ar' ? 'مفضلة' : language === 'sv' ? 'Favorit' : 'Favorite'}
           </Text>
         </TouchableOpacity>
+
+        {/* CENTER — Title */}
+        <View style={styles.titleCenter}>
+          <Text style={[styles.headerTitle, { fontSize: Math.round(FONTS.sizes.xl * fontScale) }]} numberOfLines={2}>
+            {getName()}
+          </Text>
+        </View>
+
+        {/* RIGHT slot — About */}
         {getDescription() ? (
           <TouchableOpacity
-            style={styles.metaChip}
+            style={[styles.cornerChip, styles.cornerChipAbout]}
             onPress={toggleAbout}
             activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel={
@@ -424,36 +433,39 @@ ${secrets ? '<div class="section"><div class="section-title">' + (isRTL ? 'أس�
             }
             accessibilityState={{ expanded: showAbout }}
           >
-            <Text style={styles.metaChipIcon}>📖</Text>
-            <Text style={styles.metaChipText} numberOfLines={1}>{t('about_dish')}</Text>
-            <Ionicons
-              name={showAbout ? 'chevron-up' : 'chevron-down'}
-              size={14}
-              color="#8B6914"
-            />
+            <Text style={styles.cornerChipEmoji}>📖</Text>
+            <Text style={styles.cornerChipText} numberOfLines={1}>{t('about_dish')}</Text>
           </TouchableOpacity>
-        ) : null}
-        {getTime() ? (
-          <View
-            style={styles.metaChip}
-            accessible={true}
-            accessibilityLabel={(isRTL ? 'وقت الطبخ: ' : 'Cooking time: ') + getTime()}
-          >
-            <Text style={styles.metaChipIcon}>⏱️</Text>
-            <Text style={styles.metaChipText} numberOfLines={1}>{getTime()}</Text>
-          </View>
-        ) : null}
-        {getServings() ? (
-          <View
-            style={styles.metaChip}
-            accessible={true}
-            accessibilityLabel={(isRTL ? 'عدد الأشخاص: ' : 'Servings: ') + getServings()}
-          >
-            <Text style={styles.metaChipIcon}>🍽️</Text>
-            <Text style={styles.metaChipText} numberOfLines={1}>{getServings()}</Text>
-          </View>
-        ) : null}
+        ) : (
+          <View style={[styles.cornerChip, { backgroundColor: 'transparent', borderColor: 'transparent' }]} />
+        )}
       </View>
+
+      {/* Time + Servings row underneath the title */}
+      {(getTime() || getServings()) ? (
+        <View style={[styles.metaUnderRow, isRTL && styles.metaUnderRowRTL]}>
+          {getTime() ? (
+            <View
+              style={styles.metaUnderChip}
+              accessible={true}
+              accessibilityLabel={(isRTL ? 'وقت الطبخ: ' : 'Cooking time: ') + getTime()}
+            >
+              <Text style={styles.metaUnderEmoji}>⏱️</Text>
+              <Text style={styles.metaUnderText} numberOfLines={1}>{getTime()}</Text>
+            </View>
+          ) : null}
+          {getServings() ? (
+            <View
+              style={styles.metaUnderChip}
+              accessible={true}
+              accessibilityLabel={(isRTL ? 'عدد الأشخاص: ' : 'Servings: ') + getServings()}
+            >
+              <Text style={styles.metaUnderEmoji}>👥</Text>
+              <Text style={styles.metaUnderText} numberOfLines={1}>{getServings()}</Text>
+            </View>
+          ) : null}
+        </View>
+      ) : null}
       {/* Collapsible description panel */}
       {showAbout && getDescription() ? (
         <View style={styles.aboutPanel}>
@@ -649,6 +661,91 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.sm,
     backgroundColor: '#FFFFF0',
+  },
+  // ========= NEW SYMMETRICAL TITLE LAYOUT =========
+  // RTL: [❤️ Fav] | Title | [📖 About]
+  // LTR: [📖 About] | Title | [❤️ Fav]
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: '#FFFFF0',
+    gap: 6,
+  },
+  titleRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  titleCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  cornerChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    backgroundColor: '#FFF8DC',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E8C56B',
+    minWidth: 72,
+    justifyContent: 'center',
+  },
+  cornerChipFav: {
+    backgroundColor: '#FFF0F0',
+    borderColor: '#E74C3C',
+  },
+  cornerChipAbout: {
+    backgroundColor: '#FFF8DC',
+    borderColor: '#E8C56B',
+  },
+  cornerChipEmoji: {
+    fontSize: 14,
+  },
+  cornerChipText: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1A1A2E',
+  },
+  cornerChipTextFav: {
+    color: '#C0392B',
+  },
+  metaUnderRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    paddingBottom: SPACING.sm,
+    backgroundColor: '#FFFFF0',
+  },
+  metaUnderRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  metaUnderChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: '#FFFEF5',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#FFD700',
+  },
+  metaUnderEmoji: {
+    fontSize: 14,
+  },
+  metaUnderText: {
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontSize: 12,
+    color: '#1A1A2E',
   },
   titleWrap: {
     flex: 1,

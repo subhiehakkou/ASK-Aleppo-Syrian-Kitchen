@@ -1,9 +1,20 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Vibration, Platform, AccessibilityInfo } from 'react-native';
+/**
+ * CookingTimer.tsx
+ *
+ * Full-screen cooking-timer modal. All actual countdown state lives in
+ * TimerContext so the timer keeps ticking even when the user leaves the
+ * recipe screen — the user can navigate freely while a small floating bubble
+ * (rendered globally) shows the remaining time.
+ *
+ * This component renders ONLY the rich UI (presets, big circle, buttons).
+ */
+
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { useTimer } from '../context/TimerContext';
 
 interface CookingTimerProps {
   isRTL: boolean;
@@ -21,191 +32,41 @@ export default function CookingTimer({
   onExternalClose,
   hideButton = false,
 }: CookingTimerProps) {
+  const {
+    isRunning,
+    isPaused,
+    totalSeconds,
+    initialTotal,
+    flashAlert,
+    sheetVisible,
+    openSheet,
+    closeSheet,
+    start,
+    pause,
+    resume,
+    reset,
+    formatTime,
+  } = useTimer();
+
   const isControlled = typeof externalVisible === 'boolean';
-  const [internalVisible, setInternalVisible] = useState(false);
-  const isVisible = isControlled ? !!externalVisible : internalVisible;
+  const isVisible = isControlled ? !!externalVisible : sheetVisible;
+
   const setIsVisible = (v: boolean) => {
     if (isControlled) {
       if (!v && onExternalClose) onExternalClose();
     } else {
-      setInternalVisible(v);
+      if (v) openSheet(); else closeSheet();
     }
   };
-  const [minutes, setMinutes] = useState(10);
-  const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [totalSeconds, setTotalSeconds] = useState(0);
-  const [initialTotal, setInitialTotal] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const soundRef = useRef<Audio.Sound | null>(null);
 
-  // Preset times in minutes
+  const [minutes, setMinutes] = useState(10);
   const presets = [5, 10, 15, 20, 30, 45, 60, 90];
 
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
-      if (soundRef.current) {
-        soundRef.current.unloadAsync();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isRunning && !isPaused && totalSeconds > 0) {
-      intervalRef.current = setInterval(() => {
-        setTotalSeconds(prev => {
-          if (prev <= 1) {
-            if (intervalRef.current) clearInterval(intervalRef.current);
-            setIsRunning(false);
-            setIsPaused(false);
-            onTimerComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isRunning, isPaused]);
-
-  // Visual flash state when timer completes (for hearing-impaired users)
-  const [flashAlert, setFlashAlert] = useState(false);
-  const flashIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const onTimerComplete = useCallback(async () => {
-    // 1) STRONG haptic feedback (uses iOS native taptic engine via expo-haptics)
+  const handleStart = () => {
     if (Platform.OS !== 'web') {
-      try {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        // Repeat haptic for hearing-impaired users
-        for (let i = 0; i < 4; i++) {
-          await new Promise((r) => setTimeout(r, 600));
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        }
-      } catch {
-        // Fallback to standard vibration
-      }
-      // Long, attention-grabbing vibration pattern
-      Vibration.vibrate([0, 800, 300, 800, 300, 800, 300, 800], false);
+      try { Haptics.selectionAsync(); } catch {}
     }
-
-    // 2) VISUAL flash banner (alternates colors so it's impossible to miss)
-    setFlashAlert(true);
-    let toggle = false;
-    flashIntervalRef.current = setInterval(() => {
-      toggle = !toggle;
-      setFlashAlert(toggle);
-    }, 500);
-    setTimeout(() => {
-      if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
-      setFlashAlert(false);
-    }, 8000);
-
-    // 3) SCREEN-READER announcement (for blind users)
-    try {
-      AccessibilityInfo.announceForAccessibility(
-        isRTL ? 'انتهى وقت الطبخ! المؤقت توقف.' : "Time's up! Cooking timer finished."
-      );
-    } catch {}
-
-    // 4) Play alert sound
-    try {
-      // Configure audio mode — critical for sound to play on real devices,
-      // especially when phone is in silent mode (iOS) or low volume.
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        shouldDuckAndroid: false,
-        staysActiveInBackground: false,
-        allowsRecordingIOS: false,
-      });
-
-      const { sound } = await Audio.Sound.createAsync(
-        require('../../assets/timer-alarm.wav'),
-        { shouldPlay: true, isLooping: false, volume: 1.0 }
-      );
-      soundRef.current = sound;
-      // Explicitly start playback (some Android devices need this even with shouldPlay)
-      try { await sound.playAsync(); } catch {}
-
-      // Auto unload after 6 seconds
-      setTimeout(async () => {
-        if (soundRef.current) {
-          try { await soundRef.current.stopAsync(); } catch {}
-          try { await soundRef.current.unloadAsync(); } catch {}
-          soundRef.current = null;
-        }
-      }, 6000);
-    } catch (e) {
-      console.log('Timer sound error:', e);
-      // Fallback: vibrate more aggressively as a sound substitute
-      if (Platform.OS !== 'web') {
-        Vibration.vibrate([0, 800, 400, 800, 400, 800, 400, 800], false);
-      }
-    }
-  }, []);
-
-  const startTimer = () => {
-    const total = minutes * 60;
-    if (total <= 0) return;
-    setTotalSeconds(total);
-    setInitialTotal(total);
-    setIsRunning(true);
-    setIsPaused(false);
-  };
-
-  const pauseTimer = () => {
-    setIsPaused(true);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-
-  const resumeTimer = () => {
-    setIsPaused(false);
-  };
-
-  const resetTimer = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
-    setFlashAlert(false);
-    setIsRunning(false);
-    setIsPaused(false);
-    setTotalSeconds(0);
-    setInitialTotal(0);
-    if (soundRef.current) {
-      soundRef.current.stopAsync();
-      soundRef.current.unloadAsync();
-      soundRef.current = null;
-    }
-    Vibration.cancel();
-  };
-
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const progress = initialTotal > 0 ? ((initialTotal - totalSeconds) / initialTotal) : 0;
-
-  // Mini display for when timer is running but modal is closed
-  const renderMiniTimer = () => {
-    if (!isRunning || isVisible) return null;
-    
-    return (
-      <TouchableOpacity 
-        style={styles.miniTimer} 
-        onPress={() => setIsVisible(true)}
-        activeOpacity={0.8}
-      >
-        <Ionicons name="timer" size={16} color="#FFF" />
-        <Text style={styles.miniTimerText}>{formatTime(totalSeconds)}</Text>
-      </TouchableOpacity>
-    );
+    start(minutes);
   };
 
   return (
@@ -223,9 +84,6 @@ export default function CookingTimer({
           </Text>
         </TouchableOpacity>
       )}
-
-      {/* Floating Mini Timer */}
-      {renderMiniTimer()}
 
       {/* Timer Modal */}
       <Modal
@@ -251,6 +109,7 @@ export default function CookingTimer({
                 <Text style={styles.flashBannerIcon}>🔔</Text>
               </View>
             ) : null}
+
             {/* Header */}
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, isRTL && styles.rtlText]}>
@@ -261,22 +120,32 @@ export default function CookingTimer({
               </TouchableOpacity>
             </View>
 
+            {/* Hint when running */}
+            {isRunning && (
+              <View style={styles.floatHint}>
+                <Ionicons name="information-circle" size={16} color="#1A1A2E" />
+                <Text style={[styles.floatHintText, isRTL && styles.rtlText]}>
+                  {isRTL
+                    ? 'يمكنكِ إغلاق المؤقت والتنقّل في التطبيق — سيظهر فوق الشاشة'
+                    : 'You can close this and browse the app — it stays floating'}
+                </Text>
+              </View>
+            )}
+
             {/* Timer Display */}
             <View style={styles.timerDisplay}>
               <View style={styles.timerCircle}>
-                {/* Progress Ring Background */}
                 <View style={[styles.progressRing, { borderColor: '#E0E0E0' }]} />
-                {/* Timer Text */}
                 <Text style={styles.timerText}>
                   {isRunning || totalSeconds > 0 ? formatTime(totalSeconds) : formatTime(minutes * 60)}
                 </Text>
                 <Text style={styles.timerLabel}>
-                  {totalSeconds === 0 && !isRunning 
-                    ? (isRTL ? 'اختر الوقت' : 'Set time')
-                    : isRunning && !isPaused 
+                  {totalSeconds === 0 && !isRunning
+                    ? (isRTL ? 'اختاري الوقت' : 'Set time')
+                    : isRunning && !isPaused
                       ? (isRTL ? 'جارٍ العد...' : 'Running...')
-                      : isPaused 
-                        ? (isRTL ? 'متوقف مؤقتاً' : 'Paused')
+                      : isPaused
+                        ? (isRTL ? 'متوقّف مؤقتاً' : 'Paused')
                         : (isRTL ? 'انتهى الوقت! 🔔' : 'Time\'s up! 🔔')
                   }
                 </Text>
@@ -309,7 +178,6 @@ export default function CookingTimer({
                   ))}
                 </View>
 
-                {/* Custom Time Adjuster */}
                 <View style={styles.customTime}>
                   <TouchableOpacity
                     style={styles.adjustButton}
@@ -331,7 +199,7 @@ export default function CookingTimer({
             {/* Control Buttons */}
             <View style={styles.controls}>
               {!isRunning ? (
-                <TouchableOpacity style={styles.startButton} onPress={startTimer}>
+                <TouchableOpacity style={styles.startButton} onPress={handleStart}>
                   <Ionicons name="play" size={28} color="#FFF" />
                   <Text style={styles.startButtonText}>
                     {isRTL ? 'ابدأ' : 'Start'}
@@ -340,17 +208,17 @@ export default function CookingTimer({
               ) : (
                 <View style={styles.runningControls}>
                   {isPaused ? (
-                    <TouchableOpacity style={[styles.controlBtn, styles.resumeBtn]} onPress={resumeTimer}>
+                    <TouchableOpacity style={[styles.controlBtn, styles.resumeBtn]} onPress={resume}>
                       <Ionicons name="play" size={24} color="#FFF" />
                       <Text style={styles.controlBtnText}>{isRTL ? 'استمر' : 'Resume'}</Text>
                     </TouchableOpacity>
                   ) : (
-                    <TouchableOpacity style={[styles.controlBtn, styles.pauseBtn]} onPress={pauseTimer}>
+                    <TouchableOpacity style={[styles.controlBtn, styles.pauseBtn]} onPress={pause}>
                       <Ionicons name="pause" size={24} color="#FFF" />
                       <Text style={styles.controlBtnText}>{isRTL ? 'إيقاف' : 'Pause'}</Text>
                     </TouchableOpacity>
                   )}
-                  <TouchableOpacity style={[styles.controlBtn, styles.resetBtn]} onPress={resetTimer}>
+                  <TouchableOpacity style={[styles.controlBtn, styles.resetBtn]} onPress={reset}>
                     <Ionicons name="refresh" size={24} color="#FFF" />
                     <Text style={styles.controlBtnText}>{isRTL ? 'إعادة' : 'Reset'}</Text>
                   </TouchableOpacity>
@@ -383,33 +251,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#3A3A3A',
   },
-  miniTimer: {
-    position: 'absolute',
-    bottom: 80,
-    right: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#E74C3C',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 24,
-    zIndex: 999,
-    ...SHADOWS.medium,
-  },
-  miniTimerText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '700',
-    fontFamily: 'NotoNaskhArabic_700Bold',
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   modalOverlayFlashRed: {
-    backgroundColor: 'rgba(231, 76, 60, 0.45)', // visible red tint
+    backgroundColor: 'rgba(231, 76, 60, 0.45)',
   },
   modalContent: {
     backgroundColor: '#FFFFF0',
@@ -422,7 +270,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 6,
     borderTopColor: '#E74C3C',
   },
-  // --- Visual Alert Banner (for hearing-impaired users) ---
   flashBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -433,23 +280,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: '#C0392B',
   },
-  flashBannerRed: {
-    backgroundColor: '#E74C3C',
-  },
-  flashBannerYellow: {
-    backgroundColor: '#FFD700',
-  },
-  flashBannerIcon: {
-    fontSize: 32,
-  },
+  flashBannerRed: { backgroundColor: '#E74C3C' },
+  flashBannerYellow: { backgroundColor: '#FFD700' },
+  flashBannerIcon: { fontSize: 32 },
   flashBannerText: {
     fontSize: 26,
     fontWeight: '900',
     color: '#FFFFFF',
     fontFamily: 'NotoNaskhArabic_700Bold',
-    textShadowColor: 'rgba(0,0,0,0.4)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -465,11 +303,27 @@ const styles = StyleSheet.create({
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
   },
-  closeButton: {
-    padding: SPACING.xs,
+  closeButton: { padding: SPACING.xs },
+  rtlText: { textAlign: 'right' },
+  floatHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: '#FFF8DC',
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: '#E8C56B',
   },
-  rtlText: {
-    textAlign: 'right',
+  floatHintText: {
+    flex: 1,
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 12,
+    color: '#1A1A2E',
+    lineHeight: 18,
   },
   timerDisplay: {
     alignItems: 'center',
@@ -540,9 +394,7 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     fontWeight: '600',
   },
-  presetTextActive: {
-    color: '#FFF',
-  },
+  presetTextActive: { color: '#FFF' },
   customTime: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -550,9 +402,7 @@ const styles = StyleSheet.create({
     gap: SPACING.xl,
     marginTop: SPACING.lg,
   },
-  adjustButton: {
-    padding: 4,
-  },
+  adjustButton: { padding: 4 },
   customTimeText: {
     fontSize: FONTS.sizes.xxl,
     fontWeight: '700',
@@ -595,15 +445,9 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg,
     ...SHADOWS.medium,
   },
-  pauseBtn: {
-    backgroundColor: '#FF9800',
-  },
-  resumeBtn: {
-    backgroundColor: '#4CAF50',
-  },
-  resetBtn: {
-    backgroundColor: '#F44336',
-  },
+  pauseBtn: { backgroundColor: '#FF9800' },
+  resumeBtn: { backgroundColor: '#4CAF50' },
+  resetBtn: { backgroundColor: '#F44336' },
   controlBtnText: {
     color: '#FFF',
     fontSize: FONTS.sizes.lg,

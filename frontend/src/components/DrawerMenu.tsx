@@ -1,12 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Switch } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Switch, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { FONTS, SPACING, BORDER_RADIUS } from '../constants/theme';
-import { openStorePage } from '../utils/reviewTracker';
+import { openStorePage, openFeedbackEmail, markRated } from '../utils/reviewTracker';
 
 const APP_LOGO = require('../../assets/images/logo.png');
 
@@ -17,9 +18,47 @@ interface DrawerMenuProps {
 
 export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
   const router = useRouter();
-  const { language, t, isRTL } = useLanguage();
+  const { language, isRTL } = useLanguage();
+  const { enabled: a11yEnabled, toggle: toggleA11y, fontScale } = useAccessibility();
+  const [inlineRating, setInlineRating] = useState(0);
+  const [submittingRating, setSubmittingRating] = useState(false);
 
   if (!isVisible) return null;
+
+  // ----- Localized strings -----
+  const L = {
+    ar: {
+      seniorMode: 'وضع كبار السن',
+      seniorModeOn: 'مفعّل — خط أكبر وتباين أعلى',
+      seniorModeOff: 'تكبير الخط للقراءة المريحة',
+      rateTitle: 'كيف وجدتِ تجربتكِ؟',
+      rateSubtitle: 'تقييمكِ يساعد المطبخ ينمو',
+      rateSubmit: 'إرسال التقييم',
+      rateSelect: 'اختاري عدد النجوم',
+      thanks: '🌹 شكراً يا ست الكل',
+    },
+    en: {
+      seniorMode: 'Senior Mode',
+      seniorModeOn: 'On — larger text & higher contrast',
+      seniorModeOff: 'Larger text for comfortable reading',
+      rateTitle: 'How was your experience?',
+      rateSubtitle: 'Your rating helps us grow',
+      rateSubmit: 'Submit rating',
+      rateSelect: 'Tap a star',
+      thanks: '🌹 Thank you',
+    },
+    sv: {
+      seniorMode: 'Seniorläge',
+      seniorModeOn: 'På — större text & högre kontrast',
+      seniorModeOff: 'Större text för bekväm läsning',
+      rateTitle: 'Hur var din upplevelse?',
+      rateSubtitle: 'Ditt betyg hjälper oss att växa',
+      rateSubmit: 'Skicka betyg',
+      rateSelect: 'Välj stjärnor',
+      thanks: '🌹 Tack',
+    },
+  } as const;
+  const tr = L[language] || L.ar;
 
   const menuItems = [
     {
@@ -54,14 +93,6 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
       icon: 'shield-checkmark-outline',
       route: '/privacy',
     },
-    {
-      id: 'rate',
-      label_ar: 'ادعمي المطبخ الحلبي بتقييمكِ',
-      label_en: 'Support us with your review',
-      label_sv: 'Stöd oss med din recension',
-      icon: 'star-outline',
-      route: '__rate__', // Special — opens store URL instead of navigating
-    },
   ];
 
   const getLabel = (item: typeof menuItems[0]) => {
@@ -73,20 +104,57 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
   };
 
   const handleNavigation = (route: string) => {
-    if (route === '__rate__') {
-      onClose();
-      // Slight delay so drawer closes smoothly before opening external URL
-      setTimeout(() => { openStorePage(); }, 200);
-      return;
-    }
     onClose();
     router.push(route as any);
   };
 
+  // -- Senior Mode toggle handler --
+  const handleA11yToggle = async () => {
+    if (Platform.OS !== 'web') {
+      try { Haptics.selectionAsync(); } catch {}
+    }
+    await toggleA11y();
+  };
+
+  // -- Inline rating handlers --
+  const handleStarTap = (n: number) => {
+    if (Platform.OS !== 'web') {
+      try { Haptics.selectionAsync(); } catch {}
+    }
+    setInlineRating(n);
+  };
+
+  const handleRatingSubmit = async () => {
+    if (inlineRating === 0 || submittingRating) return;
+    setSubmittingRating(true);
+    try {
+      await markRated();
+      if (Platform.OS !== 'web') {
+        try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); } catch {}
+      }
+      // Slight delay so user sees the gold flash
+      setTimeout(async () => {
+        if (inlineRating >= 4) {
+          await openStorePage();
+        } else {
+          await openFeedbackEmail(inlineRating, language as 'ar' | 'en' | 'sv');
+        }
+        setInlineRating(0);
+        setSubmittingRating(false);
+        onClose();
+      }, 700);
+    } catch {
+      setSubmittingRating(false);
+    }
+  };
+
+  // Apply Senior Mode font scaling locally on labels
+  const scale = (s: number) => Math.round(s * fontScale);
+
   return (
     <View style={styles.overlay}>
       <TouchableOpacity style={styles.backdrop} onPress={onClose} activeOpacity={1} />
-      
+
       <View style={[styles.drawer, isRTL ? styles.drawerRTL : styles.drawerLTR]}>
         <LinearGradient
           colors={['#FFDA47', '#FFD700', '#E0B000']}
@@ -96,49 +164,103 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
         >
           <Image source={APP_LOGO} style={styles.logo} resizeMode="contain" />
           <View style={styles.headerText}>
-            <Text style={styles.headerTitle}>المطبخ الحلبي السوري</Text>
-            <Text style={styles.headerSubtitle}>Aleppo Syrian Kitchen</Text>
-            <Text style={styles.headerAbbr}>ASK</Text>
+            <Text style={[styles.headerTitle, { fontSize: scale(FONTS.sizes.lg) }]}>المطبخ الحلبي السوري</Text>
+            <Text style={[styles.headerSubtitle, { fontSize: scale(FONTS.sizes.sm) }]}>Aleppo Syrian Kitchen</Text>
+            <Text style={[styles.headerAbbr, { fontSize: scale(FONTS.sizes.sm) }]}>ASK</Text>
           </View>
         </LinearGradient>
 
-        <ScrollView style={styles.menuList}>
-          {menuItems.map((item) => {
-            const isRate = item.id === 'rate';
-            return (
-              <TouchableOpacity
-                key={item.id}
+        <ScrollView style={styles.menuList} contentContainerStyle={{ paddingBottom: 16 }}>
+          {/* Standard menu items */}
+          {menuItems.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[styles.menuItem, isRTL && styles.menuItemRTL]}
+              onPress={() => handleNavigation(item.route)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={getLabel(item)}
+            >
+              <Ionicons name={item.icon as any} size={scale(24)} color="#DAA520" />
+              <Text
                 style={[
-                  styles.menuItem,
-                  isRTL && styles.menuItemRTL,
-                  isRate && styles.rateItem,
+                  styles.menuLabel,
+                  isRTL && styles.menuLabelRTL,
+                  { fontSize: scale(FONTS.sizes.lg) },
                 ]}
-                onPress={() => handleNavigation(item.route)}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-                accessibilityLabel={getLabel(item)}
               >
-                <Ionicons
-                  name={item.icon as any}
-                  size={isRate ? 26 : 24}
-                  color={isRate ? '#B8860B' : '#DAA520'}
-                />
-                <Text
-                  style={[
-                    styles.menuLabel,
-                    isRTL && styles.menuLabelRTL,
-                    isRate && styles.rateLabel,
-                  ]}
+                {getLabel(item)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+
+          {/* ---- Senior Mode (Accessibility) toggle ---- */}
+          <View style={[styles.a11yRow, isRTL && styles.a11yRowRTL]}>
+            <View style={[styles.a11yIconWrap, a11yEnabled && styles.a11yIconWrapActive]}>
+              <Ionicons name="accessibility" size={scale(22)} color={a11yEnabled ? '#FFFFFF' : '#1A1A2E'} />
+            </View>
+            <View style={styles.a11yTextCol}>
+              <Text style={[styles.a11yTitle, isRTL && styles.alignEnd, { fontSize: scale(15) }]}>
+                {tr.seniorMode}
+              </Text>
+              <Text style={[styles.a11ySubtitle, isRTL && styles.alignEnd, { fontSize: scale(11) }]}>
+                {a11yEnabled ? tr.seniorModeOn : tr.seniorModeOff}
+              </Text>
+            </View>
+            <Switch
+              value={a11yEnabled}
+              onValueChange={handleA11yToggle}
+              trackColor={{ false: '#E0E0E0', true: '#FFD700' }}
+              thumbColor={a11yEnabled ? '#1A1A2E' : '#FFFFFF'}
+              ios_backgroundColor="#E0E0E0"
+            />
+          </View>
+
+          {/* ---- Inline (non-popup) rating ---- */}
+          <View style={styles.ratingCard}>
+            <Text style={[styles.ratingTitle, { fontSize: scale(15) }]} numberOfLines={2}>
+              {tr.rateTitle}
+            </Text>
+            <Text style={[styles.ratingSubtitle, { fontSize: scale(11) }]} numberOfLines={2}>
+              {inlineRating === 0 ? tr.rateSelect : tr.rateSubtitle}
+            </Text>
+            <View style={styles.starsRow}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <TouchableOpacity
+                  key={n}
+                  onPress={() => handleStarTap(n)}
+                  hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
+                  style={styles.starBtn}
+                  activeOpacity={0.6}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${n} ${language === 'ar' ? 'نجوم' : language === 'sv' ? 'stjärnor' : 'stars'}`}
                 >
-                  {getLabel(item)}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+                  <Ionicons
+                    name={n <= inlineRating ? 'star' : 'star-outline'}
+                    size={scale(28)}
+                    color={n <= inlineRating ? '#FFD700' : '#A8A29A'}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity
+              style={[
+                styles.submitRatingBtn,
+                inlineRating === 0 && styles.submitRatingBtnDisabled,
+              ]}
+              onPress={handleRatingSubmit}
+              disabled={inlineRating === 0 || submittingRating}
+              activeOpacity={0.85}
+            >
+              <Text style={[styles.submitRatingText, { fontSize: scale(13) }]}>
+                {submittingRating ? tr.thanks : tr.rateSubmit}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>© 2026 ASK</Text>
+          <Text style={[styles.footerText, { fontSize: scale(FONTS.sizes.sm) }]}>© 2026 ASK</Text>
         </View>
       </View>
     </View>
@@ -148,113 +270,169 @@ export default function DrawerMenu({ isVisible, onClose }: DrawerMenuProps) {
 const styles = StyleSheet.create({
   overlay: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    top: 0, left: 0, right: 0, bottom: 0,
     zIndex: 1000,
   },
   backdrop: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   drawer: {
     position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: '75%',
-    maxWidth: 300,
+    top: 0, bottom: 0,
+    width: '78%',
+    maxWidth: 320,
     backgroundColor: '#FFFFF0',
   },
-  drawerLTR: {
-    left: 0,
-  },
-  drawerRTL: {
-    right: 0,
-  },
+  drawerLTR: { left: 0 },
+  drawerRTL: { right: 0 },
   header: {
     paddingTop: 50,
-    paddingBottom: SPACING.xl,
+    paddingBottom: SPACING.lg,
     paddingHorizontal: SPACING.lg,
     alignItems: 'center',
   },
   logo: {
-    width: 80,
-    height: 80,
-    marginBottom: SPACING.md,
+    width: 70,
+    height: 70,
+    marginBottom: SPACING.sm,
   },
-  headerText: {
-    alignItems: 'center',
-  },
+  headerText: { alignItems: 'center' },
   headerTitle: {
-    fontSize: FONTS.sizes.lg,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
-    color: '#3A3A3A',
+    color: '#1A1A2E',
   },
   headerSubtitle: {
-    fontSize: FONTS.sizes.sm,
-    color: '#3A3A3A',
+    color: '#1A1A2E',
     marginTop: 2,
   },
   headerAbbr: {
-    fontSize: FONTS.sizes.sm,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
-    color: '#3A3A3A',
+    color: '#1A1A2E',
     letterSpacing: 2,
     marginTop: 4,
   },
-  menuList: {
-    flex: 1,
-    paddingTop: SPACING.lg,
-  },
+  menuList: { flex: 1, paddingTop: SPACING.md },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: SPACING.lg,
-    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: '#E8E0C8',
   },
-  menuItemRTL: {
-    flexDirection: 'row-reverse',
-  },
+  menuItemRTL: { flexDirection: 'row-reverse' },
   menuLabel: {
-    fontSize: FONTS.sizes.lg,
-    color: '#3A3A3A',
+    color: '#1A1A2E',
     marginLeft: SPACING.lg,
     fontWeight: FONTS.weights.medium,
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
   },
-  menuLabelRTL: {
-    marginLeft: 0,
-    marginRight: SPACING.lg,
-  },
-  rateItem: {
+  menuLabelRTL: { marginLeft: 0, marginRight: SPACING.lg },
+
+  // ---- Senior Mode toggle ----
+  a11yRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     backgroundColor: '#FFF8DC',
     marginHorizontal: SPACING.md,
-    marginVertical: SPACING.sm,
+    marginTop: SPACING.md,
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1.5,
     borderColor: '#E8C56B',
-    borderBottomWidth: 1.5,
+    gap: SPACING.sm,
   },
-  rateLabel: {
+  a11yRowRTL: { flexDirection: 'row-reverse' },
+  a11yIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#FFE89A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#DAA520',
+  },
+  a11yIconWrapActive: {
+    backgroundColor: '#1A1A2E',
+    borderColor: '#FFD700',
+  },
+  a11yTextCol: { flex: 1 },
+  a11yTitle: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: '700',
-    color: '#B8860B',
+    color: '#1A1A2E',
   },
+  a11ySubtitle: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    color: '#5A4A1A',
+    marginTop: 1,
+  },
+  alignEnd: { textAlign: 'right' },
+
+  // ---- Inline rating card ----
+  ratingCard: {
+    marginHorizontal: SPACING.md,
+    marginTop: SPACING.md,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    backgroundColor: '#FFFEF5',
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1.5,
+    borderColor: '#FFD700',
+    alignItems: 'center',
+  },
+  ratingTitle: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: '700',
+    color: '#1A1A2E',
+    textAlign: 'center',
+  },
+  ratingSubtitle: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    color: '#5A4A1A',
+    marginTop: 2,
+    textAlign: 'center',
+  },
+  starsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 2,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.sm,
+  },
+  starBtn: { padding: 3 },
+  submitRatingBtn: {
+    width: '100%',
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: '#FFD700',
+    borderWidth: 1.5,
+    borderColor: '#DAA520',
+    alignItems: 'center',
+  },
+  submitRatingBtnDisabled: {
+    backgroundColor: '#F0EBD8',
+    borderColor: '#D8D2BD',
+    opacity: 0.6,
+  },
+  submitRatingText: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: '700',
+    color: '#1A1A2E',
+  },
+
   footer: {
-    padding: SPACING.lg,
+    padding: SPACING.md,
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
   },
-  footerText: {
-    fontSize: FONTS.sizes.sm,
-    color: '#6A6A6A',
-  },
+  footerText: { color: '#6A6A6A' },
 });

@@ -5,6 +5,8 @@ import { LanguageProvider } from '../src/context/LanguageContext';
 import { FavoritesProvider } from '../src/context/FavoritesContext';
 import { AdminProvider } from '../src/context/AdminContext';
 import { AccessibilityProvider } from '../src/context/AccessibilityContext';
+import { TimerProvider } from '../src/context/TimerContext';
+import FloatingTimer from '../src/components/FloatingTimer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -81,22 +83,28 @@ export default function RootLayout() {
         <LanguageProvider>
           <FavoritesProvider>
             <AdminProvider>
-              <StatusBar style="dark" backgroundColor="#FFDA47" />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: '#FFFFF0' },
-                  animation: 'slide_from_right',
-                }}
-              >
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="category/[id]" />
-                <Stack.Screen name="recipe/[id]" />
-                <Stack.Screen name="contact" />
-                <Stack.Screen name="about" />
-                <Stack.Screen name="search" />
-                <Stack.Screen name="qrcodes" />
-              </Stack>
+              <TimerProvider>
+                <View style={styles.container}>
+                  <StatusBar style="dark" backgroundColor="#FFDA47" />
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      contentStyle: { backgroundColor: '#FFFFF0' },
+                      animation: 'slide_from_right',
+                    }}
+                  >
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="category/[id]" />
+                    <Stack.Screen name="recipe/[id]" />
+                    <Stack.Screen name="contact" />
+                    <Stack.Screen name="about" />
+                    <Stack.Screen name="search" />
+                    <Stack.Screen name="qrcodes" />
+                  </Stack>
+                  {/* Floating cooking-timer bubble — visible on every screen */}
+                  <FloatingTimer />
+                </View>
+              </TimerProvider>
             </AdminProvider>
           </FavoritesProvider>
         </LanguageProvider>
