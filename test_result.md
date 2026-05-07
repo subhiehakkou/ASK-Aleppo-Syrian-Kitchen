@@ -264,14 +264,16 @@ frontend:
 
 metadata:
   created_by: "main_agent"
-  version: "1.1"
-  test_sequence: 2
+  version: "1.2.0"
+  test_sequence: 3
   run_ui: false
 
 test_plan:
   current_focus:
-    - "Floating timer bubble (mobile device verification recommended)"
-    - "Senior Mode font scaling on real device"
+    - "Continuous timer alarm (audio + vibration + visual flash) until manual stop"
+    - "Onboarding flow with 3 accessibility modes on first launch"
+    - "♿ Accessibility mode picker in side drawer"
+    - "About-page accessibility section"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -281,3 +283,5 @@ agent_communication:
       message: "Completed comprehensive testing of all Aleppo Syrian Kitchen API endpoints. All 8 backend endpoints are working correctly with proper multilingual support and data validation. Database contains 11 categories and 75 recipes as expected. All responses return valid JSON. No critical issues found."
     - agent: "main"
       message: "Implemented major UX upgrades: (1) GLOBAL floating timer that survives navigation, (2) restructured recipe header per user spec, (3) in-app Senior Mode (replaces native VoiceOver that crashed user's phone), (4) inline rating card in drawer, (5) restored drawer menu. All verified visually via screenshots — recipe header layout is symmetric and clean, drawer shows new senior mode toggle + 5-star inline rating, timer counts down correctly. Floating bubble verified working in code (TimerContext at root); on web testing tool, page.goto causes hard reload which loses React Context — on real iOS/Android devices the bubble persists across screens."
+    - agent: "main"
+      message: "v1.2.0 release prep — accessibility & timer overhaul: (1) Timer alarm now LOOPS continuously (audio + vibration + visual flash) until user taps the giant full-screen 'إيقاف الإنذار / STOP ALARM' button. Audio uses isLooping=true, vibration uses repeat pattern, visual flash interval has no timeout. (2) New unified Onboarding screen on first launch with 3 modes: 🍽️ Normal, 👁️‍🗨️ Low-vision (large fonts + high contrast), ♿ Blind users (TalkBack/VoiceOver instructions panel). Tagline added: 'نكهات الأصالة من حلب - سوريا'. (3) AccessibilityContext extended to support mode='normal'|'low_vision'|'screen_reader' (legacy enabled/fontScale/highContrast still exposed). (4) DrawerMenu fully refactored to use Unicode emojis instead of Ionicons (per recurring crash). New ♿ accessibility row at top opens a modal mode picker. (5) About page gets new highlighted '♿ تطبيقنا يخدم كل فئات المجتمع' section listing how the app serves elderly/low-vision/blind/deaf users. (6) app.json bumped to v1.2.0 (Android versionCode 6, iOS buildNumber 16). EAS Preview Android build queued: https://expo.dev/accounts/sabah1960/projects/ask-aleppo-syrian-kitchen/builds/b925c708-332c-4bf0-bdb4-9c834e558ea6"

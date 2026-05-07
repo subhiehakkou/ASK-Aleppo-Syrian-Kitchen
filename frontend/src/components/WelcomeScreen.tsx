@@ -1,4 +1,20 @@
-import React from 'react';
+/**
+ * WelcomeScreen.tsx — UNIFIED Onboarding (v2)
+ *
+ * Combines the original tri-lingual welcome message with an accessibility
+ * mode picker (per Ms Sabah's product spec). Shown ONLY on first launch.
+ *
+ * Three modes the user can pick from:
+ *    🍽️  الوضع العادي / Normal
+ *    👁️‍🗨️  ضعاف البصر / Low Vision (large fonts + high contrast)
+ *    ♿  المكفوفين / Blind users (TalkBack-friendly + large fonts + contrast)
+ *
+ * Picking ♿ shows an extra info panel teaching the user how to enable
+ * TalkBack/VoiceOver from the system settings, plus how to silence them
+ * via Google Assistant / Siri.
+ */
+
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,55 +22,66 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { A11yMode } from '../context/AccessibilityContext';
 
 const APP_LOGO = require('../../assets/images/logo.png');
 
-const TEXTS = [
+interface WelcomeScreenProps {
+  onContinue: (mode: A11yMode) => void;
+}
+
+const MODE_OPTIONS: {
+  key: A11yMode;
+  emoji: string;
+  ar: string;
+  en: string;
+  sv: string;
+  arDesc: string;
+  enDesc: string;
+}[] = [
   {
-    lang: 'ar',
-    text: 'هذا التطبيق سيفتح لك أبواب أسرار تراث الطهي الحلبي الأصيل، بوصفات دقيقة ونكهات مميزة لن تنساها.',
-    color: '#FFD700',
-    direction: 'rtl' as const,
-    fontStyle: 'NotoNaskhArabic_700Bold',
-    fontSize: 16,
-    lineHeight: 28,
+    key: 'normal',
+    emoji: '🍽️',
+    ar: 'الوضع العادي',
+    en: 'Normal mode',
+    sv: 'Normalt läge',
+    arDesc: 'تجربة الطبخ الكلاسيكية',
+    enDesc: 'Standard cooking experience',
   },
   {
-    lang: 'en',
-    text: 'This app will unlock the secrets of authentic Aleppo culinary heritage, with precise recipes and distinctive flavours you will never forget.',
-    color: '#FFFFF0',
-    direction: 'ltr' as const,
-    fontStyle: 'NotoNaskhArabic_600SemiBold',
-    fontSize: 14,
-    lineHeight: 22,
+    key: 'low_vision',
+    emoji: '👁️‍🗨️',
+    ar: 'وضع ضعاف البصر',
+    en: 'Low-vision mode',
+    sv: 'Synnedsättning',
+    arDesc: 'خط كبير وألوان عالية التباين',
+    enDesc: 'Large fonts + high-contrast colours',
   },
   {
-    lang: 'sv',
-    text: 'Den här appen kommer att låsa upp hemligheterna bakom Aleppos autentiska kulinariska arv, med precisa recept och distinkta smaker som du aldrig kommer att glömma.',
-    color: '#C4A265',
-    direction: 'ltr' as const,
-    fontStyle: 'NotoNaskhArabic_400Regular',
-    fontSize: 14,
-    lineHeight: 22,
+    key: 'screen_reader',
+    emoji: '♿',
+    ar: 'وضع المكفوفين',
+    en: 'Blind-user mode',
+    sv: 'För blinda användare',
+    arDesc: 'دعم كامل لقارئ الشاشة (TalkBack / VoiceOver)',
+    enDesc: 'Full screen-reader support (TalkBack / VoiceOver)',
   },
 ];
 
-interface WelcomeScreenProps {
-  onContinue: () => void;
-}
-
 export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
   const insets = useSafeAreaInsets();
+  const [selected, setSelected] = useState<A11yMode>('normal');
+  const [showSrInfo, setShowSrInfo] = useState(false);
 
   return (
     <View style={styles.container}>
       <LinearGradient
         colors={['#1A1A2E', '#16213E', '#0F3460']}
-        style={[styles.gradient, { paddingTop: insets.top + 10, paddingBottom: insets.bottom + 10 }]}
+        style={[styles.gradient, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 8 }]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0.5, y: 1 }}
       >
@@ -63,79 +90,124 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
-          {/* Top decorative line */}
-          <View style={styles.topDecor}>
+          {/* Header */}
+          <View style={styles.titleContainer}>
+            <View style={styles.logoRow}>
+              <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
+              <View>
+                <Text style={styles.titleTextAr}>المطبخ الحلبي السوري</Text>
+                <Text style={styles.titleTextEn}>A·S·K</Text>
+              </View>
+              <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
+            </View>
+            <Text style={styles.tagline}>نكهات الأصالة من حلب - سوريا</Text>
+            <Text style={styles.taglineEn}>Authentic flavours from Aleppo · Syria</Text>
+          </View>
+
+          {/* Divider */}
+          <View style={styles.divider}>
             <LinearGradient
               colors={['transparent', '#FFD700', 'transparent']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.decorLine}
+              style={styles.dividerGradient}
             />
           </View>
 
-          {/* App Title */}
-          <View style={styles.titleContainer}>
-            <Text style={styles.titleTextAr}>المطبخ الحلبي السوري</Text>
-            <View style={styles.logoRow}>
-              <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
-              <Text style={styles.titleTextEn}>A S K</Text>
-              <Image source={APP_LOGO} style={styles.titleLogo} resizeMode="contain" />
-            </View>
-            <Text style={styles.titleSubtext}>Aleppo Syrian Kitchen</Text>
+          {/* Welcome message tri-lingual (compact) */}
+          <View style={styles.welcomeBlock}>
+            <Text style={styles.welcomeAr}>
+              أهلاً وسهلاً — يفتح لكِ تطبيقنا أبواب أسرار التراث الحلبي.
+            </Text>
+            <Text style={styles.welcomeEn}>
+              Welcome — discover the secrets of Aleppo's authentic culinary heritage.
+            </Text>
+            <Text style={styles.welcomeSv}>
+              Välkommen — upptäck Aleppos autentiska matkultur.
+            </Text>
           </View>
 
-          {/* All 3 languages at once */}
-          <View style={styles.contentArea}>
-            {TEXTS.map((item, index) => (
-              <React.Fragment key={item.lang}>
-                {index > 0 && (
-                  <View style={styles.separatorContainer}>
-                    <View style={styles.separatorLine}>
-                      <LinearGradient
-                        colors={['transparent', '#FFD70080', 'transparent']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.separatorGradient}
-                      />
-                    </View>
-                    <Text style={styles.diamondText}>◆</Text>
-                    <View style={styles.separatorLine}>
-                      <LinearGradient
-                        colors={['transparent', '#FFD70080', 'transparent']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.separatorGradient}
-                      />
-                    </View>
+          {/* Mode picker */}
+          <View style={styles.pickerWrap}>
+            <Text style={styles.pickerTitle}>كيف تحبّين أن تبدو واجهتك؟</Text>
+            <Text style={styles.pickerSubtitle}>How would you like the app to appear?</Text>
+
+            {MODE_OPTIONS.map((opt) => {
+              const active = selected === opt.key;
+              return (
+                <TouchableOpacity
+                  key={opt.key}
+                  activeOpacity={0.85}
+                  style={[styles.optionCard, active && styles.optionCardActive]}
+                  onPress={() => {
+                    setSelected(opt.key);
+                    setShowSrInfo(opt.key === 'screen_reader');
+                  }}
+                  accessible={true}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: active }}
+                  accessibilityLabel={`${opt.ar}. ${opt.arDesc}`}
+                >
+                  <Text style={styles.optionEmoji}>{opt.emoji}</Text>
+                  <View style={styles.optionTextWrap}>
+                    <Text style={[styles.optionTitle, active && styles.optionTitleActive]}>
+                      {opt.ar}
+                    </Text>
+                    <Text style={[styles.optionDesc, active && styles.optionDescActive]}>
+                      {opt.arDesc}
+                    </Text>
+                    <Text style={[styles.optionEn, active && styles.optionEnActive]}>
+                      {opt.en} · {opt.sv}
+                    </Text>
                   </View>
-                )}
-                <View style={styles.textBlock}>
-                  <Text
-                    style={[
-                      styles.messageText,
-                      {
-                        color: item.color,
-                        textAlign: item.direction === 'rtl' ? 'right' : 'left',
-                        writingDirection: item.direction,
-                        fontFamily: item.fontStyle,
-                        fontSize: item.fontSize,
-                        lineHeight: item.lineHeight,
-                      },
-                    ]}
-                  >
-                    {item.text}
+                  <View style={[styles.radioOuter, active && styles.radioOuterActive]}>
+                    {active && <View style={styles.radioInner} />}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+
+            {/* Screen-reader info panel */}
+            {showSrInfo && (
+              <View style={styles.srInfoBox}>
+                <Text style={styles.srInfoTitle}>♿ تعليمات قارئ الشاشة</Text>
+                <Text style={styles.srInfoText}>
+                  لقراءة محتوى التطبيق بالصوت، فعّلي خاصية قارئ الشاشة من إعدادات جوالك:
+                </Text>
+                <View style={styles.srInfoBlock}>
+                  <Text style={styles.srInfoLabel}>• Android (TalkBack):</Text>
+                  <Text style={styles.srInfoLine}>
+                    الإعدادات ← الوصول ← TalkBack ← فعّل
+                  </Text>
+                  <Text style={styles.srInfoLine}>
+                    أو قولي: «OK Google، شغّل TalkBack»
                   </Text>
                 </View>
-              </React.Fragment>
-            ))}
+                <View style={styles.srInfoBlock}>
+                  <Text style={styles.srInfoLabel}>• iPhone (VoiceOver):</Text>
+                  <Text style={styles.srInfoLine}>
+                    الإعدادات ← الوصول ← VoiceOver ← فعّل
+                  </Text>
+                  <Text style={styles.srInfoLine}>
+                    أو قولي: «Hey Siri، شغّل VoiceOver»
+                  </Text>
+                </View>
+                <Text style={styles.srInfoFootnote}>
+                  💡 لإيقاف القارئ بالصوت: «أوقف TalkBack» / «Stop VoiceOver»
+                </Text>
+              </View>
+            )}
           </View>
 
-          {/* Enter Button — always available */}
+          {/* Enter button */}
           <View style={styles.controlsContainer}>
             <TouchableOpacity
               style={styles.enterButton}
-              onPress={onContinue}
+              onPress={() => onContinue(selected)}
               activeOpacity={0.8}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="ابدأ الطبخ"
             >
               <LinearGradient
                 colors={['#FFD700', '#E0B000', '#DAA520']}
@@ -143,20 +215,13 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
                 end={{ x: 1, y: 1 }}
                 style={styles.enterGradient}
               >
-                <Text style={styles.enterText}>دخول · Enter · Gå in</Text>
-                <Ionicons name="arrow-forward" size={20} color="#1A1A2E" style={{ marginLeft: 8 }} />
+                <Text style={styles.enterText}>ابدأ الطبخ · Start · Börja</Text>
+                <Text style={styles.enterArrow}>←</Text>
               </LinearGradient>
             </TouchableOpacity>
-          </View>
-
-          {/* Bottom decorative line */}
-          <View style={styles.bottomDecor}>
-            <LinearGradient
-              colors={['transparent', '#FFD70050', 'transparent']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.decorLine}
-            />
+            <Text style={styles.hintBelow}>
+              يمكنكِ تغيير الوضع لاحقاً من القائمة الجانبية
+            </Text>
           </View>
         </ScrollView>
       </LinearGradient>
@@ -165,110 +230,238 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1A1A2E',
-  },
-  gradient: {
-    flex: 1,
-  },
+  container: { flex: 1, backgroundColor: '#1A1A2E' },
+  gradient: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
   },
-  topDecor: {
-    width: '80%',
-    height: 2,
-    marginBottom: 16,
-  },
-  bottomDecor: {
-    width: '60%',
-    height: 1,
-    marginTop: 16,
-  },
-  decorLine: {
-    flex: 1,
-    height: '100%',
-  },
+
+  // ----- Title block -----
   titleContainer: {
     alignItems: 'center',
-    marginBottom: 14,
+    marginTop: 4,
+    marginBottom: 8,
   },
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 14,
+    gap: 12,
     marginVertical: 2,
   },
-  titleLogo: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
+  titleLogo: { width: 40, height: 40, borderRadius: 20 },
   titleTextAr: {
     fontFamily: 'NotoNaskhArabic_700Bold',
-    fontSize: 26,
+    fontSize: 22,
     color: '#FFD700',
     textAlign: 'center',
-    letterSpacing: 1,
+    letterSpacing: 0.6,
   },
   titleTextEn: {
     fontFamily: 'NotoNaskhArabic_700Bold',
-    fontSize: 32,
-    color: '#FFD700',
-    textAlign: 'center',
-    letterSpacing: 8,
-    marginTop: -4,
-  },
-  titleSubtext: {
-    fontFamily: 'NotoNaskhArabic_600SemiBold',
     fontSize: 18,
     color: '#FFD700',
     textAlign: 'center',
-    letterSpacing: 2,
+    letterSpacing: 4,
+    marginTop: -2,
+  },
+  tagline: {
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontSize: 15,
+    color: '#FFD700',
+    textAlign: 'center',
+    marginTop: 8,
+    letterSpacing: 0.4,
+  },
+  taglineEn: {
+    fontFamily: 'NotoNaskhArabic_500Medium',
+    fontSize: 12,
+    color: '#C4A265',
+    textAlign: 'center',
     marginTop: 2,
+    letterSpacing: 0.8,
   },
-  contentArea: {
-    width: '100%',
+
+  // ----- Divider -----
+  divider: { width: '70%', height: 2, alignSelf: 'center', marginVertical: 10 },
+  dividerGradient: { flex: 1, height: '100%' },
+
+  // ----- Welcome block -----
+  welcomeBlock: {
     paddingHorizontal: 8,
-    marginVertical: 10,
+    marginBottom: 14,
   },
-  textBlock: {
-    paddingVertical: 6,
-    paddingHorizontal: 4,
+  welcomeAr: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 14,
+    color: '#FFD700',
+    textAlign: 'right',
+    writingDirection: 'rtl',
+    lineHeight: 22,
+    marginBottom: 6,
   },
-  messageText: {
-    letterSpacing: 0.3,
+  welcomeEn: {
+    fontFamily: 'NotoNaskhArabic_500Medium',
+    fontSize: 12,
+    color: '#FFFFF0',
+    textAlign: 'left',
+    lineHeight: 18,
+    marginBottom: 4,
   },
-  separatorContainer: {
+  welcomeSv: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 12,
+    color: '#C4A265',
+    textAlign: 'left',
+    lineHeight: 18,
+  },
+
+  // ----- Picker -----
+  pickerWrap: {
+    paddingTop: 4,
+  },
+  pickerTitle: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 17,
+    color: '#FFD700',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  pickerSubtitle: {
+    fontFamily: 'NotoNaskhArabic_500Medium',
+    fontSize: 12,
+    color: '#C4A265',
+    textAlign: 'center',
+    marginBottom: 12,
+    letterSpacing: 0.4,
+  },
+  optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10,
+    gap: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,215,0,0.25)',
+    marginBottom: 10,
   },
-  separatorLine: {
-    height: 1,
-    width: '35%',
-    overflow: 'hidden',
+  optionCardActive: {
+    backgroundColor: 'rgba(255,215,0,0.18)',
+    borderColor: '#FFD700',
   },
-  separatorGradient: {
+  optionEmoji: {
+    fontSize: 30,
+    width: 38,
+    textAlign: 'center',
+  },
+  optionTextWrap: {
     flex: 1,
-    height: '100%',
   },
-  diamondText: {
-    fontSize: 8,
+  optionTitle: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 16,
+    color: '#FFFFF0',
+    textAlign: 'right',
+  },
+  optionTitleActive: { color: '#FFD700' },
+  optionDesc: {
+    fontFamily: 'NotoNaskhArabic_500Medium',
+    fontSize: 12,
+    color: '#C4A265',
+    textAlign: 'right',
+    marginTop: 2,
+    lineHeight: 18,
+  },
+  optionDescActive: { color: '#FFE57F' },
+  optionEn: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 11,
+    color: '#8E7B4A',
+    textAlign: 'left',
+    marginTop: 2,
+    letterSpacing: 0.3,
+  },
+  optionEnActive: { color: '#C4A265' },
+  radioOuter: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#FFD70060',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioOuterActive: {
+    borderColor: '#FFD700',
+  },
+  radioInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#FFD700',
+  },
+
+  // ----- Screen-reader info panel -----
+  srInfoBox: {
+    backgroundColor: 'rgba(255,215,0,0.08)',
+    borderColor: '#FFD70060',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 4,
+    marginBottom: 6,
+  },
+  srInfoTitle: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 14,
     color: '#FFD700',
-    marginHorizontal: 10,
+    textAlign: 'right',
+    marginBottom: 6,
   },
+  srInfoText: {
+    fontFamily: 'NotoNaskhArabic_500Medium',
+    fontSize: 12,
+    color: '#FFFFF0',
+    textAlign: 'right',
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  srInfoBlock: {
+    marginBottom: 6,
+  },
+  srInfoLabel: {
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontSize: 12,
+    color: '#FFD700',
+    textAlign: 'right',
+    marginBottom: 2,
+  },
+  srInfoLine: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 11,
+    color: '#FFFFF0',
+    textAlign: 'right',
+    lineHeight: 16,
+    marginBottom: 1,
+  },
+  srInfoFootnote: {
+    fontFamily: 'NotoNaskhArabic_500Medium',
+    fontSize: 11,
+    color: '#C4A265',
+    textAlign: 'right',
+    marginTop: 4,
+    fontStyle: Platform.OS === 'ios' ? 'italic' : 'normal',
+  },
+
+  // ----- Controls -----
   controlsContainer: {
     alignItems: 'center',
-    width: '100%',
-    paddingTop: 14,
-    paddingBottom: 10,
+    marginTop: 16,
+    paddingBottom: 8,
   },
   enterButton: {
     borderRadius: 30,
@@ -285,11 +478,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 14,
     paddingHorizontal: 36,
+    gap: 8,
   },
   enterText: {
     fontFamily: 'NotoNaskhArabic_700Bold',
-    fontSize: 17,
+    fontSize: 16,
     color: '#1A1A2E',
-    letterSpacing: 1,
+    letterSpacing: 0.6,
+  },
+  enterArrow: {
+    fontSize: 22,
+    color: '#1A1A2E',
+    fontWeight: '900',
+  },
+  hintBelow: {
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    fontSize: 11,
+    color: '#C4A265',
+    textAlign: 'center',
+    marginTop: 8,
   },
 });

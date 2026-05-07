@@ -11,7 +11,6 @@
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { useTimer } from '../context/TimerContext';
@@ -81,7 +80,7 @@ export default function CookingTimer({
           onPress={() => setIsVisible(true)}
           activeOpacity={0.7}
         >
-          <Ionicons name="timer-outline" size={20} color="#3A3A3A" />
+          <Text style={{ fontSize: 20, color: '#3A3A3A' }}>⏲</Text>
           <Text style={styles.actionButtonText}>
             {isRunning ? formatTime(totalSeconds) : (isRTL ? 'مؤقت' : 'Timer')}
           </Text>
@@ -119,14 +118,14 @@ export default function CookingTimer({
                 {isRTL ? '⏲️ مؤقت الطبخ' : '⏲️ Cooking Timer'}
               </Text>
               <TouchableOpacity onPress={() => setIsVisible(false)} style={styles.closeButton}>
-                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+                <Text style={{ fontSize: 28, color: COLORS.textPrimary, fontWeight: '700' }}>×</Text>
               </TouchableOpacity>
             </View>
 
             {/* Hint when running */}
             {isRunning && (
               <View style={styles.floatHint}>
-                <Ionicons name="information-circle" size={16} color="#1A1A2E" />
+                <Text style={{ fontSize: 16, color: '#1A1A2E' }}>ⓘ</Text>
                 <Text style={[styles.floatHintText, isRTL && styles.rtlText]}>
                   {isRTL
                     ? 'يمكنكِ إغلاق المؤقت والتنقّل في التطبيق — سيظهر فوق الشاشة'
@@ -186,14 +185,14 @@ export default function CookingTimer({
                     style={styles.adjustButton}
                     onPress={() => setMinutes(Math.max(1, minutes - 1))}
                   >
-                    <Ionicons name="remove-circle" size={36} color={COLORS.goldDark} />
+                    <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>−</Text>
                   </TouchableOpacity>
                   <Text style={styles.customTimeText}>{minutes} {isRTL ? 'دقيقة' : 'min'}</Text>
                   <TouchableOpacity
                     style={styles.adjustButton}
                     onPress={() => setMinutes(Math.min(180, minutes + 1))}
                   >
-                    <Ionicons name="add-circle" size={36} color={COLORS.goldDark} />
+                    <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>+</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -203,7 +202,7 @@ export default function CookingTimer({
             <View style={styles.controls}>
               {!isRunning ? (
                 <TouchableOpacity style={styles.startButton} onPress={handleStart}>
-                  <Ionicons name="play" size={28} color="#FFF" />
+                  <Text style={{ fontSize: 28, color: '#FFF' }}>▶</Text>
                   <Text style={styles.startButtonText}>
                     {isRTL ? 'ابدأ' : 'Start'}
                   </Text>
@@ -212,17 +211,17 @@ export default function CookingTimer({
                 <View style={styles.runningControls}>
                   {isPaused ? (
                     <TouchableOpacity style={[styles.controlBtn, styles.resumeBtn]} onPress={resume}>
-                      <Ionicons name="play" size={24} color="#FFF" />
+                      <Text style={{ fontSize: 24, color: '#FFF' }}>▶</Text>
                       <Text style={styles.controlBtnText}>{isRTL ? 'استمر' : 'Resume'}</Text>
                     </TouchableOpacity>
                   ) : (
                     <TouchableOpacity style={[styles.controlBtn, styles.pauseBtn]} onPress={pause}>
-                      <Ionicons name="pause" size={24} color="#FFF" />
+                      <Text style={{ fontSize: 24, color: '#FFF' }}>⏸</Text>
                       <Text style={styles.controlBtnText}>{isRTL ? 'إيقاف' : 'Pause'}</Text>
                     </TouchableOpacity>
                   )}
                   <TouchableOpacity style={[styles.controlBtn, styles.resetBtn]} onPress={reset}>
-                    <Ionicons name="refresh" size={24} color="#FFF" />
+                    <Text style={{ fontSize: 24, color: '#FFF' }}>↻</Text>
                     <Text style={styles.controlBtnText}>{isRTL ? 'إعادة' : 'Reset'}</Text>
                   </TouchableOpacity>
                 </View>

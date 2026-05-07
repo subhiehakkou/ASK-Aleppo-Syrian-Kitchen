@@ -4,14 +4,15 @@
  * GLOBAL cooking-timer state. Lives at the app root so the countdown keeps
  * ticking even when the user navigates between recipes / categories / search.
  *
- * Exposes:
- *   - isRunning / isPaused / totalSeconds / initialTotal / flashAlert
- *   - start(minutes), pause(), resume(), reset()
- *   - sheetVisible / openSheet() / closeSheet() — controls the full timer UI
- *
- * The actual full-screen timer modal is still rendered by <CookingTimer/>,
- * but it now reads/writes its state from this context so it never resets when
- * the host screen unmounts.
+ * Key behaviour (v2 - per Ms Sabah's request):
+ * - When the timer hits 00:00, it triggers a CONTINUOUS alarm:
+ *      • audio (looping)
+ *      • vibration (repeating pattern)
+ *      • full-screen visual flash (for deaf users)
+ *   ALL THREE keep going forever until the user explicitly stops them
+ *   (so deaf or visually-impaired users have plenty of time to notice).
+ * - `alarmActive` exposes whether we're currently in the "ringing" state.
+ * - `stopAlarm()` silences everything and clears the timer.
  */
 
 import React, {
@@ -32,6 +33,7 @@ interface TimerContextValue {
   totalSeconds: number;
   initialTotal: number;
   flashAlert: boolean;
+  alarmActive: boolean;
 
   // sheet controls
   sheetVisible: boolean;
@@ -43,6 +45,7 @@ interface TimerContextValue {
   pause: () => void;
   resume: () => void;
   reset: () => void;
+  stopAlarm: () => void;
   formatTime: (s: number) => string;
 }
 
@@ -54,6 +57,7 @@ const TimerContext = createContext<TimerContextValue>({
   totalSeconds: 0,
   initialTotal: 0,
   flashAlert: false,
+  alarmActive: false,
   sheetVisible: false,
   openSheet: noop,
   closeSheet: noop,
@@ -61,6 +65,7 @@ const TimerContext = createContext<TimerContextValue>({
   pause: noop,
   resume: noop,
   reset: noop,
+  stopAlarm: noop,
   formatTime: (s: number) => {
     const m = Math.floor(s / 60);
     const r = s % 60;
@@ -74,17 +79,46 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [initialTotal, setInitialTotal] = useState(0);
   const [flashAlert, setFlashAlert] = useState(false);
+  const [alarmActive, setAlarmActive] = useState(false);
   const [sheetVisible, setSheetVisible] = useState(false);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const flashIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const vibrationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
+
+  // -------- helpers --------
+  const stopAllAlarms = useCallback(async () => {
+    // 1) Stop visual flash
+    if (flashIntervalRef.current) {
+      clearInterval(flashIntervalRef.current);
+      flashIntervalRef.current = null;
+    }
+    setFlashAlert(false);
+
+    // 2) Stop vibration
+    if (vibrationIntervalRef.current) {
+      clearInterval(vibrationIntervalRef.current);
+      vibrationIntervalRef.current = null;
+    }
+    try { Vibration.cancel(); } catch {}
+
+    // 3) Stop sound
+    if (soundRef.current) {
+      try { await soundRef.current.stopAsync(); } catch {}
+      try { await soundRef.current.unloadAsync(); } catch {}
+      soundRef.current = null;
+    }
+
+    setAlarmActive(false);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
+      if (vibrationIntervalRef.current) clearInterval(vibrationIntervalRef.current);
       if (soundRef.current) {
         try { soundRef.current.unloadAsync(); } catch {}
       }
@@ -92,36 +126,40 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const onTimerComplete = useCallback(async () => {
-    // 1) Haptic
-    if (Platform.OS !== 'web') {
-      try {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        for (let i = 0; i < 4; i++) {
-          await new Promise((r) => setTimeout(r, 600));
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        }
-      } catch {}
-      Vibration.vibrate([0, 800, 300, 800, 300, 800, 300, 800], false);
-    }
+    // Mark alarm as active (UI everywhere reacts to this)
+    setAlarmActive(true);
 
-    // 2) Visual flash
+    // ===== 1) Continuous Visual Flash (for deaf users) =====
+    let toggle = true;
     setFlashAlert(true);
-    let toggle = false;
     flashIntervalRef.current = setInterval(() => {
       toggle = !toggle;
       setFlashAlert(toggle);
-    }, 500);
-    setTimeout(() => {
-      if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
-      setFlashAlert(false);
-    }, 8000);
+    }, 450);
 
-    // 3) Screen-reader announce
+    // ===== 2) Continuous Vibration (for blind users) =====
+    if (Platform.OS !== 'web') {
+      try {
+        // Long repeating vibration pattern (Android only supports repeat)
+        Vibration.vibrate([0, 800, 400, 800, 400], true);
+      } catch {}
+
+      // Extra haptics every 1.5s as a safety net (esp. iOS)
+      vibrationIntervalRef.current = setInterval(() => {
+        try {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        } catch {}
+      }, 1500);
+    }
+
+    // ===== 3) Screen-reader announce =====
     try {
-      AccessibilityInfo.announceForAccessibility('انتهى وقت الطبخ! Time is up!');
+      AccessibilityInfo.announceForAccessibility(
+        'انتهى وقت الطبخ! اضغطي على إيقاف. Time is up! Tap stop.'
+      );
     } catch {}
 
-    // 4) Sound
+    // ===== 4) Continuous Sound (looping forever) =====
     try {
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
@@ -131,22 +169,13 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       });
       const { sound } = await Audio.Sound.createAsync(
         require('../../assets/timer-alarm.wav'),
-        { shouldPlay: true, isLooping: false, volume: 1.0 }
+        { shouldPlay: true, isLooping: true, volume: 1.0 }
       );
       soundRef.current = sound;
       try { await sound.playAsync(); } catch {}
-      setTimeout(async () => {
-        if (soundRef.current) {
-          try { await soundRef.current.stopAsync(); } catch {}
-          try { await soundRef.current.unloadAsync(); } catch {}
-          soundRef.current = null;
-        }
-      }, 6000);
     } catch (e) {
       console.log('Timer sound error:', e);
-      if (Platform.OS !== 'web') {
-        Vibration.vibrate([0, 800, 400, 800, 400, 800, 400, 800], false);
-      }
+      // Sound failed but vibration + flash are still active.
     }
   }, []);
 
@@ -189,21 +218,18 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     setIsPaused(false);
   }, []);
 
+  const stopAlarm = useCallback(() => {
+    stopAllAlarms();
+  }, [stopAllAlarms]);
+
   const reset = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
-    if (flashIntervalRef.current) clearInterval(flashIntervalRef.current);
-    setFlashAlert(false);
+    stopAllAlarms();
     setIsRunning(false);
     setIsPaused(false);
     setTotalSeconds(0);
     setInitialTotal(0);
-    if (soundRef.current) {
-      try { soundRef.current.stopAsync(); } catch {}
-      try { soundRef.current.unloadAsync(); } catch {}
-      soundRef.current = null;
-    }
-    Vibration.cancel();
-  }, []);
+  }, [stopAllAlarms]);
 
   const openSheet = useCallback(() => setSheetVisible(true), []);
   const closeSheet = useCallback(() => setSheetVisible(false), []);
@@ -222,6 +248,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         totalSeconds,
         initialTotal,
         flashAlert,
+        alarmActive,
         sheetVisible,
         openSheet,
         closeSheet,
@@ -229,6 +256,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         pause,
         resume,
         reset,
+        stopAlarm,
         formatTime,
       }}
     >

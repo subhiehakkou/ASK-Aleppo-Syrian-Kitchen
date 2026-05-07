@@ -147,6 +147,79 @@ export default function AboutScreen() {
               </View>
             </View>
           </View>
+          {/* ♿ Accessibility Section — "تطبيقنا يخدم كل فئات المجتمع" */}
+          <View style={styles.a11ySection}>
+            <View style={[styles.a11yHeader, isRTL && styles.rtlRow]}>
+              <Text style={styles.a11yHeaderIcon}>♿</Text>
+              <Text style={[styles.a11yHeaderTitle, isRTL && styles.rtlText]}>
+                {isRTL
+                  ? 'تطبيقنا يخدم كل فئات المجتمع'
+                  : language === 'sv'
+                    ? 'Vår app tjänar alla samhällsgrupper'
+                    : 'Our app serves every member of the community'}
+              </Text>
+            </View>
+
+            <Text style={[styles.a11yIntro, isRTL && styles.rtlText]}>
+              {isRTL
+                ? 'صُمّمت تجربة الطبخ هنا بحبّ لتكون متاحة وسهلة للجميع — كبار السنّ، ضعاف البصر، المكفوفين، والصُّمّ والبُكم.'
+                : language === 'sv'
+                  ? 'Matlagningsupplevelsen här är utformad med kärlek för att vara tillgänglig för alla — äldre, synskadade, blinda och döva.'
+                  : 'This cooking experience was crafted with love to be accessible to everyone — elderly, low-vision, blind, and deaf users.'}
+            </Text>
+
+            {[
+              {
+                icon: '👴',
+                ar: 'وضع كبار السن: خط أكبر وألوان واضحة',
+                en: 'Senior mode: larger fonts & clearer colours',
+                sv: 'Seniorläge: större text & tydligare färger',
+              },
+              {
+                icon: '👁️‍🗨️',
+                ar: 'وضع ضعاف البصر: تباين عالٍ ولمسات أوسع',
+                en: 'Low-vision mode: high contrast & bigger touch areas',
+                sv: 'Synnedsättning: hög kontrast & större tryckytor',
+              },
+              {
+                icon: '♿',
+                ar: 'دعم قارئات الشاشة TalkBack و VoiceOver للمكفوفين',
+                en: 'Screen-reader support (TalkBack / VoiceOver) for blind users',
+                sv: 'Skärmläsarstöd (TalkBack / VoiceOver) för blinda',
+              },
+              {
+                icon: '🔔',
+                ar: 'تنبيهات صوتية + اهتزاز + وميض ضوئي للصُّم والبُكم',
+                en: 'Audio + vibration + visual flash alerts for deaf users',
+                sv: 'Ljud + vibration + visuella blixtar för döva',
+              },
+              {
+                icon: '👆',
+                ar: 'تحكّم كامل عبر الإيماءات وأزرار كبيرة',
+                en: 'Full gesture control & large tap targets',
+                sv: 'Full gestkontroll & stora tryckytor',
+              },
+            ].map((row, idx) => (
+              <View key={idx} style={[styles.a11yRow, isRTL && styles.rtlRow]}>
+                <View style={styles.a11yRowIconWrap}>
+                  <Text style={styles.a11yRowIcon}>{row.icon}</Text>
+                </View>
+                <Text style={[styles.a11yRowText, isRTL && styles.rtlText]}>
+                  {language === 'ar' ? row.ar : language === 'sv' ? row.sv : row.en}
+                </Text>
+              </View>
+            ))}
+
+            <View style={styles.a11yFootnote}>
+              <Text style={[styles.a11yFootnoteText, isRTL && styles.rtlText]}>
+                {isRTL
+                  ? '💡 يمكنكِ تغيير وضع الوصول في أيّ وقت من القائمة الجانبية ← ♿ وضع الوصول.'
+                  : language === 'sv'
+                    ? '💡 Du kan ändra tillgänglighetsläget när som helst från sidomenyn → ♿ Tillgänglighet.'
+                    : '💡 You can change the accessibility mode anytime from the side drawer → ♿ Accessibility.'}
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Footer */}
@@ -290,5 +363,81 @@ const styles = StyleSheet.create({
   copyrightText: {
     fontSize: FONTS.sizes.sm,
     color: COLORS.textLight,
+  },
+
+  // ---- ♿ Accessibility section ----
+  a11ySection: {
+    backgroundColor: '#FFF8DC',
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.lg,
+    borderWidth: 2,
+    borderColor: '#DAA520',
+    marginTop: SPACING.lg,
+    ...SHADOWS.small,
+  },
+  a11yHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  a11yHeaderIcon: {
+    fontSize: 30,
+  },
+  a11yHeaderTitle: {
+    flex: 1,
+    fontSize: 17,
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    color: '#1A1A2E',
+    fontWeight: '700',
+    lineHeight: 24,
+  },
+  a11yIntro: {
+    fontSize: 14,
+    color: '#3A2F0E',
+    fontFamily: 'NotoNaskhArabic_500Medium',
+    lineHeight: 22,
+    marginBottom: 14,
+  },
+  a11yRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8C56B40',
+  },
+  a11yRowIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#FFFEF5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: '#DAA520',
+  },
+  a11yRowIcon: {
+    fontSize: 20,
+  },
+  a11yRowText: {
+    flex: 1,
+    fontSize: 13,
+    fontFamily: 'NotoNaskhArabic_500Medium',
+    color: '#3A2F0E',
+    lineHeight: 20,
+  },
+  a11yFootnote: {
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#DAA52060',
+  },
+  a11yFootnoteText: {
+    fontSize: 12,
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    color: '#5A4A1A',
+    lineHeight: 18,
+    fontStyle: 'italic',
   },
 });
