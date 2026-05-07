@@ -196,7 +196,7 @@ export default function ServingCalculator({
               </Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Ionicons name="close" size={26} color={COLORS.textPrimary} />
+              <Text style={styles.closeGlyph}>×</Text>
             </TouchableOpacity>
           </View>
 
@@ -207,7 +207,7 @@ export default function ServingCalculator({
           >
             {/* Original servings — small read-only chip */}
             <View style={[styles.originalChip, isRTL && styles.rowRTL]}>
-              <Ionicons name="people-outline" size={16} color={COLORS.textSecondary} />
+              <Text style={styles.emojiIcon}>👥</Text>
               <Text style={[styles.originalChipText, isRTL && styles.rtlText]}>
                 {tr.original}: <Text style={styles.originalChipBold}>{original} {personLabel(original)}</Text>
               </Text>
@@ -233,7 +233,7 @@ export default function ServingCalculator({
                   accessibilityState={{ disabled: atMinimum }}
                   accessibilityLabel={isRTL ? `إنقاص ${tr.target}` : `Decrease ${tr.target}`}
                 >
-                  <Ionicons name="remove" size={32} color={atMinimum ? '#A8A29A' : COLORS.textPrimary} />
+                  <Text style={[styles.stepperGlyph, atMinimum && styles.stepperGlyphDisabled]}>−</Text>
                 </TouchableOpacity>
                 <View
                   style={styles.stepperValueWrap}
@@ -263,7 +263,7 @@ export default function ServingCalculator({
                   accessibilityRole="button"
                   accessibilityLabel={isRTL ? `زيادة ${tr.target}` : `Increase ${tr.target}`}
                 >
-                  <Ionicons name="add" size={32} color={COLORS.textPrimary} />
+                  <Text style={styles.stepperGlyph}>+</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -271,7 +271,7 @@ export default function ServingCalculator({
             {/* Minimum reached warning */}
             {atMinimum ? (
               <View style={styles.minWarn} accessible={true} accessibilityRole="alert">
-                <Ionicons name="information-circle" size={20} color={COLORS.goldDark} />
+                <Text style={styles.emojiIcon}>ℹ️</Text>
                 <Text style={[styles.minWarnText, isRTL && styles.rtlText]}>
                   {tr.minReached}
                 </Text>
@@ -281,7 +281,7 @@ export default function ServingCalculator({
             {/* Ingredients Result */}
             <View style={styles.resultCard}>
               <View style={[styles.resultHeader, isRTL && styles.rowRTL]}>
-                <Ionicons name="restaurant" size={20} color={COLORS.gold} />
+                <Text style={styles.emojiIcon}>🍽️</Text>
                 <Text style={[styles.resultTitle, isRTL && styles.rtlText]}>
                   {tr.ingredients}
                 </Text>
@@ -295,7 +295,7 @@ export default function ServingCalculator({
             {scaledTime ? (
               <View style={styles.timeCard}>
                 <View style={[styles.resultHeader, isRTL && styles.rowRTL]}>
-                  <Ionicons name="time" size={20} color={COLORS.goldDark} />
+                  <Text style={styles.emojiIcon}>⏱️</Text>
                   <Text style={[styles.timeTitle, isRTL && styles.rtlText]}>
                     {tr.cookingTime}
                   </Text>
@@ -339,7 +339,7 @@ export default function ServingCalculator({
               style={styles.resetBtn}
               activeOpacity={0.7}
             >
-              <Ionicons name="refresh" size={18} color={COLORS.goldDark} />
+              <Text style={[styles.emojiIcon, { fontSize: 16 }]}>↻</Text>
               <Text style={styles.resetBtnText}>{tr.reset}</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -507,6 +507,32 @@ const styles = StyleSheet.create({
   stepperUnitHighlight: {
     color: COLORS.goldDark,
     fontSize: 13,
+  },
+  // Bulletproof + / − glyphs (Unicode, system font) so they always render
+  // even when the Ionicons font fails to load on Expo Go.
+  stepperGlyph: {
+    fontSize: 32,
+    lineHeight: 36,
+    fontWeight: '900',
+    color: '#1A1A2E',           // navy — strong contrast on the gold circle
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  stepperGlyphDisabled: {
+    color: '#9C9580',
+  },
+  closeGlyph: {
+    fontSize: 28,
+    lineHeight: 30,
+    fontWeight: '900',
+    color: '#1A1A2E',
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  emojiIcon: {
+    fontSize: 18,
+    lineHeight: 22,
+    includeFontPadding: false,
   },
 
   arrowRow: {
