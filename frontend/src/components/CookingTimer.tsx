@@ -59,7 +59,39 @@ export default function CookingTimer({
   };
 
   const [minutes, setMinutes] = useState(10);
-  const presets = [5, 10, 15, 20, 30, 45, 60, 90];
+  // Two preset rows — quick minute presets + slow-cooking hour presets.
+  const minutePresets = [5, 10, 15, 20, 30, 45];
+  const hourPresets = [60, 90, 120, 180, 240, 300]; // 1h · 1.5h · 2h · 3h · 4h · 5h
+  const TIMER_MAX_MIN = 480; // 8 hours — covers slow-cooked meat / mahshi.
+
+  // Smart step: small step for short times, bigger step as time grows
+  // (tapping +/− less for hours-long recipes).
+  const smartStep = (val: number) => (val < 30 ? 1 : val < 90 ? 5 : 15);
+
+  // Format minutes as "X ساعة Y دقيقة" / "Xh Ym" for friendly display.
+  const formatMinutes = (m: number) => {
+    if (m < 60) {
+      return isRTL ? `${m} دقيقة` : `${m} min`;
+    }
+    const h = Math.floor(m / 60);
+    const r = m % 60;
+    if (r === 0) {
+      if (isRTL) return h === 1 ? 'ساعة واحدة' : h === 2 ? 'ساعتان' : `${h} ساعات`;
+      return `${h}h`;
+    }
+    if (isRTL) {
+      const hours = h === 1 ? 'ساعة' : h === 2 ? 'ساعتان' : `${h} ساعات`;
+      return `${hours} و ${r} دقيقة`;
+    }
+    return `${h}h ${r}min`;
+  };
+
+  // Short label for preset buttons (compact).
+  const formatPresetLabel = (m: number) => {
+    if (m < 60) return `${m}`;
+    const h = m / 60;
+    return Number.isInteger(h) ? `${h}h` : `${h.toFixed(1)}h`;
+  };
 
   const handleStart = () => {
     if (Platform.OS !== 'web') {
@@ -154,47 +186,84 @@ export default function CookingTimer({
               </View>
             </View>
 
-            {/* Preset Times */}
+            {/* Preset Times — minutes row + hours row */}
             {!isRunning && (
               <View style={styles.presetsContainer}>
                 <Text style={[styles.presetsLabel, isRTL && styles.rtlText]}>
-                  {isRTL ? 'أوقات سريعة (دقائق):' : 'Quick presets (min):'}
+                  {isRTL ? 'دقائق:' : 'Minutes:'}
                 </Text>
                 <View style={styles.presetsRow}>
-                  {presets.map((preset) => (
+                  {minutePresets.map((preset) => (
                     <TouchableOpacity
-                      key={preset}
+                      key={`m${preset}`}
                       style={[
                         styles.presetButton,
-                        minutes === preset && styles.presetButtonActive
+                        minutes === preset && styles.presetButtonActive,
                       ]}
                       onPress={() => setMinutes(preset)}
                     >
                       <Text style={[
                         styles.presetText,
-                        minutes === preset && styles.presetTextActive
+                        minutes === preset && styles.presetTextActive,
                       ]}>
-                        {preset}
+                        {formatPresetLabel(preset)}
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
 
+                <Text style={[styles.presetsLabel, styles.presetsLabelHours, isRTL && styles.rtlText]}>
+                  {isRTL ? 'ساعات:' : 'Hours:'}
+                </Text>
+                <View style={styles.presetsRow}>
+                  {hourPresets.map((preset) => (
+                    <TouchableOpacity
+                      key={`h${preset}`}
+                      style={[
+                        styles.presetButton,
+                        styles.presetButtonHours,
+                        minutes === preset && styles.presetButtonActive,
+                      ]}
+                      onPress={() => setMinutes(preset)}
+                    >
+                      <Text style={[
+                        styles.presetText,
+                        minutes === preset && styles.presetTextActive,
+                      ]}>
+                        {formatPresetLabel(preset)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                {/* Smart +/− adjust row */}
                 <View style={styles.customTime}>
                   <TouchableOpacity
                     style={styles.adjustButton}
-                    onPress={() => setMinutes(Math.max(1, minutes - 1))}
+                    onPress={() => setMinutes(Math.max(1, minutes - smartStep(minutes)))}
+                    accessibilityLabel={isRTL ? `إنقاص ${smartStep(minutes)} دقائق` : `Decrease by ${smartStep(minutes)} minutes`}
                   >
                     <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>−</Text>
+                    <Text style={styles.adjustStepLabel}>−{smartStep(minutes)}</Text>
                   </TouchableOpacity>
-                  <Text style={styles.customTimeText}>{minutes} {isRTL ? 'دقيقة' : 'min'}</Text>
+                  <View style={styles.customTimeWrap}>
+                    <Text style={styles.customTimeText}>{formatMinutes(minutes)}</Text>
+                    <Text style={styles.customTimeSub}>
+                      {isRTL ? `(${minutes} دقيقة)` : `(${minutes} min)`}
+                    </Text>
+                  </View>
                   <TouchableOpacity
                     style={styles.adjustButton}
-                    onPress={() => setMinutes(Math.min(180, minutes + 1))}
+                    onPress={() => setMinutes(Math.min(TIMER_MAX_MIN, minutes + smartStep(minutes)))}
+                    accessibilityLabel={isRTL ? `زيادة ${smartStep(minutes)} دقائق` : `Increase by ${smartStep(minutes)} minutes`}
                   >
                     <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>+</Text>
+                    <Text style={styles.adjustStepLabel}>+{smartStep(minutes)}</Text>
                   </TouchableOpacity>
                 </View>
+                <Text style={styles.maxHint}>
+                  {isRTL ? 'الحد الأقصى: 8 ساعات' : 'Max: 8 hours'}
+                </Text>
               </View>
             )}
 
@@ -371,6 +440,9 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
     fontFamily: 'NotoNaskhArabic_400Regular',
   },
+  presetsLabelHours: {
+    marginTop: SPACING.sm,
+  },
   presetsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -387,6 +459,10 @@ const styles = StyleSheet.create({
     minWidth: 50,
     alignItems: 'center',
   },
+  presetButtonHours: {
+    backgroundColor: '#FFF8DC',
+    borderColor: '#E8C56B',
+  },
   presetButtonActive: {
     backgroundColor: COLORS.goldDark,
     borderColor: COLORS.goldDark,
@@ -401,17 +477,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: SPACING.xl,
+    gap: SPACING.lg,
     marginTop: SPACING.lg,
   },
-  adjustButton: { padding: 4 },
+  adjustButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignItems: 'center',
+    minWidth: 60,
+  },
+  adjustStepLabel: {
+    fontSize: 11,
+    color: COLORS.goldDark,
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    marginTop: -4,
+  },
+  customTimeWrap: {
+    alignItems: 'center',
+    minWidth: 140,
+  },
   customTimeText: {
-    fontSize: FONTS.sizes.xxl,
+    fontSize: FONTS.sizes.xl,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    minWidth: 100,
     textAlign: 'center',
     fontFamily: 'NotoNaskhArabic_700Bold',
+  },
+  customTimeSub: {
+    fontSize: 11,
+    color: COLORS.textLight,
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    marginTop: 2,
+  },
+  maxHint: {
+    textAlign: 'center',
+    fontSize: 11,
+    color: COLORS.textLight,
+    fontFamily: 'NotoNaskhArabic_400Regular',
+    marginTop: 8,
+    fontStyle: 'italic',
   },
   controls: {
     paddingHorizontal: SPACING.xl,
