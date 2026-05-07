@@ -67,6 +67,9 @@ export default function CookingTimer({
       try { Haptics.selectionAsync(); } catch {}
     }
     start(minutes);
+    // Auto-close the modal after starting so the user is immediately
+    // returned to the app and the floating bubble becomes visible.
+    setTimeout(() => setIsVisible(false), 250);
   };
 
   return (
