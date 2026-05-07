@@ -114,10 +114,10 @@ export default function FavoritesScreen() {
                   <Text style={styles.recipeName} numberOfLines={2}>
                     {getRecipeName(recipe)}
                   </Text>
-                  {recipe.time && (
+                  {(recipe.time_ar || recipe.time) && (
                     <View style={styles.timeRow}>
-                      <Ionicons name="time-outline" size={14} color="#6A6A6A" />
-                      <Text style={styles.timeText}>{recipe.time}</Text>
+                      <Text style={{ fontSize: 14 }}>⏱️</Text>
+                      <Text style={styles.timeText}>{recipe.time_ar || recipe.time}</Text>
                     </View>
                   )}
                 </View>

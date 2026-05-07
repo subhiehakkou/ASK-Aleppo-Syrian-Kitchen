@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
 import { useLanguage } from '../src/context/LanguageContext';
 import { searchRecipes, SearchResult } from '../src/utils/searchHelper';
+import { getRecipeImage, getImageSource } from '../src/utils/imageHelper';
 
 const MATCH_LABELS: Record<string, Record<string, string>> = {
   ar: { name: 'الاسم', description: 'الوصف', ingredients: 'المكونات', instructions: 'الطريقة', secrets: 'الأسرار', decoration: 'التزيين', category: 'القسم', other: 'أخرى' },
@@ -158,12 +159,12 @@ export default function SearchScreen() {
                   <View style={[styles.resultRow, isRTL && { flexDirection: 'row-reverse' }]}>
                     {item.image ? (
                       <Image
-                        source={{ uri: `${BACKEND_URL}/api/images/${item.image}` }}
+                        source={getImageSource(getRecipeImage({ image: item.image, name_en: item.name_en }))}
                         style={styles.resultImage}
                       />
                     ) : (
                       <View style={[styles.resultImage, styles.placeholderImg]}>
-                        <Ionicons name="restaurant" size={24} color="#CCC" />
+                        <Text style={{ fontSize: 22, color: '#CCC' }}>🍽️</Text>
                       </View>
                     )}
                     <View style={[styles.resultInfo, isRTL && { alignItems: 'flex-end' }]}>
