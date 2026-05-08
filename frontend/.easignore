@@ -1,0 +1,13 @@
+# EAS Build ignore file — exclude unneeded directories to reduce upload + memory
+.metro-cache/
+.expo/cache/
+**/__tests__/
+**/*.test.tsx
+**/*.test.ts
+**/*.spec.tsx
+**/*.spec.ts
+*.tar.gz
+*.zip
+.DS_Store
+**/.git/
+node_modules/.cache/
