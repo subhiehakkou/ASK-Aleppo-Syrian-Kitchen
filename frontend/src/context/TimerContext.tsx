@@ -4,15 +4,21 @@
  * GLOBAL cooking-timer state. Lives at the app root so the countdown keeps
  * ticking even when the user navigates between recipes / categories / search.
  *
- * Key behaviour (v2 - per Ms Sabah's request):
- * - When the timer hits 00:00, it triggers a CONTINUOUS alarm:
- *      • audio (looping)
- *      • vibration (repeating pattern)
- *      • full-screen visual flash (for deaf users)
- *   ALL THREE keep going forever until the user explicitly stops them
- *   (so deaf or visually-impaired users have plenty of time to notice).
- * - `alarmActive` exposes whether we're currently in the "ringing" state.
- * - `stopAlarm()` silences everything and clears the timer.
+ * Key behaviour (v3 — Ms Sabah's fix):
+ * - The timer is driven by a REAL `targetEndTime` timestamp (Date.now() + ms),
+ *   NOT by ticking an integer down. This way, when Android/iOS suspends JS
+ *   in the background, the visual countdown automatically catches up to real
+ *   elapsed time the moment the user reopens the app.
+ * - An AppState listener forces an immediate recalculation when the app comes
+ *   back to "active" — so the user never sees a stale paused-looking timer.
+ * - If the timer already expired while the app was backgrounded, we fire the
+ *   in-app alarm (audio/vibration/flash) the second the app reopens.
+ *
+ * Alarm behaviour (unchanged):
+ * - When the timer hits 00:00, a CONTINUOUS alarm fires (audio loop +
+ *   vibration + visual flash). Stops only when user taps Stop.
+ * - A backup local notification (expo-notifications) ensures the phone rings
+ *   even if the app is fully closed.
  */
 
 import React, {
@@ -23,7 +29,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Platform, Vibration, AccessibilityInfo } from 'react-native';
+import { Platform, Vibration, AccessibilityInfo, AppState, AppStateStatus } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import * as Notifications from 'expo-notifications';
@@ -49,7 +55,7 @@ async function ensureChannel() {
         vibrationPattern: [0, 800, 400, 800, 400, 800],
         enableVibrate: true,
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
-        bypassDnd: false, // Respect Do Not Disturb (per Ms Sabah's request)
+        bypassDnd: false,
       });
     } catch {}
   }
@@ -129,22 +135,26 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   const soundRef = useRef<Audio.Sound | null>(null);
   const notifIdRef = useRef<string | null>(null);
 
-  // Cancel any scheduled background notification (called when timer is reset
-  // or alarm is silenced — so the OS-level alarm doesn't fire after the user
-  // has already stopped the timer manually).
+  // ===== TIMESTAMP-BASED COUNTDOWN (so background suspension can't drift) =====
+  // The single source of truth for the running timer is `targetEndTimeRef`.
+  // The tick interval and the AppState listener BOTH derive `totalSeconds`
+  // from `Math.ceil((targetEndTime - Date.now()) / 1000)`.
+  const targetEndTimeRef = useRef<number | null>(null);
+  // While paused, store remaining ms so resume() can rebuild targetEndTime.
+  const pausedRemainingMsRef = useRef<number | null>(null);
+  // Latches so background-resume doesn't re-fire alarm twice.
+  const completionFiredRef = useRef<boolean>(false);
+
   const cancelScheduledNotif = useCallback(async () => {
     const id = notifIdRef.current;
     if (id) {
       try { await Notifications.cancelScheduledNotificationAsync(id); } catch {}
       notifIdRef.current = null;
     }
-    // Also dismiss any already-presented timer notification
     try { await Notifications.dismissAllNotificationsAsync(); } catch {}
   }, []);
 
-  // -------- helpers --------
   const stopAllAlarms = useCallback(async () => {
-    // 0) Cancel any background notification first
     const id = notifIdRef.current;
     if (id) {
       try { await Notifications.cancelScheduledNotificationAsync(id); } catch {}
@@ -152,21 +162,18 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     }
     try { await Notifications.dismissAllNotificationsAsync(); } catch {}
 
-    // 1) Stop visual flash
     if (flashIntervalRef.current) {
       clearInterval(flashIntervalRef.current);
       flashIntervalRef.current = null;
     }
     setFlashAlert(false);
 
-    // 2) Stop vibration
     if (vibrationIntervalRef.current) {
       clearInterval(vibrationIntervalRef.current);
       vibrationIntervalRef.current = null;
     }
     try { Vibration.cancel(); } catch {}
 
-    // 3) Stop sound
     if (soundRef.current) {
       try { await soundRef.current.stopAsync(); } catch {}
       try { await soundRef.current.unloadAsync(); } catch {}
@@ -176,7 +183,6 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     setAlarmActive(false);
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -189,10 +195,12 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const onTimerComplete = useCallback(async () => {
-    // Mark alarm as active (UI everywhere reacts to this)
+    if (completionFiredRef.current) return; // safety: only once per cycle
+    completionFiredRef.current = true;
+
     setAlarmActive(true);
 
-    // ===== 1) Continuous Visual Flash (for deaf users) =====
+    // ===== 1) Continuous Visual Flash =====
     let toggle = true;
     setFlashAlert(true);
     flashIntervalRef.current = setInterval(() => {
@@ -200,18 +208,11 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       setFlashAlert(toggle);
     }, 450);
 
-    // ===== 2) Continuous Vibration (for blind users) =====
+    // ===== 2) Continuous Vibration =====
     if (Platform.OS !== 'web') {
-      try {
-        // Long repeating vibration pattern (Android only supports repeat)
-        Vibration.vibrate([0, 800, 400, 800, 400], true);
-      } catch {}
-
-      // Extra haptics every 1.5s as a safety net (esp. iOS)
+      try { Vibration.vibrate([0, 800, 400, 800, 400], true); } catch {}
       vibrationIntervalRef.current = setInterval(() => {
-        try {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        } catch {}
+        try { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); } catch {}
       }, 1500);
     }
 
@@ -222,7 +223,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       );
     } catch {}
 
-    // ===== 4) Continuous Sound (looping forever) =====
+    // ===== 4) Continuous Sound =====
     try {
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
@@ -238,45 +239,79 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       try { await sound.playAsync(); } catch {}
     } catch (e) {
       console.log('Timer sound error:', e);
-      // Sound failed but vibration + flash are still active.
     }
   }, []);
 
-  // Tick effect
+  // ----- Core: derive remaining seconds from real timestamp -----
+  const recomputeFromTarget = useCallback(() => {
+    const target = targetEndTimeRef.current;
+    if (target == null) return;
+    const remainingMs = target - Date.now();
+    const remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
+    setTotalSeconds(remainingSec);
+    if (remainingSec <= 0) {
+      // timer is up — stop interval and fire alarm
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      setIsRunning(false);
+      setIsPaused(false);
+      targetEndTimeRef.current = null;
+      onTimerComplete();
+    }
+  }, [onTimerComplete]);
+
+  // Tick effect — uses target timestamp so background drift is auto-corrected.
   useEffect(() => {
-    if (isRunning && !isPaused && totalSeconds > 0) {
+    if (isRunning && !isPaused && targetEndTimeRef.current != null) {
+      // Recompute immediately on (re)start
+      recomputeFromTarget();
       intervalRef.current = setInterval(() => {
-        setTotalSeconds((prev) => {
-          if (prev <= 1) {
-            if (intervalRef.current) clearInterval(intervalRef.current);
-            setIsRunning(false);
-            setIsPaused(false);
-            onTimerComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+        recomputeFromTarget();
+      }, 500); // 500ms keeps display smooth & catches sub-second rollovers
     }
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
-  }, [isRunning, isPaused, onTimerComplete]);
+  }, [isRunning, isPaused, recomputeFromTarget]);
+
+  // ----- AppState listener: snap to real time when user returns -----
+  useEffect(() => {
+    const handleAppState = (next: AppStateStatus) => {
+      if (next === 'active') {
+        // Force immediate recalculation — this is the fix for "timer pauses
+        // visually while in background then resumes from where it stopped".
+        if (isRunning && !isPaused && targetEndTimeRef.current != null) {
+          recomputeFromTarget();
+        }
+      }
+    };
+    const sub = AppState.addEventListener('change', handleAppState);
+    return () => { sub.remove(); };
+  }, [isRunning, isPaused, recomputeFromTarget]);
 
   const start = useCallback(async (minutes: number) => {
     const total = Math.max(0, Math.floor(minutes * 60));
     if (total <= 0) return;
+    // Reset latches & state
+    completionFiredRef.current = false;
+    pausedRemainingMsRef.current = null;
+    targetEndTimeRef.current = Date.now() + total * 1000;
+
     setTotalSeconds(total);
     setInitialTotal(total);
-    setIsRunning(true);
     setIsPaused(false);
+    setIsRunning(true);
 
-    // Schedule a background notification — fires even if app is closed.
+    // Schedule a backup OS notification — fires even if app is closed.
     try {
       await ensureChannel();
       const ok = await requestNotifPermissions();
       if (ok) {
-        // Cancel any previous scheduled alarm
         await cancelScheduledNotif();
         const id = await Notifications.scheduleNotificationAsync({
           content: {
@@ -295,26 +330,72 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         notifIdRef.current = id;
       }
     } catch (e) {
-      // Silently ignore — in-app alarm still works as fallback
       console.log('Notification schedule failed:', e);
     }
   }, [cancelScheduledNotif]);
 
   const pause = useCallback(() => {
+    if (!isRunning || isPaused) return;
+    // Capture remaining time BEFORE clearing target
+    const target = targetEndTimeRef.current;
+    if (target != null) {
+      pausedRemainingMsRef.current = Math.max(0, target - Date.now());
+    }
+    targetEndTimeRef.current = null;
     setIsPaused(true);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  }, []);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    // Cancel the OS notification — it will be re-scheduled on resume.
+    cancelScheduledNotif();
+  }, [isRunning, isPaused, cancelScheduledNotif]);
 
-  const resume = useCallback(() => {
+  const resume = useCallback(async () => {
+    if (!isPaused) return;
+    const remainingMs = pausedRemainingMsRef.current ?? 0;
+    if (remainingMs <= 0) return;
+    targetEndTimeRef.current = Date.now() + remainingMs;
+    pausedRemainingMsRef.current = null;
     setIsPaused(false);
-  }, []);
+
+    // Re-schedule OS notification with the remaining seconds.
+    try {
+      await ensureChannel();
+      const ok = await requestNotifPermissions();
+      if (ok) {
+        await cancelScheduledNotif();
+        const id = await Notifications.scheduleNotificationAsync({
+          content: {
+            title: '⏰ انتهى الوقت! · Time is up!',
+            body: 'وصفتك جاهزة 🌹 · Your recipe is ready',
+            sound: 'default',
+            priority: Notifications.AndroidNotificationPriority.HIGH,
+            vibrate: [0, 800, 400, 800, 400],
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds: Math.max(1, Math.ceil(remainingMs / 1000)),
+            channelId: 'cooking-timer',
+          } as any,
+        });
+        notifIdRef.current = id;
+      }
+    } catch {}
+  }, [isPaused, cancelScheduledNotif]);
 
   const stopAlarm = useCallback(() => {
     stopAllAlarms();
   }, [stopAllAlarms]);
 
   const reset = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    targetEndTimeRef.current = null;
+    pausedRemainingMsRef.current = null;
+    completionFiredRef.current = false;
     stopAllAlarms();
     setIsRunning(false);
     setIsPaused(false);

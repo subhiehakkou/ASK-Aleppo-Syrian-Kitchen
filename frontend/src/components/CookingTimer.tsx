@@ -6,11 +6,15 @@
  * recipe screen — the user can navigate freely while a small floating bubble
  * (rendered globally) shows the remaining time.
  *
- * This component renders ONLY the rich UI (presets, big circle, buttons).
+ * v3 layout (per Ms Sabah's feedback on Samsung S22):
+ * - Tight vertical heights (no oversized circle / paddings).
+ * - Full width usage for presets and action buttons.
+ * - Bottom action row uses safe-area inset so Reset is NEVER cut off.
  */
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { useTimer } from '../context/TimerContext';
@@ -46,6 +50,7 @@ export default function CookingTimer({
     reset,
     formatTime,
   } = useTimer();
+  const insets = useSafeAreaInsets();
 
   const isControlled = typeof externalVisible === 'boolean';
   const isVisible = isControlled ? !!externalVisible : sheetVisible;
@@ -62,13 +67,10 @@ export default function CookingTimer({
   // Two preset rows — quick minute presets + slow-cooking hour presets.
   const minutePresets = [5, 10, 15, 20, 30, 45];
   const hourPresets = [60, 90, 120, 180, 240, 300]; // 1h · 1.5h · 2h · 3h · 4h · 5h
-  const TIMER_MAX_MIN = 480; // 8 hours — covers slow-cooked meat / mahshi.
+  const TIMER_MAX_MIN = 480; // 8 hours
 
-  // Smart step: small step for short times, bigger step as time grows
-  // (tapping +/− less for hours-long recipes).
   const smartStep = (val: number) => (val < 30 ? 1 : val < 90 ? 5 : 15);
 
-  // Format minutes as "X ساعة Y دقيقة" / "Xh Ym" for friendly display.
   const formatMinutes = (m: number) => {
     if (m < 60) {
       return isRTL ? `${m} دقيقة` : `${m} min`;
@@ -86,7 +88,6 @@ export default function CookingTimer({
     return `${h}h ${r}min`;
   };
 
-  // Short label for preset buttons (compact).
   const formatPresetLabel = (m: number) => {
     if (m < 60) return `${m}`;
     const h = m / 60;
@@ -97,9 +98,7 @@ export default function CookingTimer({
     if (Platform.OS !== 'web') {
       try { Haptics.selectionAsync(); } catch {}
     }
-    // Close modal IMMEDIATELY (before start) so the floating bubble shows.
     setIsVisible(false);
-    // Then start the timer in next tick
     setTimeout(() => start(minutes), 50);
   };
 
@@ -128,7 +127,7 @@ export default function CookingTimer({
       >
         <View style={[styles.modalOverlay, flashAlert && styles.modalOverlayFlashRed]}>
           <View style={[styles.modalContent, flashAlert && styles.modalContentFlash]}>
-            {/* Visual flash alert banner — appears prominently when time is up */}
+            {/* Visual flash alert banner */}
             {totalSeconds === 0 && !isRunning && initialTotal > 0 ? (
               <View
                 style={[styles.flashBanner, flashAlert ? styles.flashBannerRed : styles.flashBannerYellow]}
@@ -144,17 +143,17 @@ export default function CookingTimer({
               </View>
             ) : null}
 
-            {/* Header (fixed at top) */}
+            {/* Header (compact) */}
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, isRTL && styles.rtlText]}>
                 {isRTL ? '⏲️ مؤقت الطبخ' : '⏲️ Cooking Timer'}
               </Text>
               <TouchableOpacity onPress={() => setIsVisible(false)} style={styles.closeButton}>
-                <Text style={{ fontSize: 28, color: COLORS.textPrimary, fontWeight: '700' }}>×</Text>
+                <Text style={{ fontSize: 26, color: COLORS.textPrimary, fontWeight: '700' }}>×</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Scrollable middle content — guarantees nothing gets hidden */}
+            {/* Scrollable middle */}
             <ScrollView
               style={styles.scrollMiddle}
               contentContainerStyle={styles.scrollContent}
@@ -164,7 +163,7 @@ export default function CookingTimer({
               {/* Hint when running */}
               {isRunning && (
                 <View style={styles.floatHint}>
-                  <Text style={{ fontSize: 16, color: '#1A1A2E' }}>ⓘ</Text>
+                  <Text style={{ fontSize: 14, color: '#1A1A2E' }}>ⓘ</Text>
                   <Text style={[styles.floatHintText, isRTL && styles.rtlText]}>
                     {isRTL
                       ? 'يمكنكِ إغلاق المؤقت والتنقّل في التطبيق — سيظهر فوق الشاشة'
@@ -173,7 +172,7 @@ export default function CookingTimer({
                 </View>
               )}
 
-              {/* Timer Display */}
+              {/* Timer Display — compact circle */}
               <View style={styles.timerDisplay}>
                 <View style={styles.timerCircle}>
                   <View style={[styles.progressRing, { borderColor: '#E0E0E0' }]} />
@@ -187,13 +186,13 @@ export default function CookingTimer({
                         ? (isRTL ? 'جارٍ العد...' : 'Running...')
                         : isPaused
                           ? (isRTL ? 'متوقّف مؤقتاً' : 'Paused')
-                          : (isRTL ? 'انتهى الوقت! 🔔' : 'Time\'s up! 🔔')
+                          : (isRTL ? 'انتهى! 🔔' : 'Done! 🔔')
                     }
                   </Text>
                 </View>
               </View>
 
-              {/* Preset Times — minutes row + hours row */}
+              {/* Presets — full-width row, flex distribution */}
               {!isRunning && (
                 <View style={styles.presetsContainer}>
                   <Text style={[styles.presetsLabel, isRTL && styles.rtlText]}>
@@ -250,7 +249,7 @@ export default function CookingTimer({
                       onPress={() => setMinutes(Math.max(1, minutes - smartStep(minutes)))}
                       accessibilityLabel={isRTL ? `إنقاص ${smartStep(minutes)} دقائق` : `Decrease by ${smartStep(minutes)} minutes`}
                     >
-                      <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>−</Text>
+                      <Text style={{ fontSize: 28, color: COLORS.goldDark, fontWeight: '700' }}>−</Text>
                       <Text style={styles.adjustStepLabel}>−{smartStep(minutes)}</Text>
                     </TouchableOpacity>
                     <View style={styles.customTimeWrap}>
@@ -264,7 +263,7 @@ export default function CookingTimer({
                       onPress={() => setMinutes(Math.min(TIMER_MAX_MIN, minutes + smartStep(minutes)))}
                       accessibilityLabel={isRTL ? `زيادة ${smartStep(minutes)} دقائق` : `Increase by ${smartStep(minutes)} minutes`}
                     >
-                      <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>+</Text>
+                      <Text style={{ fontSize: 28, color: COLORS.goldDark, fontWeight: '700' }}>+</Text>
                       <Text style={styles.adjustStepLabel}>+{smartStep(minutes)}</Text>
                     </TouchableOpacity>
                   </View>
@@ -275,11 +274,16 @@ export default function CookingTimer({
               )}
             </ScrollView>
 
-            {/* Control Buttons (FIXED at bottom — always visible) */}
-            <View style={styles.controlsFixed}>
+            {/* Control Buttons — fixed bottom, safe-area aware, full width */}
+            <View
+              style={[
+                styles.controlsFixed,
+                { paddingBottom: Math.max(SPACING.md, insets.bottom + 6) },
+              ]}
+            >
               {!isRunning ? (
                 <TouchableOpacity style={styles.startButton} onPress={handleStart}>
-                  <Text style={{ fontSize: 28, color: '#FFF' }}>▶</Text>
+                  <Text style={{ fontSize: 24, color: '#FFF' }}>▶</Text>
                   <Text style={styles.startButtonText}>
                     {isRTL ? 'ابدأ' : 'Start'}
                   </Text>
@@ -288,17 +292,17 @@ export default function CookingTimer({
                 <View style={styles.runningControls}>
                   {isPaused ? (
                     <TouchableOpacity style={[styles.controlBtn, styles.resumeBtn]} onPress={resume}>
-                      <Text style={{ fontSize: 24, color: '#FFF' }}>▶</Text>
+                      <Text style={{ fontSize: 22, color: '#FFF' }}>▶</Text>
                       <Text style={styles.controlBtnText}>{isRTL ? 'استمر' : 'Resume'}</Text>
                     </TouchableOpacity>
                   ) : (
                     <TouchableOpacity style={[styles.controlBtn, styles.pauseBtn]} onPress={pause}>
-                      <Text style={{ fontSize: 24, color: '#FFF' }}>⏸</Text>
+                      <Text style={{ fontSize: 22, color: '#FFF' }}>⏸</Text>
                       <Text style={styles.controlBtnText}>{isRTL ? 'إيقاف' : 'Pause'}</Text>
                     </TouchableOpacity>
                   )}
                   <TouchableOpacity style={[styles.controlBtn, styles.resetBtn]} onPress={reset}>
-                    <Text style={{ fontSize: 24, color: '#FFF' }}>↻</Text>
+                    <Text style={{ fontSize: 22, color: '#FFF' }}>↻</Text>
                     <Text style={styles.controlBtnText}>{isRTL ? 'إعادة' : 'Reset'}</Text>
                   </TouchableOpacity>
                 </View>
@@ -343,19 +347,22 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingBottom: 0,
-    height: '85%',  // Fixed 85% of screen — guarantees room for header + scroll + footer
+    // Use min/max so on small phones it doesn't overshoot, but it can shrink
+    // to fit content. flexShrink lets ScrollView absorb extra space.
+    maxHeight: '92%',
+    minHeight: 360,
     flexDirection: 'column',
   },
   scrollMiddle: {
-    flex: 1,  // CRITICAL: makes ScrollView take all remaining space between header and footer
+    flex: 1, // takes all remaining space between header and footer
   },
   scrollContent: {
-    paddingBottom: SPACING.md,
+    paddingBottom: SPACING.sm,
   },
   controlsFixed: {
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.lg,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.sm,
+    // paddingBottom is set inline using safe-area insets
     backgroundColor: '#FFFFF0',
     borderTopWidth: 1,
     borderTopColor: '#E8E0C8',
@@ -368,17 +375,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 18,
-    paddingHorizontal: 16,
-    gap: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    gap: 10,
     borderBottomWidth: 2,
     borderBottomColor: '#C0392B',
   },
   flashBannerRed: { backgroundColor: '#E74C3C' },
   flashBannerYellow: { backgroundColor: '#FFD700' },
-  flashBannerIcon: { fontSize: 32 },
+  flashBannerIcon: { fontSize: 24 },
   flashBannerText: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: '900',
     color: '#FFFFFF',
     fontFamily: 'NotoNaskhArabic_700Bold',
@@ -387,26 +394,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: SPACING.lg,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
   modalTitle: {
-    fontSize: FONTS.sizes.xl,
+    fontSize: FONTS.sizes.lg,
     fontFamily: 'NotoNaskhArabic_700Bold',
     fontWeight: FONTS.weights.bold,
     color: COLORS.textPrimary,
   },
-  closeButton: { padding: SPACING.xs },
+  closeButton: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 2,
+  },
   rtlText: { textAlign: 'right' },
   floatHint: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginHorizontal: SPACING.lg,
+    marginHorizontal: SPACING.md,
     marginTop: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 6,
     backgroundColor: '#FFF8DC',
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
@@ -415,72 +426,74 @@ const styles = StyleSheet.create({
   floatHintText: {
     flex: 1,
     fontFamily: 'NotoNaskhArabic_400Regular',
-    fontSize: 12,
+    fontSize: 11,
     color: '#1A1A2E',
-    lineHeight: 18,
+    lineHeight: 16,
   },
   timerDisplay: {
     alignItems: 'center',
-    paddingVertical: SPACING.xl,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.sm,
   },
   timerCircle: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 132,
+    height: 132,
+    borderRadius: 66,
     backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 6,
+    borderWidth: 5,
     borderColor: COLORS.goldDark,
-    ...SHADOWS.large,
+    ...SHADOWS.medium,
   },
   progressRing: {
     position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    borderWidth: 4,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
   },
   timerText: {
-    fontSize: 48,
+    fontSize: 34,
     fontWeight: '700',
     color: COLORS.textPrimary,
     fontFamily: 'NotoNaskhArabic_700Bold',
   },
   timerLabel: {
-    fontSize: FONTS.sizes.sm,
+    fontSize: 11,
     color: COLORS.textLight,
-    marginTop: 4,
+    marginTop: 2,
     fontFamily: 'NotoNaskhArabic_400Regular',
   },
   presetsContainer: {
-    paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.lg,
+    paddingHorizontal: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   presetsLabel: {
-    fontSize: FONTS.sizes.md,
+    fontSize: FONTS.sizes.sm,
     color: COLORS.textSecondary,
-    marginBottom: SPACING.sm,
+    marginBottom: 6,
     fontFamily: 'NotoNaskhArabic_400Regular',
   },
   presetsLabelHours: {
     marginTop: SPACING.sm,
   },
+  // Use full row width: distribute presets evenly across the row.
   presetsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.sm,
-    justifyContent: 'center',
+    gap: 6,
   },
   presetButton: {
-    paddingHorizontal: 16,
+    flex: 1, // full-width distribution
+    paddingHorizontal: 4,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 18,
     backgroundColor: '#FFF',
     borderWidth: 1.5,
     borderColor: '#E0E0E0',
-    minWidth: 50,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 36,
   },
   presetButtonHours: {
     backgroundColor: '#FFF8DC',
@@ -491,7 +504,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.goldDark,
   },
   presetText: {
-    fontSize: FONTS.sizes.md,
+    fontSize: 14,
     color: COLORS.textSecondary,
     fontWeight: '600',
   },
@@ -499,28 +512,28 @@ const styles = StyleSheet.create({
   customTime: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.lg,
-    marginTop: SPACING.lg,
+    justifyContent: 'space-between',
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
   },
   adjustButton: {
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 2,
     alignItems: 'center',
-    minWidth: 60,
+    minWidth: 56,
   },
   adjustStepLabel: {
-    fontSize: 11,
+    fontSize: 10,
     color: COLORS.goldDark,
     fontFamily: 'NotoNaskhArabic_600SemiBold',
-    marginTop: -4,
+    marginTop: -2,
   },
   customTimeWrap: {
+    flex: 1,
     alignItems: 'center',
-    minWidth: 140,
   },
   customTimeText: {
-    fontSize: FONTS.sizes.xl,
+    fontSize: FONTS.sizes.lg,
     fontWeight: '700',
     color: COLORS.textPrimary,
     textAlign: 'center',
@@ -530,19 +543,15 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: COLORS.textLight,
     fontFamily: 'NotoNaskhArabic_400Regular',
-    marginTop: 2,
+    marginTop: 1,
   },
   maxHint: {
     textAlign: 'center',
-    fontSize: 11,
+    fontSize: 10,
     color: COLORS.textLight,
     fontFamily: 'NotoNaskhArabic_400Regular',
-    marginTop: 8,
+    marginTop: 6,
     fontStyle: 'italic',
-  },
-  controls: {
-    paddingHorizontal: SPACING.xl,
-    paddingTop: SPACING.md,
   },
   startButton: {
     flexDirection: 'row',
@@ -550,27 +559,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: SPACING.sm,
     backgroundColor: '#4CAF50',
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: BORDER_RADIUS.lg,
     ...SHADOWS.medium,
   },
   startButtonText: {
     color: '#FFF',
-    fontSize: FONTS.sizes.xl,
+    fontSize: FONTS.sizes.lg,
     fontWeight: '700',
     fontFamily: 'NotoNaskhArabic_700Bold',
   },
   runningControls: {
     flexDirection: 'row',
-    gap: SPACING.md,
+    gap: SPACING.sm,
   },
   controlBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 14,
+    gap: 6,
+    paddingVertical: 12,
     borderRadius: BORDER_RADIUS.lg,
     ...SHADOWS.medium,
   },
@@ -579,7 +588,7 @@ const styles = StyleSheet.create({
   resetBtn: { backgroundColor: '#F44336' },
   controlBtnText: {
     color: '#FFF',
-    fontSize: FONTS.sizes.lg,
+    fontSize: FONTS.sizes.md,
     fontWeight: '700',
     fontFamily: 'NotoNaskhArabic_700Bold',
   },
