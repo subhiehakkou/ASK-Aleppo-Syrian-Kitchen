@@ -70,7 +70,9 @@ export default function BottomTabBar({ activeTab }: BottomTabBarProps) {
         // Add the device's bottom safe-area inset so the bar sits ABOVE the
         // Android system gesture pill / iOS home indicator. Min 16 px so
         // tap targets never collide with system controls.
-        { paddingBottom: Math.max(insets.bottom, 16) + 4 },
+        // Increased minimum padding (24) so flags don't collide with
+        // OS gesture/nav bar on smaller phones (S22 non-Ultra etc).
+        { paddingBottom: Math.max(insets.bottom, 24) + 8 },
       ]}
     >
       {tabs.map((tab) => {
