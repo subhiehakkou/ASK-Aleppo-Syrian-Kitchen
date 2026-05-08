@@ -225,16 +225,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    backgroundColor: COLORS.gold,
+    backgroundColor: '#1A1A2E', // Navy — high contrast
     paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.sm + 2,
     borderRadius: BORDER_RADIUS.xxl,
+    borderWidth: 2,
+    borderColor: '#FFD700',
   },
   recipeCount: {
-    fontSize: FONTS.sizes.md,
-    fontFamily: 'NotoNaskhArabic_600SemiBold',
-    fontWeight: FONTS.weights.semibold,
-    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: '700',
+    color: '#FFD700', // Gold on Navy — clearly readable
+    letterSpacing: 0.3,
   },
   emptyContainer: {
     flex: 1,
@@ -295,23 +298,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#FFF8DC',
-    borderColor: '#DAA520',
-    borderWidth: 1,
+    backgroundColor: '#1A1A2E', // Navy
+    borderColor: '#FFD700',
+    borderWidth: 1.5,
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 12,
     minWidth: 70,
   },
   cardMetaIcon: {
     fontSize: 14,
-    color: '#8B6914',
+    color: '#FFD700', // Gold
   },
   cardMetaText: {
     fontSize: 12,
-    fontFamily: 'NotoNaskhArabic_600SemiBold',
-    fontWeight: '600',
-    color: '#5A4A1A',
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: '700',
+    color: '#FFD700', // Gold on Navy — high contrast
+    letterSpacing: 0.2,
   },
   cardImageWrap: {
     flex: 1, // 1/3
