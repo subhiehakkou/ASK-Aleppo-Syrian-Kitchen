@@ -26,6 +26,47 @@ import React, {
 import { Platform, Vibration, AccessibilityInfo } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
+import * as Notifications from 'expo-notifications';
+
+// Configure how notifications appear when app is in foreground
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+// Ensure we have a dedicated channel on Android with sound + vibration.
+async function ensureChannel() {
+  if (Platform.OS === 'android') {
+    try {
+      await Notifications.setNotificationChannelAsync('cooking-timer', {
+        name: 'Cooking Timer',
+        importance: Notifications.AndroidImportance.HIGH,
+        sound: 'default',
+        vibrationPattern: [0, 800, 400, 800, 400, 800],
+        enableVibrate: true,
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+        bypassDnd: false, // Respect Do Not Disturb (per Ms Sabah's request)
+      });
+    } catch {}
+  }
+}
+
+async function requestNotifPermissions() {
+  try {
+    const settings = await Notifications.getPermissionsAsync();
+    if (settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL) {
+      return true;
+    }
+    const req = await Notifications.requestPermissionsAsync({
+      ios: { allowAlert: true, allowBadge: false, allowSound: true },
+    });
+    return req.granted;
+  } catch { return false; }
+}
 
 interface TimerContextValue {
   isRunning: boolean;
@@ -86,9 +127,31 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   const flashIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const vibrationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
+  const notifIdRef = useRef<string | null>(null);
+
+  // Cancel any scheduled background notification (called when timer is reset
+  // or alarm is silenced — so the OS-level alarm doesn't fire after the user
+  // has already stopped the timer manually).
+  const cancelScheduledNotif = useCallback(async () => {
+    const id = notifIdRef.current;
+    if (id) {
+      try { await Notifications.cancelScheduledNotificationAsync(id); } catch {}
+      notifIdRef.current = null;
+    }
+    // Also dismiss any already-presented timer notification
+    try { await Notifications.dismissAllNotificationsAsync(); } catch {}
+  }, []);
 
   // -------- helpers --------
   const stopAllAlarms = useCallback(async () => {
+    // 0) Cancel any background notification first
+    const id = notifIdRef.current;
+    if (id) {
+      try { await Notifications.cancelScheduledNotificationAsync(id); } catch {}
+      notifIdRef.current = null;
+    }
+    try { await Notifications.dismissAllNotificationsAsync(); } catch {}
+
     // 1) Stop visual flash
     if (flashIntervalRef.current) {
       clearInterval(flashIntervalRef.current);
@@ -200,14 +263,42 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     };
   }, [isRunning, isPaused, onTimerComplete]);
 
-  const start = useCallback((minutes: number) => {
+  const start = useCallback(async (minutes: number) => {
     const total = Math.max(0, Math.floor(minutes * 60));
     if (total <= 0) return;
     setTotalSeconds(total);
     setInitialTotal(total);
     setIsRunning(true);
     setIsPaused(false);
-  }, []);
+
+    // Schedule a background notification — fires even if app is closed.
+    try {
+      await ensureChannel();
+      const ok = await requestNotifPermissions();
+      if (ok) {
+        // Cancel any previous scheduled alarm
+        await cancelScheduledNotif();
+        const id = await Notifications.scheduleNotificationAsync({
+          content: {
+            title: '⏰ انتهى الوقت! · Time is up!',
+            body: 'وصفتك جاهزة 🌹 · Your recipe is ready',
+            sound: 'default',
+            priority: Notifications.AndroidNotificationPriority.HIGH,
+            vibrate: [0, 800, 400, 800, 400],
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds: total,
+            channelId: 'cooking-timer',
+          } as any,
+        });
+        notifIdRef.current = id;
+      }
+    } catch (e) {
+      // Silently ignore — in-app alarm still works as fallback
+      console.log('Notification schedule failed:', e);
+    }
+  }, [cancelScheduledNotif]);
 
   const pause = useCallback(() => {
     setIsPaused(true);

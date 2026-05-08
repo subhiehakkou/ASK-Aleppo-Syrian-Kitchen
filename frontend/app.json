@@ -51,7 +51,14 @@
       ],
       "expo-mail-composer",
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "color": "#FFD700",
+          "defaultChannel": "cooking-timer"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
