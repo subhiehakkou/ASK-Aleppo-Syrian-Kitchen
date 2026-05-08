@@ -92,7 +92,7 @@ export default function CategoryScreen() {
         {/* Category Info */}
         <View style={styles.categoryInfo}>
           <View style={styles.categoryBadge}>
-            <Ionicons name="restaurant" size={20} color={COLORS.gold} />
+            <Text style={{ fontSize: 18, color: '#FFFFFF' }}>🍽</Text>
             <Text style={styles.recipeCount}>
               {recipes.length} {t('recipes')}
             </Text>
@@ -102,7 +102,7 @@ export default function CategoryScreen() {
         {/* Recipes List */}
         {recipes.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Ionicons name="document-text-outline" size={64} color={COLORS.textLight} />
+            <Text style={{ fontSize: 56, color: COLORS.textLight, marginBottom: 8 }}>📄</Text>
             <Text style={styles.emptyText}>{t('no_recipes')}</Text>
           </View>
         ) : (
@@ -114,37 +114,45 @@ export default function CategoryScreen() {
                 onPress={() => router.push(`/recipe/${recipe.id}`)}
                 activeOpacity={0.8}
               >
-                <Image
-                  source={getImageSource(getRecipeImage(recipe))}
-                  style={styles.recipeImage}
-                  resizeMode="cover"
-                />
-                <View style={[styles.recipeContent, isRTL && styles.rtlContent]}>
-                  <Text style={[styles.recipeName, isRTL && styles.rtlText]} numberOfLines={2}>
+                {/* Row 1: Centered recipe name (full width) */}
+                <View style={styles.cardTitleRow}>
+                  <Text style={styles.cardTitle} numberOfLines={2}>
                     {getRecipeName(recipe)}
                   </Text>
-                  
-                  <View style={[styles.recipeMetaRow, isRTL && styles.rtlRow]}>
+                </View>
+
+                {/* Row 2: Info (2/3) + Image (1/3, isolated) */}
+                <View style={styles.cardBody}>
+                  <View style={styles.cardInfo}>
                     {getRecipeTime(recipe) && (
-                      <View style={[styles.metaItem, isRTL && styles.rtlRow]}>
-                        <Ionicons name="time-outline" size={14} color={COLORS.textLight} />
-                        <Text style={styles.metaText}>{getRecipeTime(recipe)}</Text>
+                      <View style={styles.cardMetaItem}>
+                        <Text style={styles.cardMetaIcon}>⏱</Text>
+                        <Text style={styles.cardMetaText} numberOfLines={1}>
+                          {getRecipeTime(recipe)}
+                        </Text>
                       </View>
                     )}
                     {getRecipeServings(recipe) && (
-                      <View style={[styles.metaItem, isRTL && styles.rtlRow]}>
-                        <Ionicons name="people-outline" size={14} color={COLORS.textLight} />
-                        <Text style={styles.metaText}>{getRecipeServings(recipe)}</Text>
+                      <View style={styles.cardMetaItem}>
+                        <Text style={styles.cardMetaIcon}>👥</Text>
+                        <Text style={styles.cardMetaText} numberOfLines={1}>
+                          {getRecipeServings(recipe)}
+                        </Text>
                       </View>
                     )}
                   </View>
+                  <View style={styles.cardImageWrap}>
+                    <Image
+                      source={getImageSource(getRecipeImage(recipe))}
+                      style={styles.cardImage}
+                      resizeMode="cover"
+                    />
+                  </View>
                 </View>
-                <View style={styles.arrowContainer}>
-                  <Ionicons 
-                    name={isRTL ? "chevron-back" : "chevron-forward"} 
-                    size={20} 
-                    color={COLORS.gold} 
-                  />
+
+                {/* Right edge chevron — gold */}
+                <View style={styles.cardChevron}>
+                  <Text style={styles.cardChevronIcon}>{isRTL ? '‹' : '›'}</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -241,18 +249,99 @@ const styles = StyleSheet.create({
     color: COLORS.textLight,
   },
   recipesList: {
-    paddingHorizontal: SPACING.lg,
+    paddingHorizontal: SPACING.md,
     paddingBottom: SPACING.xxxl,
   },
+  // ---- New 2-row recipe card layout ----
   recipeCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: COLORS.cardBackground,
     borderRadius: BORDER_RADIUS.lg,
-    marginBottom: SPACING.md,
-    padding: SPACING.md,
-    ...SHADOWS.medium,
+    marginBottom: SPACING.sm,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    paddingRight: SPACING.lg + 8, // room for chevron
+    position: 'relative',
+    ...SHADOWS.small,
   },
+  cardTitleRow: {
+    paddingBottom: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0E8C8',
+    marginBottom: 6,
+  },
+  cardTitle: {
+    fontSize: 15,
+    fontFamily: 'NotoNaskhArabic_700Bold',
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  cardBody: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  cardInfo: {
+    flex: 2, // 2/3
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingRight: 4,
+  },
+  cardMetaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#FFF8DC',
+    borderColor: '#DAA520',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    minWidth: 70,
+  },
+  cardMetaIcon: {
+    fontSize: 14,
+    color: '#8B6914',
+  },
+  cardMetaText: {
+    fontSize: 12,
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
+    fontWeight: '600',
+    color: '#5A4A1A',
+  },
+  cardImageWrap: {
+    flex: 1, // 1/3
+    aspectRatio: 1,
+    maxWidth: 80,
+    minWidth: 60,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#DAA520',
+    backgroundColor: '#FFF8DC',
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
+  },
+  cardChevron: {
+    position: 'absolute',
+    right: 8,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    width: 16,
+  },
+  cardChevronIcon: {
+    fontSize: 22,
+    color: '#DAA520',
+    fontWeight: '900',
+  },
+  // Legacy (kept for other places)
   recipeImage: {
     width: 70,
     height: 70,

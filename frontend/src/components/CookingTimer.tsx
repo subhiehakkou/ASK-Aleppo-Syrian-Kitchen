@@ -10,7 +10,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform, ScrollView } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { useTimer } from '../context/TimerContext';
@@ -144,7 +144,7 @@ export default function CookingTimer({
               </View>
             ) : null}
 
-            {/* Header */}
+            {/* Header (fixed at top) */}
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, isRTL && styles.rtlText]}>
                 {isRTL ? '⏲️ مؤقت الطبخ' : '⏲️ Cooking Timer'}
@@ -154,121 +154,129 @@ export default function CookingTimer({
               </TouchableOpacity>
             </View>
 
-            {/* Hint when running */}
-            {isRunning && (
-              <View style={styles.floatHint}>
-                <Text style={{ fontSize: 16, color: '#1A1A2E' }}>ⓘ</Text>
-                <Text style={[styles.floatHintText, isRTL && styles.rtlText]}>
-                  {isRTL
-                    ? 'يمكنكِ إغلاق المؤقت والتنقّل في التطبيق — سيظهر فوق الشاشة'
-                    : 'You can close this and browse the app — it stays floating'}
-                </Text>
-              </View>
-            )}
-
-            {/* Timer Display */}
-            <View style={styles.timerDisplay}>
-              <View style={styles.timerCircle}>
-                <View style={[styles.progressRing, { borderColor: '#E0E0E0' }]} />
-                <Text style={styles.timerText}>
-                  {isRunning || totalSeconds > 0 ? formatTime(totalSeconds) : formatTime(minutes * 60)}
-                </Text>
-                <Text style={styles.timerLabel}>
-                  {totalSeconds === 0 && !isRunning
-                    ? (isRTL ? 'اختاري الوقت' : 'Set time')
-                    : isRunning && !isPaused
-                      ? (isRTL ? 'جارٍ العد...' : 'Running...')
-                      : isPaused
-                        ? (isRTL ? 'متوقّف مؤقتاً' : 'Paused')
-                        : (isRTL ? 'انتهى الوقت! 🔔' : 'Time\'s up! 🔔')
-                  }
-                </Text>
-              </View>
-            </View>
-
-            {/* Preset Times — minutes row + hours row */}
-            {!isRunning && (
-              <View style={styles.presetsContainer}>
-                <Text style={[styles.presetsLabel, isRTL && styles.rtlText]}>
-                  {isRTL ? 'دقائق:' : 'Minutes:'}
-                </Text>
-                <View style={styles.presetsRow}>
-                  {minutePresets.map((preset) => (
-                    <TouchableOpacity
-                      key={`m${preset}`}
-                      style={[
-                        styles.presetButton,
-                        minutes === preset && styles.presetButtonActive,
-                      ]}
-                      onPress={() => setMinutes(preset)}
-                    >
-                      <Text style={[
-                        styles.presetText,
-                        minutes === preset && styles.presetTextActive,
-                      ]}>
-                        {formatPresetLabel(preset)}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+            {/* Scrollable middle content — guarantees nothing gets hidden */}
+            <ScrollView
+              style={styles.scrollMiddle}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={true}
+              bounces={true}
+            >
+              {/* Hint when running */}
+              {isRunning && (
+                <View style={styles.floatHint}>
+                  <Text style={{ fontSize: 16, color: '#1A1A2E' }}>ⓘ</Text>
+                  <Text style={[styles.floatHintText, isRTL && styles.rtlText]}>
+                    {isRTL
+                      ? 'يمكنكِ إغلاق المؤقت والتنقّل في التطبيق — سيظهر فوق الشاشة'
+                      : 'You can close this and browse the app — it stays floating'}
+                  </Text>
                 </View>
+              )}
 
-                <Text style={[styles.presetsLabel, styles.presetsLabelHours, isRTL && styles.rtlText]}>
-                  {isRTL ? 'ساعات:' : 'Hours:'}
-                </Text>
-                <View style={styles.presetsRow}>
-                  {hourPresets.map((preset) => (
-                    <TouchableOpacity
-                      key={`h${preset}`}
-                      style={[
-                        styles.presetButton,
-                        styles.presetButtonHours,
-                        minutes === preset && styles.presetButtonActive,
-                      ]}
-                      onPress={() => setMinutes(preset)}
-                    >
-                      <Text style={[
-                        styles.presetText,
-                        minutes === preset && styles.presetTextActive,
-                      ]}>
-                        {formatPresetLabel(preset)}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+              {/* Timer Display */}
+              <View style={styles.timerDisplay}>
+                <View style={styles.timerCircle}>
+                  <View style={[styles.progressRing, { borderColor: '#E0E0E0' }]} />
+                  <Text style={styles.timerText}>
+                    {isRunning || totalSeconds > 0 ? formatTime(totalSeconds) : formatTime(minutes * 60)}
+                  </Text>
+                  <Text style={styles.timerLabel}>
+                    {totalSeconds === 0 && !isRunning
+                      ? (isRTL ? 'اختاري الوقت' : 'Set time')
+                      : isRunning && !isPaused
+                        ? (isRTL ? 'جارٍ العد...' : 'Running...')
+                        : isPaused
+                          ? (isRTL ? 'متوقّف مؤقتاً' : 'Paused')
+                          : (isRTL ? 'انتهى الوقت! 🔔' : 'Time\'s up! 🔔')
+                    }
+                  </Text>
                 </View>
+              </View>
 
-                {/* Smart +/− adjust row */}
-                <View style={styles.customTime}>
-                  <TouchableOpacity
-                    style={styles.adjustButton}
-                    onPress={() => setMinutes(Math.max(1, minutes - smartStep(minutes)))}
-                    accessibilityLabel={isRTL ? `إنقاص ${smartStep(minutes)} دقائق` : `Decrease by ${smartStep(minutes)} minutes`}
-                  >
-                    <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>−</Text>
-                    <Text style={styles.adjustStepLabel}>−{smartStep(minutes)}</Text>
-                  </TouchableOpacity>
-                  <View style={styles.customTimeWrap}>
-                    <Text style={styles.customTimeText}>{formatMinutes(minutes)}</Text>
-                    <Text style={styles.customTimeSub}>
-                      {isRTL ? `(${minutes} دقيقة)` : `(${minutes} min)`}
-                    </Text>
+              {/* Preset Times — minutes row + hours row */}
+              {!isRunning && (
+                <View style={styles.presetsContainer}>
+                  <Text style={[styles.presetsLabel, isRTL && styles.rtlText]}>
+                    {isRTL ? 'دقائق:' : 'Minutes:'}
+                  </Text>
+                  <View style={styles.presetsRow}>
+                    {minutePresets.map((preset) => (
+                      <TouchableOpacity
+                        key={`m${preset}`}
+                        style={[
+                          styles.presetButton,
+                          minutes === preset && styles.presetButtonActive,
+                        ]}
+                        onPress={() => setMinutes(preset)}
+                      >
+                        <Text style={[
+                          styles.presetText,
+                          minutes === preset && styles.presetTextActive,
+                        ]}>
+                          {formatPresetLabel(preset)}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
                   </View>
-                  <TouchableOpacity
-                    style={styles.adjustButton}
-                    onPress={() => setMinutes(Math.min(TIMER_MAX_MIN, minutes + smartStep(minutes)))}
-                    accessibilityLabel={isRTL ? `زيادة ${smartStep(minutes)} دقائق` : `Increase by ${smartStep(minutes)} minutes`}
-                  >
-                    <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>+</Text>
-                    <Text style={styles.adjustStepLabel}>+{smartStep(minutes)}</Text>
-                  </TouchableOpacity>
-                </View>
-                <Text style={styles.maxHint}>
-                  {isRTL ? 'الحد الأقصى: 8 ساعات' : 'Max: 8 hours'}
-                </Text>
-              </View>
-            )}
 
-            {/* Control Buttons */}
-            <View style={styles.controls}>
+                  <Text style={[styles.presetsLabel, styles.presetsLabelHours, isRTL && styles.rtlText]}>
+                    {isRTL ? 'ساعات:' : 'Hours:'}
+                  </Text>
+                  <View style={styles.presetsRow}>
+                    {hourPresets.map((preset) => (
+                      <TouchableOpacity
+                        key={`h${preset}`}
+                        style={[
+                          styles.presetButton,
+                          styles.presetButtonHours,
+                          minutes === preset && styles.presetButtonActive,
+                        ]}
+                        onPress={() => setMinutes(preset)}
+                      >
+                        <Text style={[
+                          styles.presetText,
+                          minutes === preset && styles.presetTextActive,
+                        ]}>
+                          {formatPresetLabel(preset)}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  {/* Smart +/− adjust row */}
+                  <View style={styles.customTime}>
+                    <TouchableOpacity
+                      style={styles.adjustButton}
+                      onPress={() => setMinutes(Math.max(1, minutes - smartStep(minutes)))}
+                      accessibilityLabel={isRTL ? `إنقاص ${smartStep(minutes)} دقائق` : `Decrease by ${smartStep(minutes)} minutes`}
+                    >
+                      <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>−</Text>
+                      <Text style={styles.adjustStepLabel}>−{smartStep(minutes)}</Text>
+                    </TouchableOpacity>
+                    <View style={styles.customTimeWrap}>
+                      <Text style={styles.customTimeText}>{formatMinutes(minutes)}</Text>
+                      <Text style={styles.customTimeSub}>
+                        {isRTL ? `(${minutes} دقيقة)` : `(${minutes} min)`}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.adjustButton}
+                      onPress={() => setMinutes(Math.min(TIMER_MAX_MIN, minutes + smartStep(minutes)))}
+                      accessibilityLabel={isRTL ? `زيادة ${smartStep(minutes)} دقائق` : `Increase by ${smartStep(minutes)} minutes`}
+                    >
+                      <Text style={{ fontSize: 36, color: COLORS.goldDark, fontWeight: '700' }}>+</Text>
+                      <Text style={styles.adjustStepLabel}>+{smartStep(minutes)}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.maxHint}>
+                    {isRTL ? 'الحد الأقصى: 8 ساعات' : 'Max: 8 hours'}
+                  </Text>
+                </View>
+              )}
+            </ScrollView>
+
+            {/* Control Buttons (FIXED at bottom — always visible) */}
+            <View style={styles.controlsFixed}>
               {!isRunning ? (
                 <TouchableOpacity style={styles.startButton} onPress={handleStart}>
                   <Text style={{ fontSize: 28, color: '#FFF' }}>▶</Text>
@@ -334,8 +342,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFF0',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    paddingBottom: 40,
-    maxHeight: '85%',
+    paddingBottom: 0,
+    maxHeight: '90%',
+    minHeight: '60%',
+    flexDirection: 'column',
+  },
+  scrollMiddle: {
+    flexShrink: 1,
+    flexGrow: 1,
+  },
+  scrollContent: {
+    paddingBottom: SPACING.md,
+  },
+  controlsFixed: {
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.lg,
+    backgroundColor: '#FFFFF0',
+    borderTopWidth: 1,
+    borderTopColor: '#E8E0C8',
   },
   modalContentFlash: {
     borderTopWidth: 6,

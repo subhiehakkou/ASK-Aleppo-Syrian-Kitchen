@@ -4,83 +4,95 @@
     "cat_id": "Keb",
     "name_ar": "الكبب الحلبية",
     "name_en": "Aleppo Kebbe",
-    "name_sv": "Aleppo-kebbe"
+    "name_sv": "Aleppo-kebbe",
+    "cover_image": "Kebbe_Meqleyeh.jpg"
   },
   {
     "id": "Yog",
     "cat_id": "Yog",
     "name_ar": "أكلات باللبن الزبادي",
     "name_en": "Yogurt Dishes",
-    "name_sv": "Yoghurträtter"
+    "name_sv": "Yoghurträtter",
+    "cover_image": "Shishbarak.jpg"
   },
   {
     "id": "Grn",
     "cat_id": "Grn",
     "name_ar": "أكلات الحبوب",
     "name_en": "Grain Dishes",
-    "name_sv": "Spannmålsrätter"
+    "name_sv": "Spannmålsrätter",
+    "cover_image": "Mjaddara_Burghul.jpg"
   },
   {
     "id": "Ass",
     "cat_id": "Ass",
     "name_ar": "أكلات متنوعة",
     "name_en": "Assorted Dishes",
-    "name_sv": "Diverse rätter"
+    "name_sv": "Diverse rätter",
+    "cover_image": "Mutabbal.jpg"
   },
   {
     "id": "Oil",
     "cat_id": "Oil",
     "name_ar": "أكلات نباتية",
     "name_en": "Vegetarian Dishes",
-    "name_sv": "Vegetariska rätter"
+    "name_sv": "Vegetariska rätter",
+    "cover_image": "Foul_Bezeit.jpg"
   },
   {
     "id": "Veg",
     "cat_id": "Veg",
     "name_ar": "الخضار",
     "name_en": "Vegetable Dishes",
-    "name_sv": "Grönsaksrätter"
+    "name_sv": "Grönsaksrätter",
+    "cover_image": "Fasoulia_Khadra.jpg"
   },
   {
     "id": "Met",
     "cat_id": "Met",
     "name_ar": "اللحوم",
     "name_en": "Meat Dishes",
-    "name_sv": "Kötträtter"
+    "name_sv": "Kötträtter",
+    "cover_image": "Kabab_Beseinieh_Belbanadora.jpg"
   },
   {
     "id": "Stf",
     "cat_id": "Stf",
     "name_ar": "المحاشي",
     "name_en": "Stuffed Vegetables",
-    "name_sv": "Fyllda grönsaker"
+    "name_sv": "Fyllda grönsaker",
+    "cover_image": "Mehshi.jpg"
   },
   {
     "id": "App",
     "cat_id": "App",
     "name_ar": "المقبلات",
     "name_en": "Appetizers",
-    "name_sv": "Förrätter"
+    "name_sv": "Förrätter",
+    "cover_image": "Muhammara.jpg"
   },
   {
     "id": "Sld",
     "cat_id": "Sld",
     "name_ar": "السلطات",
     "name_en": "Salads",
-    "name_sv": "Sallader"
+    "name_sv": "Sallader",
+    "cover_image": "Tabbouleh.jpg"
   },
   {
     "id": "Pat",
     "cat_id": "Pat",
     "name_ar": "المعجنات",
     "name_en": "Pastries",
-    "name_sv": "Bakverk"
+    "name_sv": "Bakverk",
+    "cover_image": "Esh_Elbulbul.jpg"
   },
   {
     "id": "Sop",
     "cat_id": "Sop",
     "name_ar": "الشوربات",
     "name_en": "Soups",
-    "name_sv": "Soppor"
+    "name_sv": "Soppor",
+    "cover_image": "soups.png"
   }
 ]

@@ -78,6 +78,8 @@ const imageMap: Record<string, any> = {
   'Mosaqaa_Batinjan.jpg': require('../../assets/recipe-images/Mosaqaa_Batinjan.jpg'),
   'Wyka_Bamia.jpg': require('../../assets/recipe-images/Wyka_Bamia.jpg'),
   'Yahoodi_Msafer.jpg': require('../../assets/recipe-images/Yahoodi_Msafer.jpg'),
+  // Category cover images
+  'soups.png': require('../../assets/recipe-images/soups.png'),
 };
 
 export default imageMap;

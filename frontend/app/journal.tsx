@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Modal, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Modal, Alert, Platform, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sharing from 'expo-sharing';
 import { useLanguage } from '../src/context/LanguageContext';
@@ -221,7 +220,7 @@ export default function CookingJournalScreen() {
 
       {/* Hero Section — compact, single row */}
       <View style={[styles.hero, isRTL && styles.rtlRow]}>
-        <Ionicons name="book" size={22} color={COLORS.goldDark} />
+        <Text style={{ fontSize: 22, color: COLORS.goldDark }}>?</Text>
         <View style={{ flex: 1 }}>
           <Text style={[styles.heroTitle, isRTL && styles.rtlText]} numberOfLines={1}>{L.title}</Text>
           <Text style={[styles.heroSubtitle, isRTL && styles.rtlText]} numberOfLines={1}>{L.subtitle}</Text>
@@ -231,7 +230,7 @@ export default function CookingJournalScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {entries.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="restaurant-outline" size={64} color={COLORS.border} />
+            <Text style={{ fontSize: 64, color: COLORS.border }}>?</Text>
             <Text style={[styles.emptyText, isRTL && styles.rtlText]}>{L.noEntries}</Text>
             <Text style={[styles.emptyHint, isRTL && styles.rtlText]}>{L.noEntriesHint}</Text>
           </View>
@@ -245,7 +244,7 @@ export default function CookingJournalScreen() {
             >
               <View style={[styles.entryHeader, isRTL && styles.rtlRow]}>
                 <View style={styles.entryIcon}>
-                  <Ionicons name="restaurant" size={20} color={COLORS.goldDark} />
+                  <Text style={{ fontSize: 20, color: COLORS.goldDark }}>?</Text>
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.entryName, isRTL && styles.rtlText]} numberOfLines={1}>
@@ -257,7 +256,7 @@ export default function CookingJournalScreen() {
                 </View>
                 <View style={[styles.entryActions, isRTL && styles.rtlRow]}>
                   <TouchableOpacity onPress={() => shareEntry(entry)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                    <Ionicons name="share-outline" size={20} color={COLORS.textLight} />
+                    <Text style={{ fontSize: 20, color: COLORS.textLight }}>?</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -268,7 +267,7 @@ export default function CookingJournalScreen() {
               ) : null}
               {entry.ingredients || entry.instructions ? (
                 <View style={[styles.recipeBadge, isRTL && { alignSelf: 'flex-end' }]}>
-                  <Ionicons name="document-text-outline" size={12} color={COLORS.goldDark} />
+                  <Text style={{ fontSize: 12, color: COLORS.goldDark }}>?</Text>
                   <Text style={styles.recipeBadgeText}>{L.myRecipe}</Text>
                 </View>
               ) : null}
@@ -291,73 +290,84 @@ export default function CookingJournalScreen() {
 
       {/* Add Entry Modal */}
       <Modal visible={showAddModal} transparent animationType="slide" onRequestClose={() => setShowAddModal(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, isRTL && styles.rtlText]}>{L.addEntry}</Text>
-              <TouchableOpacity onPress={() => setShowAddModal(false)}>
-                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
-              </TouchableOpacity>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={0}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={[styles.modalTitle, isRTL && styles.rtlText]}>{L.addEntry}</Text>
+                <TouchableOpacity onPress={() => setShowAddModal(false)}>
+                  <Text style={{ fontSize: 26, color: COLORS.textPrimary, fontWeight: '700' }}>×</Text>
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView
+                style={styles.formScroll}
+                contentContainerStyle={{ paddingBottom: 40 }}
+                showsVerticalScrollIndicator={true}
+                keyboardShouldPersistTaps="handled"
+              >
+                <Text style={[styles.inputLabel, isRTL && styles.rtlText]}>{L.recipeName} *</Text>
+                <TextInput
+                  style={[styles.input, isRTL && styles.rtlInput]}
+                  value={recipeName}
+                  onChangeText={setRecipeName}
+                  placeholder={isRTL ? 'مثال: كبة بالصينية' : 'e.g. Kibbeh bil Sayniyeh'}
+                  placeholderTextColor="#AAA"
+                  textAlign={isRTL ? 'right' : 'left'}
+                />
+
+                <Text style={[styles.inputLabel, isRTL && styles.rtlText]}>{L.note}</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea, isRTL && styles.rtlInput]}
+                  value={note}
+                  onChangeText={setNote}
+                  placeholder={isRTL ? 'أضفت ليمون إضافي...' : 'Added extra lemon...'}
+                  placeholderTextColor="#AAA"
+                  multiline
+                  numberOfLines={3}
+                  textAlignVertical="top"
+                  textAlign={isRTL ? 'right' : 'left'}
+                />
+
+                <Text style={[styles.inputLabel, isRTL && styles.rtlText]}>{L.ingredients}</Text>
+                <TextInput
+                  style={[styles.input, styles.textAreaLarge, isRTL && styles.rtlInput]}
+                  value={ingredients}
+                  onChangeText={setIngredients}
+                  placeholder={isRTL ? 'كيلو لحم مفروم\nبصلة كبيرة...' : '1 kg minced meat\n1 large onion...'}
+                  placeholderTextColor="#AAA"
+                  multiline
+                  numberOfLines={5}
+                  textAlignVertical="top"
+                  textAlign={isRTL ? 'right' : 'left'}
+                />
+
+                <Text style={[styles.inputLabel, isRTL && styles.rtlText]}>{L.instructions}</Text>
+                <TextInput
+                  style={[styles.input, styles.textAreaLarge, isRTL && styles.rtlInput]}
+                  value={instructions}
+                  onChangeText={setInstructions}
+                  placeholder={isRTL ? 'نخلط اللحم مع البرغل...' : 'Mix meat with bulgur...'}
+                  placeholderTextColor="#AAA"
+                  multiline
+                  numberOfLines={5}
+                  textAlignVertical="top"
+                  textAlign={isRTL ? 'right' : 'left'}
+                />
+
+                <TouchableOpacity style={styles.saveButton} onPress={addEntry}>
+                  <Text style={{ fontSize: 22, color: '#FFF', fontWeight: '700' }}>✓</Text>
+                  <Text style={styles.saveButtonText}>{L.save}</Text>
+                </TouchableOpacity>
+                <View style={{ height: 60 }} />
+              </ScrollView>
             </View>
-
-            <ScrollView style={styles.formScroll} showsVerticalScrollIndicator={false}>
-              <Text style={[styles.inputLabel, isRTL && styles.rtlText]}>{L.recipeName} *</Text>
-              <TextInput
-                style={[styles.input, isRTL && styles.rtlInput]}
-                value={recipeName}
-                onChangeText={setRecipeName}
-                placeholder={isRTL ? 'مثال: كبة بالصينية' : 'e.g. Kibbeh bil Sayniyeh'}
-                placeholderTextColor="#AAA"
-                textAlign={isRTL ? 'right' : 'left'}
-              />
-
-              <Text style={[styles.inputLabel, isRTL && styles.rtlText]}>{L.note}</Text>
-              <TextInput
-                style={[styles.input, styles.textArea, isRTL && styles.rtlInput]}
-                value={note}
-                onChangeText={setNote}
-                placeholder={isRTL ? 'أضفت ليمون إضافي...' : 'Added extra lemon...'}
-                placeholderTextColor="#AAA"
-                multiline
-                numberOfLines={3}
-                textAlignVertical="top"
-                textAlign={isRTL ? 'right' : 'left'}
-              />
-
-              <Text style={[styles.inputLabel, isRTL && styles.rtlText]}>{L.ingredients}</Text>
-              <TextInput
-                style={[styles.input, styles.textAreaLarge, isRTL && styles.rtlInput]}
-                value={ingredients}
-                onChangeText={setIngredients}
-                placeholder={isRTL ? 'كيلو لحم مفروم\nبصلة كبيرة...' : '1 kg minced meat\n1 large onion...'}
-                placeholderTextColor="#AAA"
-                multiline
-                numberOfLines={5}
-                textAlignVertical="top"
-                textAlign={isRTL ? 'right' : 'left'}
-              />
-
-              <Text style={[styles.inputLabel, isRTL && styles.rtlText]}>{L.instructions}</Text>
-              <TextInput
-                style={[styles.input, styles.textAreaLarge, isRTL && styles.rtlInput]}
-                value={instructions}
-                onChangeText={setInstructions}
-                placeholder={isRTL ? 'نخلط اللحم مع البرغل...' : 'Mix meat with bulgur...'}
-                placeholderTextColor="#AAA"
-                multiline
-                numberOfLines={5}
-                textAlignVertical="top"
-                textAlign={isRTL ? 'right' : 'left'}
-              />
-
-              <TouchableOpacity style={styles.saveButton} onPress={addEntry}>
-                <Ionicons name="checkmark" size={22} color="#FFF" />
-                <Text style={styles.saveButtonText}>{L.save}</Text>
-              </TouchableOpacity>
-              <View style={{ height: 30 }} />
-            </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Detail Modal */}
@@ -371,7 +381,7 @@ export default function CookingJournalScreen() {
                     {selectedEntry.recipeName}
                   </Text>
                   <TouchableOpacity onPress={() => setShowDetailModal(false)}>
-                    <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+                    <Text style={{ fontSize: 24, color: COLORS.textPrimary }}>×</Text>
                   </TouchableOpacity>
                 </View>
                 
@@ -418,14 +428,14 @@ export default function CookingJournalScreen() {
                       style={[styles.detailBtn, styles.shareBtn]}
                       onPress={() => shareEntry(selectedEntry)}
                     >
-                      <Ionicons name="share-outline" size={20} color="#FFF" />
+                      <Text style={{ fontSize: 20, color: "#FFF" }}>?</Text>
                       <Text style={styles.detailBtnText}>{L.share}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       style={[styles.detailBtn, styles.deleteBtn]}
                       onPress={() => deleteEntry(selectedEntry.id)}
                     >
-                      <Ionicons name="trash-outline" size={20} color="#FFF" />
+                      <Text style={{ fontSize: 20, color: "#FFF" }}>🗑</Text>
                       <Text style={styles.detailBtnText}>{L.delete}</Text>
                     </TouchableOpacity>
                   </View>
