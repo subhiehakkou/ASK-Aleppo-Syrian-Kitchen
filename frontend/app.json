@@ -2,16 +2,22 @@
   "expo": {
     "name": "ASK - المطبخ الحلبي السوري",
     "slug": "ask-aleppo-syrian-kitchen",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "ask-kitchen",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "assets/recipe-images/**/*",
+      "assets/images/**/*",
+      "assets/fonts/**/*",
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ask.syr",
-      "buildNumber": "21",
+      "buildNumber": "22",
       "infoPlist": {
         "CFBundleDisplayName": "ASK Kitchen",
         "ITSAppUsesNonExemptEncryption": false
@@ -19,7 +25,7 @@
     },
     "android": {
       "package": "com.ask.syr",
-      "versionCode": 11,
+      "versionCode": 12,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#FFD700"
