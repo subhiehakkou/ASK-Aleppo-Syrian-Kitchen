@@ -343,13 +343,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingBottom: 0,
-    maxHeight: '90%',
-    minHeight: '60%',
+    height: '85%',  // Fixed 85% of screen — guarantees room for header + scroll + footer
     flexDirection: 'column',
   },
   scrollMiddle: {
-    flexShrink: 1,
-    flexGrow: 1,
+    flex: 1,  // CRITICAL: makes ScrollView take all remaining space between header and footer
   },
   scrollContent: {
     paddingBottom: SPACING.md,
