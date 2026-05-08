@@ -29,13 +29,14 @@ export interface SearchResult {
   description_sv?: string;
 }
 
+// Strict mode: only search in fields that describe what the recipe IS,
+// not in instructions/secrets/decoration where mentions can be incidental
+// (per Ms Sabah's request — "لبن" should not match recipes that just
+//  serve yogurt on the side or mention it in the cooking method).
 const FIELD_GROUPS: Record<string, SearchMatchField['type']> = {
   name_ar: 'name', name_en: 'name', name_sv: 'name',
   description_ar: 'description', description_en: 'description', description_sv: 'description',
   ingredients_ar: 'ingredients', ingredients_en: 'ingredients', ingredients_sv: 'ingredients',
-  instructions_ar: 'instructions', instructions_en: 'instructions', instructions_sv: 'instructions',
-  secrets_ar: 'secrets', secrets_en: 'secrets', secrets_sv: 'secrets',
-  decoration_ar: 'decoration', decoration_en: 'decoration', decoration_sv: 'decoration',
   category_name_ar: 'category', category_name_en: 'category', category_name_sv: 'category',
 };
 
