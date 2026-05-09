@@ -19,7 +19,7 @@
         "buildType": "app-bundle"
       },
       "ios": {
-        "credentialsSource": "local"
+        "credentialsSource": "remote"
       },
       "autoIncrement": true
     }
