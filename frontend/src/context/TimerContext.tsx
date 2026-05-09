@@ -50,12 +50,18 @@ async function ensureChannel() {
     try {
       await Notifications.setNotificationChannelAsync('cooking-timer', {
         name: 'Cooking Timer',
-        importance: Notifications.AndroidImportance.HIGH,
+        // MAX importance — full-screen heads-up + ring even when locked
+        importance: Notifications.AndroidImportance.MAX,
         sound: 'default',
-        vibrationPattern: [0, 800, 400, 800, 400, 800],
+        vibrationPattern: [0, 800, 400, 800, 400, 800, 400, 800],
         enableVibrate: true,
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
-        bypassDnd: false,
+        // Ring even in Do Not Disturb / Silent mode (per Ms Sabah's request:
+        // an alarm should ring like a real alarm clock — burning food cannot wait).
+        bypassDnd: true,
+        showBadge: false,
+        enableLights: true,
+        lightColor: '#FFD700',
       });
     } catch {}
   }
@@ -318,8 +324,10 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
             title: '⏰ انتهى الوقت! · Time is up!',
             body: 'وصفتك جاهزة 🌹 · Your recipe is ready',
             sound: 'default',
-            priority: Notifications.AndroidNotificationPriority.HIGH,
-            vibrate: [0, 800, 400, 800, 400],
+            priority: Notifications.AndroidNotificationPriority.MAX,
+            vibrate: [0, 800, 400, 800, 400, 800, 400, 800],
+            // iOS: time-sensitive bypasses Focus/silent mode
+            interruptionLevel: 'timeSensitive',
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -370,8 +378,9 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
             title: '⏰ انتهى الوقت! · Time is up!',
             body: 'وصفتك جاهزة 🌹 · Your recipe is ready',
             sound: 'default',
-            priority: Notifications.AndroidNotificationPriority.HIGH,
-            vibrate: [0, 800, 400, 800, 400],
+            priority: Notifications.AndroidNotificationPriority.MAX,
+            vibrate: [0, 800, 400, 800, 400, 800, 400, 800],
+            interruptionLevel: 'timeSensitive',
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,

@@ -3,17 +3,18 @@
  *
  * Full-screen cooking-timer modal. All actual countdown state lives in
  * TimerContext so the timer keeps ticking even when the user leaves the
- * recipe screen — the user can navigate freely while a small floating bubble
- * (rendered globally) shows the remaining time.
+ * recipe screen.
  *
- * v3 layout (per Ms Sabah's feedback on Samsung S22):
- * - Tight vertical heights (no oversized circle / paddings).
- * - Full width usage for presets and action buttons.
- * - Bottom action row uses safe-area inset so Reset is NEVER cut off.
+ * v4 layout (per Ms Sabah's feedback — June 2026):
+ * - NO ScrollView. Everything fits on one screen, always visible.
+ * - Modal takes ~85% of the screen height (3/4+) with safe-area aware controls.
+ * - The minutes count, +/-, presets, and action buttons are ALL visible
+ *   simultaneously without any scrolling. The user never has to "find"
+ *   buttons — they are always on screen.
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Platform, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
@@ -21,13 +22,12 @@ import { useTimer } from '../context/TimerContext';
 
 interface CookingTimerProps {
   isRTL: boolean;
-  /** When provided, parent controls modal visibility (no standalone button rendered). */
   externalVisible?: boolean;
-  /** Called when user dismisses the modal in controlled mode. */
   onExternalClose?: () => void;
-  /** Hide the standalone action-bar button (used inside the unified Tools menu). */
   hideButton?: boolean;
 }
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function CookingTimer({
   isRTL,
@@ -64,17 +64,14 @@ export default function CookingTimer({
   };
 
   const [minutes, setMinutes] = useState(10);
-  // Two preset rows — quick minute presets + slow-cooking hour presets.
   const minutePresets = [5, 10, 15, 20, 30, 45];
-  const hourPresets = [60, 90, 120, 180, 240, 300]; // 1h · 1.5h · 2h · 3h · 4h · 5h
-  const TIMER_MAX_MIN = 480; // 8 hours
+  const hourPresets = [60, 90, 120, 180, 240, 300];
+  const TIMER_MAX_MIN = 480;
 
   const smartStep = (val: number) => (val < 30 ? 1 : val < 90 ? 5 : 15);
 
   const formatMinutes = (m: number) => {
-    if (m < 60) {
-      return isRTL ? `${m} دقيقة` : `${m} min`;
-    }
+    if (m < 60) return isRTL ? `${m} دقيقة` : `${m} min`;
     const h = Math.floor(m / 60);
     const r = m % 60;
     if (r === 0) {
@@ -104,7 +101,6 @@ export default function CookingTimer({
 
   return (
     <>
-      {/* Timer Button in Action Bar (hidden when used inside Tools menu) */}
       {!hideButton && (
         <TouchableOpacity
           style={styles.actionButton}
@@ -118,7 +114,6 @@ export default function CookingTimer({
         </TouchableOpacity>
       )}
 
-      {/* Timer Modal */}
       <Modal
         visible={isVisible}
         transparent={true}
@@ -127,7 +122,8 @@ export default function CookingTimer({
       >
         <View style={[styles.modalOverlay, flashAlert && styles.modalOverlayFlashRed]}>
           <View style={[styles.modalContent, flashAlert && styles.modalContentFlash]}>
-            {/* Visual flash alert banner */}
+
+            {/* Flash banner when time is up */}
             {totalSeconds === 0 && !isRunning && initialTotal > 0 ? (
               <View
                 style={[styles.flashBanner, flashAlert ? styles.flashBannerRed : styles.flashBannerYellow]}
@@ -143,7 +139,7 @@ export default function CookingTimer({
               </View>
             ) : null}
 
-            {/* Header (compact) */}
+            {/* Header */}
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, isRTL && styles.rtlText]}>
                 {isRTL ? '⏲️ مؤقت الطبخ' : '⏲️ Cooking Timer'}
@@ -153,29 +149,20 @@ export default function CookingTimer({
               </TouchableOpacity>
             </View>
 
-            {/* Scrollable middle */}
-            <ScrollView
-              style={styles.scrollMiddle}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={true}
-              bounces={true}
-            >
+            {/* Middle content — NO ScrollView, everything fits */}
+            <View style={styles.middleContent}>
               {/* Hint when running */}
               {isRunning && (
                 <View style={styles.floatHint}>
-                  <Text style={{ fontSize: 14, color: '#1A1A2E' }}>ⓘ</Text>
                   <Text style={[styles.floatHintText, isRTL && styles.rtlText]}>
-                    {isRTL
-                      ? 'يمكنكِ إغلاق المؤقت والتنقّل في التطبيق — سيظهر فوق الشاشة'
-                      : 'You can close this and browse the app — it stays floating'}
+                    {isRTL ? 'ⓘ يمكنكِ إغلاق المؤقت والتنقّل في التطبيق' : 'ⓘ You can close this and browse'}
                   </Text>
                 </View>
               )}
 
-              {/* Timer Display — compact circle */}
+              {/* Timer Circle */}
               <View style={styles.timerDisplay}>
                 <View style={styles.timerCircle}>
-                  <View style={[styles.progressRing, { borderColor: '#E0E0E0' }]} />
                   <Text style={styles.timerText}>
                     {isRunning || totalSeconds > 0 ? formatTime(totalSeconds) : formatTime(minutes * 60)}
                   </Text>
@@ -192,89 +179,99 @@ export default function CookingTimer({
                 </View>
               </View>
 
-              {/* Presets — full-width row, flex distribution */}
               {!isRunning && (
-                <View style={styles.presetsContainer}>
-                  <Text style={[styles.presetsLabel, isRTL && styles.rtlText]}>
-                    {isRTL ? 'دقائق:' : 'Minutes:'}
-                  </Text>
-                  <View style={styles.presetsRow}>
-                    {minutePresets.map((preset) => (
-                      <TouchableOpacity
-                        key={`m${preset}`}
-                        style={[
-                          styles.presetButton,
-                          minutes === preset && styles.presetButtonActive,
-                        ]}
-                        onPress={() => setMinutes(preset)}
-                      >
-                        <Text style={[
-                          styles.presetText,
-                          minutes === preset && styles.presetTextActive,
-                        ]}>
-                          {formatPresetLabel(preset)}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
+                <>
+                  {/* Minutes presets */}
+                  <View style={styles.presetsBlock}>
+                    <Text style={[styles.presetsLabel, isRTL && styles.rtlText]}>
+                      {isRTL ? 'دقائق' : 'Minutes'}
+                    </Text>
+                    <View style={styles.presetsRow}>
+                      {minutePresets.map((p) => (
+                        <TouchableOpacity
+                          key={`m${p}`}
+                          style={[
+                            styles.presetButton,
+                            minutes === p && styles.presetButtonActive,
+                          ]}
+                          onPress={() => setMinutes(p)}
+                        >
+                          <Text style={[
+                            styles.presetText,
+                            minutes === p && styles.presetTextActive,
+                          ]}>
+                            {formatPresetLabel(p)}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
                   </View>
 
-                  <Text style={[styles.presetsLabel, styles.presetsLabelHours, isRTL && styles.rtlText]}>
-                    {isRTL ? 'ساعات:' : 'Hours:'}
-                  </Text>
-                  <View style={styles.presetsRow}>
-                    {hourPresets.map((preset) => (
-                      <TouchableOpacity
-                        key={`h${preset}`}
-                        style={[
-                          styles.presetButton,
-                          styles.presetButtonHours,
-                          minutes === preset && styles.presetButtonActive,
-                        ]}
-                        onPress={() => setMinutes(preset)}
-                      >
-                        <Text style={[
-                          styles.presetText,
-                          minutes === preset && styles.presetTextActive,
-                        ]}>
-                          {formatPresetLabel(preset)}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
+                  {/* Hours presets */}
+                  <View style={styles.presetsBlock}>
+                    <Text style={[styles.presetsLabel, isRTL && styles.rtlText]}>
+                      {isRTL ? 'ساعات' : 'Hours'}
+                    </Text>
+                    <View style={styles.presetsRow}>
+                      {hourPresets.map((p) => (
+                        <TouchableOpacity
+                          key={`h${p}`}
+                          style={[
+                            styles.presetButton,
+                            styles.presetButtonHours,
+                            minutes === p && styles.presetButtonActive,
+                          ]}
+                          onPress={() => setMinutes(p)}
+                        >
+                          <Text style={[
+                            styles.presetText,
+                            minutes === p && styles.presetTextActive,
+                          ]}>
+                            {formatPresetLabel(p)}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
                   </View>
 
-                  {/* Smart +/− adjust row */}
+                  {/* +/- adjuster — minute count BETWEEN the buttons, always visible */}
                   <View style={styles.customTime}>
                     <TouchableOpacity
                       style={styles.adjustButton}
                       onPress={() => setMinutes(Math.max(1, minutes - smartStep(minutes)))}
-                      accessibilityLabel={isRTL ? `إنقاص ${smartStep(minutes)} دقائق` : `Decrease by ${smartStep(minutes)} minutes`}
+                      accessibilityLabel={isRTL ? `إنقاص ${smartStep(minutes)} دقائق` : `Decrease ${smartStep(minutes)} min`}
                     >
-                      <Text style={{ fontSize: 28, color: COLORS.goldDark, fontWeight: '700' }}>−</Text>
+                      <Text style={styles.adjustSymbol}>−</Text>
                       <Text style={styles.adjustStepLabel}>−{smartStep(minutes)}</Text>
                     </TouchableOpacity>
+
                     <View style={styles.customTimeWrap}>
-                      <Text style={styles.customTimeText}>{formatMinutes(minutes)}</Text>
+                      <Text style={styles.customTimeText} numberOfLines={1} adjustsFontSizeToFit>
+                        {formatMinutes(minutes)}
+                      </Text>
                       <Text style={styles.customTimeSub}>
                         {isRTL ? `(${minutes} دقيقة)` : `(${minutes} min)`}
                       </Text>
                     </View>
+
                     <TouchableOpacity
                       style={styles.adjustButton}
                       onPress={() => setMinutes(Math.min(TIMER_MAX_MIN, minutes + smartStep(minutes)))}
-                      accessibilityLabel={isRTL ? `زيادة ${smartStep(minutes)} دقائق` : `Increase by ${smartStep(minutes)} minutes`}
+                      accessibilityLabel={isRTL ? `زيادة ${smartStep(minutes)} دقائق` : `Increase ${smartStep(minutes)} min`}
                     >
-                      <Text style={{ fontSize: 28, color: COLORS.goldDark, fontWeight: '700' }}>+</Text>
+                      <Text style={styles.adjustSymbol}>+</Text>
                       <Text style={styles.adjustStepLabel}>+{smartStep(minutes)}</Text>
                     </TouchableOpacity>
                   </View>
+
                   <Text style={styles.maxHint}>
                     {isRTL ? 'الحد الأقصى: 8 ساعات' : 'Max: 8 hours'}
                   </Text>
-                </View>
+                </>
               )}
-            </ScrollView>
+            </View>
 
-            {/* Control Buttons — fixed bottom, safe-area aware, full width */}
+            {/* Action buttons — always visible, full width, safe-area aware */}
             <View
               style={[
                 styles.controlsFixed,
@@ -283,7 +280,7 @@ export default function CookingTimer({
             >
               {!isRunning ? (
                 <TouchableOpacity style={styles.startButton} onPress={handleStart}>
-                  <Text style={{ fontSize: 24, color: '#FFF' }}>▶</Text>
+                  <Text style={{ fontSize: 22, color: '#FFF' }}>▶</Text>
                   <Text style={styles.startButtonText}>
                     {isRTL ? 'ابدأ' : 'Start'}
                   </Text>
@@ -292,17 +289,17 @@ export default function CookingTimer({
                 <View style={styles.runningControls}>
                   {isPaused ? (
                     <TouchableOpacity style={[styles.controlBtn, styles.resumeBtn]} onPress={resume}>
-                      <Text style={{ fontSize: 22, color: '#FFF' }}>▶</Text>
+                      <Text style={{ fontSize: 20, color: '#FFF' }}>▶</Text>
                       <Text style={styles.controlBtnText}>{isRTL ? 'استمر' : 'Resume'}</Text>
                     </TouchableOpacity>
                   ) : (
                     <TouchableOpacity style={[styles.controlBtn, styles.pauseBtn]} onPress={pause}>
-                      <Text style={{ fontSize: 22, color: '#FFF' }}>⏸</Text>
+                      <Text style={{ fontSize: 20, color: '#FFF' }}>⏸</Text>
                       <Text style={styles.controlBtnText}>{isRTL ? 'إيقاف' : 'Pause'}</Text>
                     </TouchableOpacity>
                   )}
                   <TouchableOpacity style={[styles.controlBtn, styles.resetBtn]} onPress={reset}>
-                    <Text style={{ fontSize: 22, color: '#FFF' }}>↻</Text>
+                    <Text style={{ fontSize: 20, color: '#FFF' }}>↻</Text>
                     <Text style={styles.controlBtnText}>{isRTL ? 'إعادة' : 'Reset'}</Text>
                   </TouchableOpacity>
                 </View>
@@ -336,7 +333,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'flex-end',
   },
   modalOverlayFlashRed: {
@@ -347,22 +344,20 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingBottom: 0,
-    // Use min/max so on small phones it doesn't overshoot, but it can shrink
-    // to fit content. flexShrink lets ScrollView absorb extra space.
-    maxHeight: '92%',
-    minHeight: 360,
+    // ~85% (more than 3/4) — leaves a small overlay above so user feels modal,
+    // and gives ample room for ALL content without any scrolling.
+    height: SCREEN_HEIGHT * 0.85,
     flexDirection: 'column',
   },
-  scrollMiddle: {
-    flex: 1, // takes all remaining space between header and footer
-  },
-  scrollContent: {
-    paddingBottom: SPACING.sm,
+  middleContent: {
+    flex: 1,
+    paddingHorizontal: SPACING.md,
+    justifyContent: 'space-around', // distributes content evenly between header and footer
+    paddingVertical: SPACING.sm,
   },
   controlsFixed: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.sm,
-    // paddingBottom is set inline using safe-area insets
     backgroundColor: '#FFFFF0',
     borderTopWidth: 1,
     borderTopColor: '#E8E0C8',
@@ -378,14 +373,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     gap: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: '#C0392B',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   flashBannerRed: { backgroundColor: '#E74C3C' },
   flashBannerYellow: { backgroundColor: '#FFD700' },
-  flashBannerIcon: { fontSize: 24 },
+  flashBannerIcon: { fontSize: 22 },
   flashBannerText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
     color: '#FFFFFF',
     fontFamily: 'NotoNaskhArabic_700Bold',
@@ -411,34 +406,27 @@ const styles = StyleSheet.create({
   },
   rtlText: { textAlign: 'right' },
   floatHint: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginHorizontal: SPACING.md,
-    marginTop: SPACING.sm,
     paddingHorizontal: SPACING.sm,
-    paddingVertical: 6,
+    paddingVertical: 4,
     backgroundColor: '#FFF8DC',
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
     borderColor: '#E8C56B',
+    alignSelf: 'center',
   },
   floatHintText: {
-    flex: 1,
     fontFamily: 'NotoNaskhArabic_400Regular',
     fontSize: 11,
     color: '#1A1A2E',
-    lineHeight: 16,
+    textAlign: 'center',
   },
   timerDisplay: {
     alignItems: 'center',
-    paddingTop: SPACING.sm,
-    paddingBottom: SPACING.sm,
   },
   timerCircle: {
-    width: 132,
-    height: 132,
-    borderRadius: 66,
+    width: 130,
+    height: 130,
+    borderRadius: 65,
     backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
@@ -446,15 +434,8 @@ const styles = StyleSheet.create({
     borderColor: COLORS.goldDark,
     ...SHADOWS.medium,
   },
-  progressRing: {
-    position: 'absolute',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 3,
-  },
   timerText: {
-    fontSize: 34,
+    fontSize: 32,
     fontWeight: '700',
     color: COLORS.textPrimary,
     fontFamily: 'NotoNaskhArabic_700Bold',
@@ -465,35 +446,30 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontFamily: 'NotoNaskhArabic_400Regular',
   },
-  presetsContainer: {
-    paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.sm,
+  presetsBlock: {
+    width: '100%',
   },
   presetsLabel: {
     fontSize: FONTS.sizes.sm,
     color: COLORS.textSecondary,
-    marginBottom: 6,
-    fontFamily: 'NotoNaskhArabic_400Regular',
+    marginBottom: 4,
+    fontFamily: 'NotoNaskhArabic_600SemiBold',
   },
-  presetsLabelHours: {
-    marginTop: SPACING.sm,
-  },
-  // Use full row width: distribute presets evenly across the row.
   presetsRow: {
     flexDirection: 'row',
-    gap: 6,
+    gap: 5,
   },
   presetButton: {
-    flex: 1, // full-width distribution
-    paddingHorizontal: 4,
-    paddingVertical: 8,
-    borderRadius: 18,
+    flex: 1,
+    paddingHorizontal: 2,
+    paddingVertical: 7,
+    borderRadius: 16,
     backgroundColor: '#FFF',
     borderWidth: 1.5,
     borderColor: '#E0E0E0',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 36,
+    minHeight: 34,
   },
   presetButtonHours: {
     backgroundColor: '#FFF8DC',
@@ -504,23 +480,33 @@ const styles = StyleSheet.create({
     borderColor: COLORS.goldDark,
   },
   presetText: {
-    fontSize: 14,
+    fontSize: 13,
     color: COLORS.textSecondary,
     fontWeight: '600',
   },
-  presetTextActive: { color: '#FFF' },
+  presetTextActive: { color: '#FFF', fontWeight: '700' },
   customTime: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: SPACING.sm,
-    marginTop: SPACING.sm,
+    backgroundColor: '#FFF8DC',
+    borderRadius: BORDER_RADIUS.md,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderWidth: 1.5,
+    borderColor: '#E8C56B',
   },
   adjustButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     alignItems: 'center',
     minWidth: 56,
+  },
+  adjustSymbol: {
+    fontSize: 30,
+    color: COLORS.goldDark,
+    fontWeight: '900',
+    lineHeight: 32,
   },
   adjustStepLabel: {
     fontSize: 10,
@@ -531,9 +517,10 @@ const styles = StyleSheet.create({
   customTimeWrap: {
     flex: 1,
     alignItems: 'center',
+    paddingHorizontal: 4,
   },
   customTimeText: {
-    fontSize: FONTS.sizes.lg,
+    fontSize: 17,
     fontWeight: '700',
     color: COLORS.textPrimary,
     textAlign: 'center',
@@ -550,7 +537,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: COLORS.textLight,
     fontFamily: 'NotoNaskhArabic_400Regular',
-    marginTop: 6,
     fontStyle: 'italic',
   },
   startButton: {

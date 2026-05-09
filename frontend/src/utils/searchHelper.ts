@@ -29,13 +29,15 @@ export interface SearchResult {
   description_sv?: string;
 }
 
-// Strict mode: only search in fields that describe what the recipe IS,
-// not in instructions/secrets/decoration where mentions can be incidental
-// (per Ms Sabah's request — "لبن" should not match recipes that just
-//  serve yogurt on the side or mention it in the cooking method).
+// SUPER STRICT mode (per Ms Sabah's strong request): search ONLY in
+// • name (what the recipe IS called)
+// • ingredients (what the recipe ACTUALLY contains)
+// • category (high-level grouping)
+// We deliberately EXCLUDE description, instructions, secrets, decoration —
+// because those fields often mention ingredients incidentally (e.g. "يقدم
+// مع اللبن" or "تزيين بالنعناع") and would create false positives.
 const FIELD_GROUPS: Record<string, SearchMatchField['type']> = {
   name_ar: 'name', name_en: 'name', name_sv: 'name',
-  description_ar: 'description', description_en: 'description', description_sv: 'description',
   ingredients_ar: 'ingredients', ingredients_en: 'ingredients', ingredients_sv: 'ingredients',
   category_name_ar: 'category', category_name_en: 'category', category_name_sv: 'category',
 };
