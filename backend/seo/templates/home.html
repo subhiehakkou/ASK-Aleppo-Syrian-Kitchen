@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ brand_name }} — {{ brand_tagline }}{% endblock %}
+{% block description %}{{ labels.home_description }}{% endblock %}
+{% block schema_jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ brand_name }}",
+  "url": "{{ primary_domain }}",
+  "inLanguage": "{{ lang }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ primary_domain }}/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+  <h1>{{ brand_name }}</h1>
+  <p style="font-size: 18px; color: #555;">{{ brand_tagline }}</p>
+
+  <a href="{{ deep_link_home }}" class="install-cta">
+    📱 {{ labels.open_in_app }}
+    <small>{{ labels.open_in_app_sub }}</small>
+  </a>
+
+  <h2>📂 {{ labels.categories }}</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+    {% for c in categories %}
+      <a href="{{ category_url(c) }}" style="text-decoration: none; color: inherit; background: #FFF; padding: 16px; border-radius: 12px; border: 2px solid #E8C56B; text-align: center; font-weight: 600;">
+        {{ c['name_' + lang] if c.get('name_' + lang) else c.get('name_en') }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <h2>🍽️ {{ labels.popular_recipes }}</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px;">
+    {% for r in recipes[:12] %}
+      <a href="{{ recipe_url(r) }}" style="text-decoration: none; color: inherit; background: #FFF; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #E0E0E0;">
+        <img src="{{ recipe_image(r) }}" alt="{{ recipe_title(r) }}" style="width: 100%; height: 160px; object-fit: cover;" loading="lazy">
+        <div style="padding: 12px 14px;">
+          <div style="font-weight: 700;">{{ recipe_title(r) }}</div>
+          {% if r.get('time_' + lang) %}<div style="font-size: 13px; color: #888; margin-top: 4px;">⏲️ {{ r['time_' + lang] }}</div>{% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}

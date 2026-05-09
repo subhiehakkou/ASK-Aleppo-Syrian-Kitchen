@@ -18,6 +18,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.ask.syr",
       "buildNumber": "27",
+      "associatedDomains": [
+        "applinks:ask.cooking"
+      ],
       "infoPlist": {
         "CFBundleDisplayName": "ASK Kitchen",
         "ITSAppUsesNonExemptEncryption": false
@@ -38,6 +41,19 @@
         "android.permission.USE_EXACT_ALARM",
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.POST_NOTIFICATIONS"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            { "scheme": "https", "host": "ask.cooking", "pathPrefix": "/recipes/" },
+            { "scheme": "https", "host": "ask.cooking", "pathPrefix": "/categories/" },
+            { "scheme": "https", "host": "ask.cooking", "pathPrefix": "/ar/" },
+            { "scheme": "https", "host": "ask.cooking", "pathPrefix": "/sv/" }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
     },
     "web": {

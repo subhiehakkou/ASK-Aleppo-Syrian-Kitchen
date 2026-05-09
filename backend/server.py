@@ -659,11 +659,31 @@ async def update_about(update: AboutUpdate, password: str = ""):
 # Include the router AFTER all routes are defined
 app.include_router(api_router)
 
+# ============================================================================
+#  SEO Web Routes (Server-Side Rendered HTML for Google indexing)
+#  These routes are mounted at the ROOT of the FastAPI app — NOT under /api/*.
+#  They power:
+#    • Recipe pages indexable by Google (with Schema.org Recipe rich data)
+#    • Sitemap.xml auto-generated from recipes
+#    • robots.txt
+#    • /.well-known/apple-app-site-association  (iOS Universal Links)
+#    • /.well-known/assetlinks.json             (Android App Links)
+#  Mobile app endpoints under /api/* are completely unaffected.
+# ============================================================================
+try:
+    from seo.router import router as seo_router
+    app.include_router(seo_router)
+    logger.info("SEO web routes mounted (SSR + sitemap + universal links)")
+except Exception as e:
+    logger.error(f"Failed to mount SEO router: {e}")
+
 # Mount static files for recipe images
 STATIC_DIR = ROOT_DIR / 'static'
 IMAGES_DIR = STATIC_DIR / 'images'
 if IMAGES_DIR.exists():
     app.mount("/api/images", StaticFiles(directory=str(IMAGES_DIR)), name="recipe_images")
+    # Also mount at /static/images/* for SEO HTML pages (no /api prefix)
+    app.mount("/static/images", StaticFiles(directory=str(IMAGES_DIR)), name="seo_images")
     logger.info(f"Static images mounted from {IMAGES_DIR}")
 
 # Mount poster files for download

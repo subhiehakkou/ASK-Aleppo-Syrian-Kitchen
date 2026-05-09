@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category_name }} | {{ brand_name }}{% endblock %}
+{% block description %}{{ labels.category_description.replace('{cat}', category_name) }}{% endblock %}
+
+{% block schema_jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "{{ category_name }}",
+  "url": "{{ canonical_url }}",
+  "inLanguage": "{{ lang }}",
+  "isPartOf": { "@type": "WebSite", "name": "{{ brand_name }}", "url": "{{ primary_domain }}" }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+  <h1>{{ category_name }}</h1>
+
+  <a href="{{ deep_link_url }}" class="install-cta">📱 {{ labels.open_in_app }}</a>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px;">
+    {% for r in recipes %}
+      <a href="{{ recipe_url(r) }}" style="text-decoration: none; color: inherit; background: #FFF; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #E0E0E0;">
+        <img src="{{ recipe_image(r) }}" alt="{{ recipe_title(r) }}" style="width: 100%; height: 160px; object-fit: cover;" loading="lazy">
+        <div style="padding: 12px 14px;">
+          <div style="font-weight: 700;">{{ recipe_title(r) }}</div>
+          {% if r.get('time_' + lang) %}<div style="font-size: 13px; color: #888; margin-top: 4px;">⏲️ {{ r['time_' + lang] }}</div>{% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}

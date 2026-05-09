@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe_name }} | {{ brand_name }}{% endblock %}
+{% block description %}{{ recipe_description|truncate(155) }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_image %}{{ recipe_image_abs }}{% endblock %}
+
+{% block schema_jsonld %}
+<script type="application/ld+json">
+{{ schema_json|safe }}
+</script>
+{% endblock %}
+
+{% block content %}
+  <h1>{{ recipe_name }}</h1>
+  {% if recipe_description %}<p style="font-size: 17px; color: #555;">{{ recipe_description }}</p>{% endif %}
+
+  {% if recipe_image_abs %}
+  <img class="recipe-hero" src="{{ recipe_image_abs }}" alt="{{ recipe_name }}" loading="eager">
+  {% endif %}
+
+  <div class="meta-row">
+    {% if t.time %}<div class="meta-item">⏲️ <span class="meta-label">{{ labels.time }}:</span> {{ t.time }}</div>{% endif %}
+    {% if t.servings %}<div class="meta-item">🍽️ <span class="meta-label">{{ labels.servings }}:</span> {{ t.servings }}</div>{% endif %}
+    {% if category_name %}<div class="meta-item">📂 <span class="meta-label">{{ labels.category }}:</span> <a href="{{ category_url }}">{{ category_name }}</a></div>{% endif %}
+  </div>
+
+  <a href="{{ deep_link_url }}" class="install-cta" id="open-in-app">
+    📱 {{ labels.open_in_app }}
+    <small>{{ labels.open_in_app_sub }}</small>
+  </a>
+
+  {% if t.ingredients %}
+  <h2>🥄 {{ labels.ingredients }}</h2>
+  <ul class="ingredients">
+    {% for ing in t.ingredients_list %}<li>{{ ing }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if t.instructions %}
+  <h2>👩‍🍳 {{ labels.instructions }}</h2>
+  <ol class="steps">
+    {% for step in t.instructions_list %}<li>{{ step }}</li>{% endfor %}
+  </ol>
+  {% endif %}
+
+  {% if t.secrets %}
+  <div class="secret-box">
+    <h3>✨ {{ labels.secrets }}</h3>
+    <p>{{ t.secrets }}</p>
+  </div>
+  {% endif %}
+
+  {% if t.decoration %}
+  <h2>🌹 {{ labels.decoration }}</h2>
+  <p>{{ t.decoration }}</p>
+  {% endif %}
+
+  {% if t.pro_tips %}
+  <div class="secret-box">
+    <h3>💡 {{ labels.pro_tips }}</h3>
+    <p>{{ t.pro_tips }}</p>
+  </div>
+  {% endif %}
+
+  <a href="{{ deep_link_url }}" class="install-cta">
+    📱 {{ labels.open_in_app }}
+  </a>
+{% endblock %}
