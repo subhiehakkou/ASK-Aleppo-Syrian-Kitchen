@@ -16,10 +16,10 @@ import re
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
+# MongoDB connection — both env vars are REQUIRED (fail fast if missing)
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'ask_kitchen')]
+db = client[os.environ['DB_NAME']]
 
 # Create the main app
 app = FastAPI(title="Aleppo Syrian Kitchen API")
@@ -548,7 +548,9 @@ async def get_stats():
 
 # ============== ADMIN API ROUTES ==============
 
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Gimini2026')
+# Admin password — required env var. Fail fast at startup if not set
+# (security: never ship a hardcoded default into production).
+ADMIN_PASSWORD = os.environ['ADMIN_PASSWORD']
 
 class AdminAuth(BaseModel):
     password: str
