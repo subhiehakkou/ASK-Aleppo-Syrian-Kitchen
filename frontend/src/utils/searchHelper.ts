@@ -72,6 +72,46 @@ function fieldContains(fieldValue: string, normQuery: string): boolean {
   return normField.includes(normQuery);
 }
 
+/**
+ * Extract ONLY the actual ingredient bullet lines from the ingredients block.
+ *
+ * Why this matters (per Ms Sabah's strong feedback):
+ *   The `ingredients_*` field in each recipe is a multi-line text that contains:
+ *     • bullet lines starting with "•" — these are the REAL ingredients
+ *       (e.g. "• 2 كيلو لبن دسم 10%")
+ *     • narrative paragraphs that mention other dishes/concepts incidentally
+ *       (e.g. "كل الكبب بالمرق أو اللبن الكبة فيها موحدة")
+ *
+ *   When a user with a yogurt allergy searches "لبن", showing them recipes
+ *   that just MENTION yogurt in narrative text — but don't actually CONTAIN
+ *   yogurt as an ingredient — is dangerous misinformation. So we strictly
+ *   limit ingredient-search to bullet-prefixed lines.
+ *
+ *   All 81 ASK recipes use the "•" bullet convention, so this is reliable.
+ */
+function extractIngredientBullets(ingredientsBlock: string): string {
+  if (!ingredientsBlock) return '';
+  const lines = ingredientsBlock.split(/[\r\n]+/);
+  const bulletLines: string[] = [];
+  for (const raw of lines) {
+    const trimmed = raw.trim();
+    // Real ingredient line — starts with •, ◦, –, *, or "- "
+    if (/^[•◦●○○*–\-]/.test(trimmed)) {
+      bulletLines.push(trimmed);
+    }
+  }
+  return bulletLines.join('\n');
+}
+
+/** Same as fieldContains but for ingredient fields — only matches bullet lines. */
+function ingredientBulletsContain(ingredientsBlock: string, normQuery: string): boolean {
+  if (!ingredientsBlock) return false;
+  const bullets = extractIngredientBullets(ingredientsBlock);
+  if (!bullets) return false;
+  const normField = normalize(bullets);
+  return normField.includes(normQuery);
+}
+
 // Build category lookup
 const categoriesMap: Record<string, any> = {};
 (categoriesData as any[]).forEach((c) => {
@@ -102,8 +142,18 @@ export function searchRecipes(query: string): SearchResult[] {
     // Check each searchable field
     for (const fieldName of Object.keys(FIELD_GROUPS)) {
       const value = fullRecord[fieldName];
-      if (value && fieldContains(String(value), normQuery)) {
-        const type = FIELD_GROUPS[fieldName];
+      if (!value) continue;
+      const type = FIELD_GROUPS[fieldName];
+
+      // For ingredient fields, ONLY match against bullet-prefixed lines
+      // (real ingredients) — never against narrative text mixed in. This
+      // prevents false positives like "لبن" matching recipes that mention
+      // yogurt only as a related-dish reference.
+      const matched = (type === 'ingredients')
+        ? ingredientBulletsContain(String(value), normQuery)
+        : fieldContains(String(value), normQuery);
+
+      if (matched) {
         if (!seenTypes.has(type)) {
           matchFields.push({ field: fieldName, type });
           seenTypes.add(type);

@@ -77,11 +77,15 @@ export default function AppHeader({ showBack = false, showMenu = false, title, o
                 try { router.replace('/'); } catch {}
               }
             }}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             accessibilityRole="button"
-            accessibilityLabel="back"
+            accessibilityLabel="Back"
           >
-            <Ionicons name="arrow-back" size={22} color="#3A3A3A" />
+            {/* Use a Unicode arrow so it renders even if the Ionicons font
+                fails to load (same fix as the hamburger menu — production
+                iOS sometimes fails to load custom icon fonts, leaving the
+                button invisible and trapping the user). */}
+            <Text style={styles.backArrowText}>‹</Text>
           </TouchableOpacity>
         ) : showMenu && onMenuPress ? (
           <TouchableOpacity
@@ -171,6 +175,15 @@ const styles = StyleSheet.create({
     color: '#3A3A3A',
     fontWeight: '700',
     includeFontPadding: false,
+  },
+  backArrowText: {
+    // Big chevron — Unicode renders on every device without any custom font.
+    fontSize: 36,
+    lineHeight: 38,
+    color: '#3A3A3A',
+    fontWeight: '700',
+    includeFontPadding: false,
+    marginTop: -4, // tiny tweak so the chevron is vertically centred
   },
   nameBlock: {
     flexDirection: 'row',
