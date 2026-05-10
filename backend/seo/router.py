@@ -78,13 +78,15 @@ LABELS = {
 }
 
 
-def _abs_image_url(filename: Optional[str]) -> str:
-    """Build an absolute image URL (used in Schema.org & OG tags)."""
+def _abs_image_url(filename: Optional[str], base_url: Optional[str] = None) -> str:
+    """Build an absolute image URL (used in Schema.org & OG tags).
+    If base_url provided, uses it (request-host-aware). Otherwise falls back to PRIMARY_DOMAIN."""
+    base = base_url or C.PRIMARY_DOMAIN
     if not filename:
-        return f"{C.PRIMARY_DOMAIN}/static/images/logo.png"
+        return f"{base}/static/images/logo.png"
     # Strip any directory prefix
     name = re.sub(r'^.*[/\\]', '', filename)
-    return f"{C.PRIMARY_DOMAIN}/static/images/{quote(name)}"
+    return f"{base}/static/images/{quote(name)}"
 
 
 def _path_for_recipe(recipe: dict, lang: str) -> str:
@@ -111,14 +113,17 @@ def _split_lines(text: Optional[str]) -> list[str]:
 
 def _base_ctx(request: Request, lang: str, canonical_path: str, hreflang_paths: Optional[dict] = None) -> dict:
     """Build the base template context shared across all SSR pages."""
-    canonical = f"{C.PRIMARY_DOMAIN}{canonical_path}"
+    # Derive base URL from current request — works on emergent.host now,
+    # automatically switches to ask.cooking once domain is linked.
+    base_url = f"{request.url.scheme}://{request.url.netloc}".rstrip('/')
+    canonical = f"{base_url}{canonical_path}"
     if hreflang_paths is None:
         # Default: current page in all locales
         hreflang_paths = {l: canonical_path for l in C.LOCALES}
-    hreflangs = [{'lang': C.LOCALE_HREFLANG[l], 'url': f"{C.PRIMARY_DOMAIN}{hreflang_paths[l]}"} for l in C.LOCALES]
+    hreflangs = [{'lang': C.LOCALE_HREFLANG[l], 'url': f"{base_url}{hreflang_paths[l]}"} for l in C.LOCALES]
 
     def lang_url(target_lang: str) -> str:
-        return f"{C.PRIMARY_DOMAIN}{hreflang_paths.get(target_lang, '/')}"
+        return f"{base_url}{hreflang_paths.get(target_lang, '/')}"
 
     brand = {'en': C.BRAND_NAME, 'ar': C.BRAND_NAME_AR, 'sv': C.BRAND_NAME_SV}.get(lang, C.BRAND_NAME)
     tagline = {'en': C.BRAND_TAGLINE_EN, 'ar': C.BRAND_TAGLINE_AR, 'sv': C.BRAND_TAGLINE_SV}.get(lang, C.BRAND_TAGLINE_EN)
@@ -127,7 +132,8 @@ def _base_ctx(request: Request, lang: str, canonical_path: str, hreflang_paths: 
         'request': request,
         'lang': lang,
         'canonical_url': canonical,
-        'primary_domain': C.PRIMARY_DOMAIN,
+        'primary_domain': base_url,
+        'base_url': base_url,
         'brand_name': brand,
         'brand_tagline': tagline,
         'hreflangs': hreflangs,
@@ -146,8 +152,8 @@ def _recipe_url(r: dict, lang: str) -> str:
     return _path_for_recipe(r, lang)
 
 
-def _recipe_image(r: dict) -> str:
-    return _abs_image_url(r.get('image') or r.get('image_path'))
+def _recipe_image(r: dict, base_url: Optional[str] = None) -> str:
+    return _abs_image_url(r.get('image') or r.get('image_path'), base_url)
 
 
 def _recipe_title(r: dict, lang: str) -> str:
@@ -162,6 +168,9 @@ def _render_recipe(request: Request, slug: str, lang: str) -> HTMLResponse:
     recipe = S.get_recipe(slug)
     if not recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
+
+    # Compute base URL from current request (auto-adapts to any domain)
+    base_url = f"{request.url.scheme}://{request.url.netloc}".rstrip('/')
 
     # localized text
     t = {
@@ -178,11 +187,11 @@ def _render_recipe(request: Request, slug: str, lang: str) -> HTMLResponse:
 
     name = _recipe_title(recipe, lang)
     description = recipe.get(f'description_{lang}') or recipe.get('description_en') or ''
-    image_abs = _recipe_image(recipe)
+    image_abs = _recipe_image(recipe, base_url)
 
     cat = S.category_by_id(recipe.get('category_id', ''))
     category_name = cat.get(f'name_{lang}') if cat else ''
-    category_url = f"{C.PRIMARY_DOMAIN}{_path_for_category(cat, lang)}" if cat else None
+    category_url = f"{base_url}{_path_for_category(cat, lang)}" if cat else None
 
     # canonical & hreflang paths
     canonical_path = _path_for_recipe(recipe, lang)
@@ -198,7 +207,7 @@ def _render_recipe(request: Request, slug: str, lang: str) -> HTMLResponse:
         'recipeCuisine': 'Syrian',
         'recipeCategory': cat.get(f'name_{lang}') if cat else 'Main Course',
         'inLanguage': lang,
-        'author': {'@type': 'Organization', 'name': C.BRAND_NAME, 'url': C.PRIMARY_DOMAIN},
+        'author': {'@type': 'Organization', 'name': C.BRAND_NAME, 'url': base_url},
         'datePublished': '2026-01-01',
         'recipeYield': t['servings'] or None,
         'totalTime': _to_iso_duration(t['time']),
@@ -217,7 +226,7 @@ def _render_recipe(request: Request, slug: str, lang: str) -> HTMLResponse:
     else:
         # Direct Universal Link / App Link — same as canonical URL.
         # On iOS/Android with app installed, OS will open the app directly.
-        deep_link_url = f"{C.PRIMARY_DOMAIN}{canonical_path}"
+        deep_link_url = f"{base_url}{canonical_path}"
 
     ctx = _base_ctx(request, lang, canonical_path, hreflang_paths)
     ctx.update({
@@ -273,17 +282,18 @@ async def home_sv(request: Request):
 
 
 def _render_home(request: Request, lang: str) -> HTMLResponse:
+    base_url = f"{request.url.scheme}://{request.url.netloc}".rstrip('/')
     canonical = f"/{lang}" if lang != C.DEFAULT_LOCALE else "/"
     hreflang_paths = {'en': '/', 'ar': '/ar', 'sv': '/sv'}
     ctx = _base_ctx(request, lang, canonical, hreflang_paths)
     ctx.update({
         'categories': S.all_categories(),
         'recipes': S.all_recipes(),
-        'category_url': lambda c: f"{C.PRIMARY_DOMAIN}{_path_for_category(c, lang)}",
-        'recipe_url': lambda r: f"{C.PRIMARY_DOMAIN}{_path_for_recipe(r, lang)}",
-        'recipe_image': _recipe_image,
+        'category_url': lambda c: f"{base_url}{_path_for_category(c, lang)}",
+        'recipe_url': lambda r: f"{base_url}{_path_for_recipe(r, lang)}",
+        'recipe_image': lambda r: _recipe_image(r, base_url),
         'recipe_title': lambda r: _recipe_title(r, lang),
-        'deep_link_home': f"{C.PRIMARY_DOMAIN}/" if not C.BRANCH_KEY else f"https://{C.BRANCH_DOMAIN or 'app.link'}/",
+        'deep_link_home': f"{base_url}/" if not C.BRANCH_KEY else f"https://{C.BRANCH_DOMAIN or 'app.link'}/",
     })
     return templates.TemplateResponse("home.html", ctx)
 
@@ -304,6 +314,7 @@ def _render_category(request: Request, cat_id: str, lang: str) -> HTMLResponse:
     cat = S.category_by_id(cat_id)
     if not cat:
         raise HTTPException(status_code=404, detail="Category not found")
+    base_url = f"{request.url.scheme}://{request.url.netloc}".rstrip('/')
     recipes = S.recipes_in_category(cat.get('cat_id') or cat.get('id'))
     canonical = _path_for_category(cat, lang)
     hreflang_paths = {l: _path_for_category(cat, l) for l in C.LOCALES}
@@ -314,10 +325,10 @@ def _render_category(request: Request, cat_id: str, lang: str) -> HTMLResponse:
         'category': cat,
         'category_name': name,
         'recipes': recipes,
-        'recipe_url': lambda r: f"{C.PRIMARY_DOMAIN}{_path_for_recipe(r, lang)}",
-        'recipe_image': _recipe_image,
+        'recipe_url': lambda r: f"{base_url}{_path_for_recipe(r, lang)}",
+        'recipe_image': lambda r: _recipe_image(r, base_url),
         'recipe_title': lambda r: _recipe_title(r, lang),
-        'deep_link_url': f"{C.PRIMARY_DOMAIN}{canonical}",
+        'deep_link_url': f"{base_url}{canonical}",
     })
     return templates.TemplateResponse("category.html", ctx)
 
@@ -339,22 +350,24 @@ async def category_lang(request: Request, lang: str, cat_id: str):
 # ---------------------------------------------------------------------------
 
 @router.get("/sitemap.xml", response_class=Response)
-async def sitemap():
-    """Dynamic sitemap — automatically includes every recipe + locale variant."""
+async def sitemap(request: Request):
+    """Dynamic sitemap — automatically includes every recipe + locale variant.
+    Auto-adapts to current host (emergent.host now, ask.cooking after domain link)."""
+    base_url = f"{request.url.scheme}://{request.url.netloc}".rstrip('/')
     today = datetime.utcnow().strftime("%Y-%m-%d")
     urls = []
     # Home in 3 locales
     for lang in C.LOCALES:
         path = "/" if lang == C.DEFAULT_LOCALE else f"/{lang}"
-        urls.append((f"{C.PRIMARY_DOMAIN}{path}", today, '1.0', 'weekly'))
+        urls.append((f"{base_url}{path}", today, '1.0', 'weekly'))
     # Categories
     for cat in S.all_categories():
         for lang in C.LOCALES:
-            urls.append((f"{C.PRIMARY_DOMAIN}{_path_for_category(cat, lang)}", today, '0.7', 'weekly'))
+            urls.append((f"{base_url}{_path_for_category(cat, lang)}", today, '0.7', 'weekly'))
     # Recipes
     for r in S.all_recipes():
         for lang in C.LOCALES:
-            urls.append((f"{C.PRIMARY_DOMAIN}{_path_for_recipe(r, lang)}", today, '0.9', 'monthly'))
+            urls.append((f"{base_url}{_path_for_recipe(r, lang)}", today, '0.9', 'monthly'))
 
     body = ['<?xml version="1.0" encoding="UTF-8"?>',
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">']
@@ -370,12 +383,13 @@ async def sitemap():
 
 
 @router.get("/robots.txt", response_class=PlainTextResponse)
-async def robots():
+async def robots(request: Request):
+    base_url = f"{request.url.scheme}://{request.url.netloc}".rstrip('/')
     return f"""User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: {C.PRIMARY_DOMAIN}/sitemap.xml
+Sitemap: {base_url}/sitemap.xml
 """
 
 
