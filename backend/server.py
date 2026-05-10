@@ -490,6 +490,10 @@ async def search_recipes(q: str = ""):
     # Execute search
     recipes = await db.recipes.find({"$or": or_conditions}).to_list(1000)
     
+    # Pre-fetch all categories ONCE (avoid N+1 query problem)
+    all_categories = await db.categories.find().to_list(100)
+    cat_lookup = {c.get('cat_id', ''): c for c in all_categories}
+    
     # Recipes to exclude from yogurt-related searches (contain trace amounts only)
     yogurt_minor_recipes = ["عش البلبل"]
     
@@ -514,8 +518,8 @@ async def search_recipes(q: str = ""):
                 else:
                     match_fields.append({'field': field, 'type': 'other'})
         
-        # Get category name
-        cat = await db.categories.find_one({"cat_id": recipe.get('category_id', '')})
+        # Get category name from pre-fetched lookup (no DB call!)
+        cat = cat_lookup.get(recipe.get('category_id', ''))
         
         results.append({
             'id': recipe.get('id', ''),
