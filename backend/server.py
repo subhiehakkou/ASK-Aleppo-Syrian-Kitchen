@@ -173,7 +173,7 @@ async def health_check():
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories():
     """Get all recipe categories"""
-    categories = await db.categories.find().to_list(100)
+    categories = await db.categories.find({}, {"_id": 0}).limit(100).to_list(100)
     return [Category(**cat) for cat in categories]
 
 @api_router.get("/categories/{cat_id}", response_model=Category)
@@ -233,7 +233,7 @@ async def create_feedback(feedback_input: FeedbackCreate):
 @api_router.get("/feedback", response_model=List[Feedback])
 async def get_all_feedback():
     """Get all feedback (admin)"""
-    feedback_list = await db.feedback.find().sort("timestamp", -1).to_list(1000)
+    feedback_list = await db.feedback.find({}, {"_id": 0}).sort("timestamp", -1).limit(500).to_list(500)
     return [Feedback(**fb) for fb in feedback_list]
 
 # About
