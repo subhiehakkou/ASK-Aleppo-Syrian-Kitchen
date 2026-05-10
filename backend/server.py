@@ -30,6 +30,17 @@ app = FastAPI(title="Aleppo Syrian Kitchen API")
 async def root_health_check():
     return {"status": "healthy", "service": "ask-backend"}
 
+# Favicon — return the logo image so browsers/crawlers don't get 404s
+# (Some deployment verifiers fail builds when /favicon.ico returns 404)
+@app.get("/favicon.ico")
+async def favicon():
+    from fastapi.responses import FileResponse, Response
+    favicon_path = ROOT_DIR / 'static' / 'images' / 'logo.png'
+    if favicon_path.exists():
+        return FileResponse(str(favicon_path), media_type='image/png')
+    # Fallback: empty 204 (No Content) — never 404
+    return Response(status_code=204)
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
