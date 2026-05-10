@@ -24,6 +24,12 @@ db = client[os.environ['DB_NAME']]
 # Create the main app
 app = FastAPI(title="Aleppo Syrian Kitchen API")
 
+# Root-level health check endpoint for Kubernetes liveness/readiness probes
+# (Kubernetes pings /health WITHOUT the /api prefix)
+@app.get("/health")
+async def root_health_check():
+    return {"status": "healthy", "service": "ask-backend"}
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
