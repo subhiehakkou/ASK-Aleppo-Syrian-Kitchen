@@ -17,10 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ask.syr",
-      "buildNumber": "31",
-      "associatedDomains": [
-        "applinks:ask.cooking"
-      ],
+      "buildNumber": "32",
       "infoPlist": {
         "CFBundleDisplayName": "ASK Kitchen",
         "ITSAppUsesNonExemptEncryption": false
