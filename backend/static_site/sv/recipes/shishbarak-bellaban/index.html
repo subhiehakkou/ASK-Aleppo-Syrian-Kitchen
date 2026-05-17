@@ -60,7 +60,6 @@
   "recipeYield": "4 portioner",
   "totalTime": "PT30M",
   "recipeIngredient": [
-    "Ingredienser till deg:",
     "5 dl vetemjöl",
     "0,25 tsk salt",
     "1 msk socker",
@@ -76,48 +75,38 @@
   "recipeInstructions": [
     {
       "@type": "HowToStep",
-      "text": "Så här förbereder du fyllningen:",
+      "text": "Använd samma metod som för stekt kebbe-fyllning (färs, finhackad lök, svartpeppar, sjukryddor och salt).",
       "position": 1
     },
     {
       "@type": "HowToStep",
-      "text": "Använd samma metod som för stekt kebbe-fyllning (färs, finhackad lök, svartpeppar, sjukryddor och salt).",
+      "text": "Dagen innan du tillagar shishbaraken, lägg yoghurt, salt, socker och varmt vatten i en lämplig plastskål och blanda väl. Börja sedan med 2,5 dl mjöl och blanda väl. Tillsätt gradvis resterande dl mjöl och blanda noggrant. Om degen fortfarande är mjuk och klibbig, strö över lite mer mjöl. Om den är stel, strö över lite varmt vatten.",
       "position": 2
     },
     {
       "@type": "HowToStep",
-      "text": "Så här förbereder du shishbarak-degen:",
+      "text": "Lägg degen i en plastpåse och linda in den i en handduk i rumstemperatur över natten.",
       "position": 3
     },
     {
       "@type": "HowToStep",
-      "text": "Dagen innan du tillagar shishbaraken, lägg yoghurt, salt, socker och varmt vatten i en lämplig plastskål och blanda väl. Börja sedan med 2,5 dl mjöl och blanda väl. Tillsätt gradvis resterande dl mjöl och blanda noggrant. Om degen fortfarande är mjuk och klibbig, strö över lite mer mjöl. Om den är stel, strö över lite varmt vatten.",
+      "text": "Dela degen i 4 portioner och låt dem vila i 1-2 minuter för att hjälpa dem att kavla ut sig. Kavla varje portion till en stor cirkel och skär den i små bitar med antingen en rund metallutstickare (om sådan finns) eller en turkisk kaffekopp.",
       "position": 4
     },
     {
       "@type": "HowToStep",
-      "text": "Lägg degen i en plastpåse och linda in den i en handduk i rumstemperatur över natten.",
+      "text": "Ta 0,5 teskedar av fyllningen medan den fortfarande är kall och placera den i mitten av en liten cirkel. Förslut den väl med fingrarna och nyp sedan ihop ändarna för att bilda shishbarakbitarna. Lägg dem på en bricka och frys in i 1 timme så att de är lättare att tillsätta i yoghurtsåsen.",
       "position": 5
     },
     {
       "@type": "HowToStep",
-      "text": "Dela degen i 4 portioner och låt dem vila i 1-2 minuter för att hjälpa dem att kavla ut sig. Kavla varje portion till en stor cirkel och skär den i små bitar med antingen en rund metallutstickare (om sådan finns) eller en turkisk kaffekopp.",
+      "text": "Häll yoghurten i en ren, torr kastrull och rör långsamt i en riktning på hög värme under ständig omrörning tills det kokar. Tillsätt vatten och köttbuljong eller buljongtärningar till yoghurten och låt det koka upp igen. Tillsätt sedan shishbaraken. Stek vitlöken i olja tills den är gyllenbrun direkt därefter, tillsätt sedan den torkade koriandern och fräs tills den är lätt brynt. Tillsätt blandningen till yoghurtsåsen.",
       "position": 6
     },
     {
       "@type": "HowToStep",
-      "text": "Ta 0,5 teskedar av fyllningen medan den fortfarande är kall och placera den i mitten av en liten cirkel. Förslut den väl med fingrarna och nyp sedan ihop ändarna för att bilda shishbarakbitarna. Lägg dem på en bricka och frys in i 1 timme så att de är lättare att tillsätta i yoghurtsåsen.",
-      "position": 7
-    },
-    {
-      "@type": "HowToStep",
-      "text": "Häll yoghurten i en ren, torr kastrull och rör långsamt i en riktning på hög värme under ständig omrörning tills det kokar. Tillsätt vatten och köttbuljong eller buljongtärningar till yoghurten och låt det koka upp igen. Tillsätt sedan shishbaraken. Stek vitlöken i olja tills den är gyllenbrun direkt därefter, tillsätt sedan den torkade koriandern och fräs tills den är lätt brynt. Tillsätt blandningen till yoghurtsåsen.",
-      "position": 8
-    },
-    {
-      "@type": "HowToStep",
       "text": "Låt det sjuda på låg värme i 10 minuter.",
-      "position": 9
+      "position": 7
     }
   ]
 }
@@ -187,6 +176,20 @@
     .install-cta small { display: block; font-weight: 400; opacity: 0.7; margin-top: 4px; }
     ul.ingredients { padding-left: 22px; }
     ol.steps li { margin-bottom: 10px; }
+    .section-subheader {
+      font-size: 19px; font-weight: 700; color: #1A1A2E;
+      margin: 22px 0 8px; padding-bottom: 6px;
+      border-bottom: 2px solid #FFD700;
+      display: inline-block;
+    }
+    .recipe-note {
+      background: #FFFBE6;
+      border-left: 3px solid #FFD700;
+      padding: 10px 14px; border-radius: 6px;
+      margin: 14px 0; font-size: 16px; color: #444;
+      line-height: 1.6;
+    }
+    .recipe-paragraph { margin: 10px 0; line-height: 1.7; color: #333; }
     .secret-box {
       background: linear-gradient(135deg, #FFF8DC, #FAEBD7);
       border-left: 4px solid #B8860B;
@@ -242,16 +245,58 @@
 
   
   <h2>🥄 Ingredienser</h2>
-  <ul class="ingredients">
-    <li>Ingredienser till deg:</li><li>5 dl vetemjöl</li><li>0,25 tsk salt</li><li>1 msk socker</li><li>2 msk yoghurt</li><li>2,5 dl varmt vatten (du kan behöva mer eller mindre beroende på mjölsort)</li><li>1 kg yoghurt</li><li>0,5 kg fylld shishbarak</li><li>1 msk vitlök</li><li>1 msk malen koriander (du kan använda 1 knippe färsk koriander om så önskas)</li><li>2 msk ghee</li><li>5 dl nöt- eller kycklingbuljong (om det inte finns tillgängligt kan du använda 2 Maggi-kuber med kokande vatten)</li>
-  </ul>
+  
+    
+      <h3 class="section-subheader">Ingredienser till deg</h3>
+    
+  
+    
+      <ul class="ingredients">
+        <li>5 dl vetemjöl</li><li>0,25 tsk salt</li><li>1 msk socker</li><li>2 msk yoghurt</li><li>2,5 dl varmt vatten (du kan behöva mer eller mindre beroende på mjölsort)</li><li>1 kg yoghurt</li><li>0,5 kg fylld shishbarak</li><li>1 msk vitlök</li><li>1 msk malen koriander (du kan använda 1 knippe färsk koriander om så önskas)</li><li>2 msk ghee</li><li>5 dl nöt- eller kycklingbuljong (om det inte finns tillgängligt kan du använda 2 Maggi-kuber med kokande vatten)</li>
+      </ul>
+    
+  
   
 
   
   <h2>👩‍🍳 Instruktioner</h2>
-  <ol class="steps">
-    <li>Så här förbereder du fyllningen:</li><li>Använd samma metod som för stekt kebbe-fyllning (färs, finhackad lök, svartpeppar, sjukryddor och salt).</li><li>Så här förbereder du shishbarak-degen:</li><li>Dagen innan du tillagar shishbaraken, lägg yoghurt, salt, socker och varmt vatten i en lämplig plastskål och blanda väl. Börja sedan med 2,5 dl mjöl och blanda väl. Tillsätt gradvis resterande dl mjöl och blanda noggrant. Om degen fortfarande är mjuk och klibbig, strö över lite mer mjöl. Om den är stel, strö över lite varmt vatten.</li><li>Lägg degen i en plastpåse och linda in den i en handduk i rumstemperatur över natten.</li><li>Dela degen i 4 portioner och låt dem vila i 1-2 minuter för att hjälpa dem att kavla ut sig. Kavla varje portion till en stor cirkel och skär den i små bitar med antingen en rund metallutstickare (om sådan finns) eller en turkisk kaffekopp.</li><li>Ta 0,5 teskedar av fyllningen medan den fortfarande är kall och placera den i mitten av en liten cirkel. Förslut den väl med fingrarna och nyp sedan ihop ändarna för att bilda shishbarakbitarna. Lägg dem på en bricka och frys in i 1 timme så att de är lättare att tillsätta i yoghurtsåsen.</li><li>Häll yoghurten i en ren, torr kastrull och rör långsamt i en riktning på hög värme under ständig omrörning tills det kokar. Tillsätt vatten och köttbuljong eller buljongtärningar till yoghurten och låt det koka upp igen. Tillsätt sedan shishbaraken. Stek vitlöken i olja tills den är gyllenbrun direkt därefter, tillsätt sedan den torkade koriandern och fräs tills den är lätt brynt. Tillsätt blandningen till yoghurtsåsen.</li><li>Låt det sjuda på låg värme i 10 minuter.</li>
-  </ol>
+  
+    
+      <h3 class="section-subheader">Så här förbereder du fyllningen</h3>
+    
+  
+    
+      <p class="recipe-paragraph">Använd samma metod som för stekt kebbe-fyllning (färs, finhackad lök, svartpeppar, sjukryddor och salt).</p>
+    
+  
+    
+      <h3 class="section-subheader">Så här förbereder du shishbarak-degen</h3>
+    
+  
+    
+      <p class="recipe-paragraph">Dagen innan du tillagar shishbaraken, lägg yoghurt, salt, socker och varmt vatten i en lämplig plastskål och blanda väl. Börja sedan med 2,5 dl mjöl och blanda väl. Tillsätt gradvis resterande dl mjöl och blanda noggrant. Om degen fortfarande är mjuk och klibbig, strö över lite mer mjöl. Om den är stel, strö över lite varmt vatten.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Lägg degen i en plastpåse och linda in den i en handduk i rumstemperatur över natten.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Dela degen i 4 portioner och låt dem vila i 1-2 minuter för att hjälpa dem att kavla ut sig. Kavla varje portion till en stor cirkel och skär den i små bitar med antingen en rund metallutstickare (om sådan finns) eller en turkisk kaffekopp.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Ta 0,5 teskedar av fyllningen medan den fortfarande är kall och placera den i mitten av en liten cirkel. Förslut den väl med fingrarna och nyp sedan ihop ändarna för att bilda shishbarakbitarna. Lägg dem på en bricka och frys in i 1 timme så att de är lättare att tillsätta i yoghurtsåsen.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Häll yoghurten i en ren, torr kastrull och rör långsamt i en riktning på hög värme under ständig omrörning tills det kokar. Tillsätt vatten och köttbuljong eller buljongtärningar till yoghurten och låt det koka upp igen. Tillsätt sedan shishbaraken. Stek vitlöken i olja tills den är gyllenbrun direkt därefter, tillsätt sedan den torkade koriandern och fräs tills den är lätt brynt. Tillsätt blandningen till yoghurtsåsen.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Låt det sjuda på låg värme i 10 minuter.</p>
+    
+  
   
 
   

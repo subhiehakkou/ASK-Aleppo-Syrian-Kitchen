@@ -60,7 +60,6 @@
   "recipeYield": "Mängden räcker till 4 personer.",
   "totalTime": "PT3H",
   "recipeIngredient": [
-    "Ingredienser för deglagning:",
     "7,5 dl mjöl.",
     "2 msk rumstempererad yoghurt.",
     "4,5 dl varmt vatten, tillsätt gradvis, eftersom yoghurten också ger fukt (olika typer av mjöl kräver mer vatten; tillsätt alltid vattnet gradvis för att säkerställa att degen förblir mjuk).",
@@ -68,7 +67,6 @@
     "1 tsk socker.",
     "0,5 tsk salt.",
     "Ghee (klarat smör) är bäst till \"fågelbo\"-degen, eller fårghee till pensling och lager.",
-    "Ingredienser till kött:",
     "1 kg mycket finmalet lammkött, minst 30 % fett.",
     "2 små lökar, mycket finhackade (dessa kan hackas med köttet vid slakt; lök är valfritt och inte en basvara i Aleppos populärkultur eftersom den ger en liknande smak som köttpajer, men vissa föredrar det).",
     "1,2 dl tjock, syrlig granatäpplemelass.",
@@ -120,13 +118,8 @@
     },
     {
       "@type": "HowToStep",
-      "text": "Köttberedning:",
-      "position": 9
-    },
-    {
-      "@type": "HowToStep",
       "text": "Blanda alla köttingredienser i en skål och knåda väl för att fördela kryddorna, granatäpplemelassen och löken tills blandningen är sammanhängande. Lägg en pingisbollstor mängd av fyllningen på varje degcirkel och bred ut den så att den täcker ytan av den förberedda degcirkeln.",
-      "position": 10
+      "position": 9
     }
   ]
 }
@@ -196,6 +189,20 @@
     .install-cta small { display: block; font-weight: 400; opacity: 0.7; margin-top: 4px; }
     ul.ingredients { padding-left: 22px; }
     ol.steps li { margin-bottom: 10px; }
+    .section-subheader {
+      font-size: 19px; font-weight: 700; color: #1A1A2E;
+      margin: 22px 0 8px; padding-bottom: 6px;
+      border-bottom: 2px solid #FFD700;
+      display: inline-block;
+    }
+    .recipe-note {
+      background: #FFFBE6;
+      border-left: 3px solid #FFD700;
+      padding: 10px 14px; border-radius: 6px;
+      margin: 14px 0; font-size: 16px; color: #444;
+      line-height: 1.6;
+    }
+    .recipe-paragraph { margin: 10px 0; line-height: 1.7; color: #333; }
     .secret-box {
       background: linear-gradient(135deg, #FFF8DC, #FAEBD7);
       border-left: 4px solid #B8860B;
@@ -251,16 +258,72 @@
 
   
   <h2>🥄 Ingredienser</h2>
-  <ul class="ingredients">
-    <li>Ingredienser för deglagning:</li><li>7,5 dl mjöl.</li><li>2 msk rumstempererad yoghurt.</li><li>4,5 dl varmt vatten, tillsätt gradvis, eftersom yoghurten också ger fukt (olika typer av mjöl kräver mer vatten; tillsätt alltid vattnet gradvis för att säkerställa att degen förblir mjuk).</li><li>2 msk vegetabilisk olja.</li><li>1 tsk socker.</li><li>0,5 tsk salt.</li><li>Ghee (klarat smör) är bäst till &#34;fågelbo&#34;-degen, eller fårghee till pensling och lager.</li><li>Ingredienser till kött:</li><li>1 kg mycket finmalet lammkött, minst 30 % fett.</li><li>2 små lökar, mycket finhackade (dessa kan hackas med köttet vid slakt; lök är valfritt och inte en basvara i Aleppos populärkultur eftersom den ger en liknande smak som köttpajer, men vissa föredrar det).</li><li>1,2 dl tjock, syrlig granatäpplemelass.</li><li>1/2 matsked salt</li><li>1 tsk sjukryddsmix</li><li>1 tsk svartpeppar</li><li>200 gram rostade pinjenötter</li>
-  </ul>
+  
+    
+      <h3 class="section-subheader">Ingredienser för deglagning</h3>
+    
+  
+    
+      <ul class="ingredients">
+        <li>7,5 dl mjöl.</li><li>2 msk rumstempererad yoghurt.</li><li>4,5 dl varmt vatten, tillsätt gradvis, eftersom yoghurten också ger fukt (olika typer av mjöl kräver mer vatten; tillsätt alltid vattnet gradvis för att säkerställa att degen förblir mjuk).</li><li>2 msk vegetabilisk olja.</li><li>1 tsk socker.</li><li>0,5 tsk salt.</li><li>Ghee (klarat smör) är bäst till &#34;fågelbo&#34;-degen, eller fårghee till pensling och lager.</li>
+      </ul>
+    
+  
+    
+      <h3 class="section-subheader">Ingredienser till kött</h3>
+    
+  
+    
+      <ul class="ingredients">
+        <li>1 kg mycket finmalet lammkött, minst 30 % fett.</li><li>2 små lökar, mycket finhackade (dessa kan hackas med köttet vid slakt; lök är valfritt och inte en basvara i Aleppos populärkultur eftersom den ger en liknande smak som köttpajer, men vissa föredrar det).</li><li>1,2 dl tjock, syrlig granatäpplemelass.</li><li>1/2 matsked salt</li><li>1 tsk sjukryddsmix</li><li>1 tsk svartpeppar</li><li>200 gram rostade pinjenötter</li>
+      </ul>
+    
+  
   
 
   
   <h2>👩‍🍳 Instruktioner</h2>
-  <ol class="steps">
-    <li>Metod för degberedning: Lägg yoghurt, vatten, salt, socker och vegetabilisk olja i en plastskål. Använd kökshandskar och blanda väl. Tillsätt mjölet en kopp i taget, inte allt på en gång, och knåda tills varje kopp är helt blandad. Om degen fortfarande är tjock och styv efter att du har tillsatt allt mjöl, vilket gör den svår att kavla ut efter jäsningen, tillsätt gradvis en kvarts kopp vatten och knåda tills du får en slät och smidig deg.</li><li>Låt degen jäsa i en plastpåse, täckt med en handduk eller något annat för att skydda den från ljus, över natten. Detta kommer att hjälpa degen att jäsa och bli mer hanterbar.</li><li>Låt degen jäsa i en plastpåse, inlindad i en handduk, för att skydda den från ljus och låta yoghurten jäsa naturligt.</li><li>För att göra den lagervisa degbiten, skär degen i fyra lika stora bitar. Kavla ut varje bit och bred ett lager rumstempererad ghee över den. Vik den andra sidan av degen över gheen och kavla ut den med en kavel tills den är tre gånger sin ursprungliga storlek. Upprepa processen, bred ut ghee över det nyutkavlade lagret och vik degen minst 10 gånger.</li><li>Lägg biten på en plastpåse och täck över den. Upprepa processen med de återstående bitarna och lägg dem ovanpå varandra med plastfolie mellan dem. Låt dem vila i 2 timmar.</li><li>Nästa dag, smält gheen i en djup skål. Skär degen i små bitar, vars storlek i allmänhet inte bör överstiga 7 cm, men upp till maximalt 10 cm. Doppa bitarna i den smälta gheen och lägg dem på en plåt. Täck bitarna med plastfolie, sedan en handduk och låt dem vila i minst 2 timmar.</li><li>Kavla ut varje bit individuellt och forma den till en jämn cirkel. Lägg dem på en bakplåt. Lägg 2 matskedar av fyllningen på varje cirkel och bred ut den lätt med en sked. När plåten är full, tryck ner cirklarna med en annan bakplåt uppifrån för att fördela köttet och se till att det fäster helt på degen.</li><li>Ugnen ska vara förvärmd till högsta inställning, både upptill och nedtill. Placera plåten på det nedersta gallret och grädda i cirka 15 minuter, eller tills &#34;fågelboet&#34;-bakverken är gyllenbruna och krispiga.</li><li>Köttberedning:</li><li>Blanda alla köttingredienser i en skål och knåda väl för att fördela kryddorna, granatäpplemelassen och löken tills blandningen är sammanhängande. Lägg en pingisbollstor mängd av fyllningen på varje degcirkel och bred ut den så att den täcker ytan av den förberedda degcirkeln.</li>
-  </ol>
+  
+    
+      <p class="recipe-paragraph">Metod för degberedning: Lägg yoghurt, vatten, salt, socker och vegetabilisk olja i en plastskål. Använd kökshandskar och blanda väl. Tillsätt mjölet en kopp i taget, inte allt på en gång, och knåda tills varje kopp är helt blandad. Om degen fortfarande är tjock och styv efter att du har tillsatt allt mjöl, vilket gör den svår att kavla ut efter jäsningen, tillsätt gradvis en kvarts kopp vatten och knåda tills du får en slät och smidig deg.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Låt degen jäsa i en plastpåse, täckt med en handduk eller något annat för att skydda den från ljus, över natten. Detta kommer att hjälpa degen att jäsa och bli mer hanterbar.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Låt degen jäsa i en plastpåse, inlindad i en handduk, för att skydda den från ljus och låta yoghurten jäsa naturligt.</p>
+    
+  
+    
+      <p class="recipe-paragraph">För att göra den lagervisa degbiten, skär degen i fyra lika stora bitar. Kavla ut varje bit och bred ett lager rumstempererad ghee över den. Vik den andra sidan av degen över gheen och kavla ut den med en kavel tills den är tre gånger sin ursprungliga storlek. Upprepa processen, bred ut ghee över det nyutkavlade lagret och vik degen minst 10 gånger.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Lägg biten på en plastpåse och täck över den. Upprepa processen med de återstående bitarna och lägg dem ovanpå varandra med plastfolie mellan dem. Låt dem vila i 2 timmar.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Nästa dag, smält gheen i en djup skål. Skär degen i små bitar, vars storlek i allmänhet inte bör överstiga 7 cm, men upp till maximalt 10 cm. Doppa bitarna i den smälta gheen och lägg dem på en plåt. Täck bitarna med plastfolie, sedan en handduk och låt dem vila i minst 2 timmar.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Kavla ut varje bit individuellt och forma den till en jämn cirkel. Lägg dem på en bakplåt. Lägg 2 matskedar av fyllningen på varje cirkel och bred ut den lätt med en sked. När plåten är full, tryck ner cirklarna med en annan bakplåt uppifrån för att fördela köttet och se till att det fäster helt på degen.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Ugnen ska vara förvärmd till högsta inställning, både upptill och nedtill. Placera plåten på det nedersta gallret och grädda i cirka 15 minuter, eller tills &#34;fågelboet&#34;-bakverken är gyllenbruna och krispiga.</p>
+    
+  
+    
+      <h3 class="section-subheader">Köttberedning</h3>
+    
+  
+    
+      <p class="recipe-paragraph">Blanda alla köttingredienser i en skål och knåda väl för att fördela kryddorna, granatäpplemelassen och löken tills blandningen är sammanhängande. Lägg en pingisbollstor mängd av fyllningen på varje degcirkel och bred ut den så att den täcker ytan av den förberedda degcirkeln.</p>
+    
+  
   
 
   

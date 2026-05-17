@@ -32,16 +32,32 @@
 
   {% if t.ingredients %}
   <h2>🥄 {{ labels.ingredients }}</h2>
-  <ul class="ingredients">
-    {% for ing in t.ingredients_list %}<li>{{ ing }}</li>{% endfor %}
-  </ul>
+  {% for blk in t.ingredients_blocks %}
+    {% if blk.type == 'header' %}
+      <h3 class="section-subheader">{{ blk.text }}</h3>
+    {% elif blk.type == 'list' %}
+      <ul class="ingredients">
+        {% for entry in blk.entries %}<li>{{ entry }}</li>{% endfor %}
+      </ul>
+    {% else %}
+      <p class="recipe-note">{{ blk.text }}</p>
+    {% endif %}
+  {% endfor %}
   {% endif %}
 
   {% if t.instructions %}
   <h2>👩‍🍳 {{ labels.instructions }}</h2>
-  <ol class="steps">
-    {% for step in t.instructions_list %}<li>{{ step }}</li>{% endfor %}
-  </ol>
+  {% for blk in t.instructions_blocks %}
+    {% if blk.type == 'header' %}
+      <h3 class="section-subheader">{{ blk.text }}</h3>
+    {% elif blk.type == 'list' %}
+      <ol class="steps">
+        {% for entry in blk.entries %}<li>{{ entry }}</li>{% endfor %}
+      </ol>
+    {% else %}
+      <p class="recipe-paragraph">{{ blk.text }}</p>
+    {% endif %}
+  {% endfor %}
   {% endif %}
 
   {% if t.secrets %}

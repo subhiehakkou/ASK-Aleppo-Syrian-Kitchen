@@ -71,7 +71,6 @@
     "1 tsk malen ingefära",
     "1 Maggi-tärning",
     "1 msk salt",
-    "Fyllning:",
     "1,5 kg mager nötfärs (1,5 kg per 1 kg bulgur)",
     "3 stora lökar (600 g)",
     "100 g rostade pinjenötter (om sådana finns)",
@@ -85,33 +84,28 @@
   "recipeInstructions": [
     {
       "@type": "HowToStep",
-      "text": "Förberedelse av kibbehdegen:",
+      "text": "Häll 7,5 dl kallt kranvatten över bulgurn. Skiva löken i klyftor och lägg den i bulgurn. Tillsätt resterande ingredienser i bulgurn, förutom det magra köttet och mjölet, som tillsätts i det andra steget. Låt bulgurn dra i sjukryddsblandningen och den skivade löken i minst 2 timmar, eller längre om det behövs.",
       "position": 1
     },
     {
       "@type": "HowToStep",
-      "text": "Häll 7,5 dl kallt kranvatten över bulgurn. Skiva löken i klyftor och lägg den i bulgurn. Tillsätt resterande ingredienser i bulgurn, förutom det magra köttet och mjölet, som tillsätts i det andra steget. Låt bulgurn dra i sjukryddsblandningen och den skivade löken i minst 2 timmar, eller längre om det behövs.",
+      "text": "Mal bulgurn för första gången i en köttkvarn, utan det magra köttet. Efter den första malningen är klar, blanda det malda magra köttet med den malda bulgurn. Tillsätt mjölet i detta skede. Om degen känns torr, tillsätt gradvis lite vatten. Mal sedan bulgur, det magra köttet och mjölet tillsammans i köttkvarnen igen tills kibbehn har en jämn färg. Knåda blandningen på en arbetsyta tills den är helt slät. Degen ska vara fast, varken för mjuk eller för stel, och lätt att forma.",
       "position": 2
     },
     {
       "@type": "HowToStep",
-      "text": "Mal bulgurn för första gången i en köttkvarn, utan det magra köttet. Efter den första malningen är klar, blanda det malda magra köttet med den malda bulgurn. Tillsätt mjölet i detta skede. Om degen känns torr, tillsätt gradvis lite vatten. Mal sedan bulgur, det magra köttet och mjölet tillsammans i köttkvarnen igen tills kibbehn har en jämn färg. Knåda blandningen på en arbetsyta tills den är helt slät. Degen ska vara fast, varken för mjuk eller för stel, och lätt att forma.",
+      "text": "Det finns olika typer av bulgur, och vissa kräver mer vatten än andra. Tillsätt vattnet genom att försiktigt strö och knåda det efter behov.",
       "position": 3
     },
     {
       "@type": "HowToStep",
-      "text": "Det finns olika typer av bulgur, och vissa kräver mer vatten än andra. Tillsätt vattnet genom att försiktigt strö och knåda det efter behov.",
+      "text": "Förberedelse av fyllningen: Hacka löken fint och värm lite olja i en djup kastrull. Fräs tills den är gyllenbrun. Tillsätt den magra köttfärsen, bryt den isär så mycket som möjligt och blanda den med löken. Täck över och tillaga på låg värme i 1.30 timme, eller tills köttet är genomstekt. Om det fortfarande finns vätska kvar, täck över och fortsätt tillaga på mycket låg värme tills vätskan har avdunstat. Tillsätt sedan salt, kryddblandning och nötter. Kom ihåg att nötter också absorberar vätska, men inte för mycket. Låt den svalna i kylskåpet, eller till och med över natten.",
       "position": 4
     },
     {
       "@type": "HowToStep",
-      "text": "Förberedelse av fyllningen: Hacka löken fint och värm lite olja i en djup kastrull. Fräs tills den är gyllenbrun. Tillsätt den magra köttfärsen, bryt den isär så mycket som möjligt och blanda den med löken. Täck över och tillaga på låg värme i 1.30 timme, eller tills köttet är genomstekt. Om det fortfarande finns vätska kvar, täck över och fortsätt tillaga på mycket låg värme tills vätskan har avdunstat. Tillsätt sedan salt, kryddblandning och nötter. Kom ihåg att nötter också absorberar vätska, men inte för mycket. Låt den svalna i kylskåpet, eller till och med över natten.",
-      "position": 5
-    },
-    {
-      "@type": "HowToStep",
       "text": "Forma och fylla kibbehn: Skär degen i bitar ungefär lika stora som din knytnäve, halvt stängda, som väger cirka 70 gram. Fukta händerna med lite vatten, men använd inte för mycket, då fastnar kibbehn. Börja från mitten av cirkeln och urholka kibbehn. Tryck på kanterna på cirkeln för att platta till den, rulla biten i handen tills den är ungefär en halv centimeter tjock, eller mindre om möjligt. Fyll den sedan med fyllningen.",
-      "position": 6
+      "position": 5
     }
   ]
 }
@@ -181,6 +175,20 @@
     .install-cta small { display: block; font-weight: 400; opacity: 0.7; margin-top: 4px; }
     ul.ingredients { padding-left: 22px; }
     ol.steps li { margin-bottom: 10px; }
+    .section-subheader {
+      font-size: 19px; font-weight: 700; color: #1A1A2E;
+      margin: 22px 0 8px; padding-bottom: 6px;
+      border-bottom: 2px solid #FFD700;
+      display: inline-block;
+    }
+    .recipe-note {
+      background: #FFFBE6;
+      border-left: 3px solid #FFD700;
+      padding: 10px 14px; border-radius: 6px;
+      margin: 14px 0; font-size: 16px; color: #444;
+      line-height: 1.6;
+    }
+    .recipe-paragraph { margin: 10px 0; line-height: 1.7; color: #333; }
     .secret-box {
       background: linear-gradient(135deg, #FFF8DC, #FAEBD7);
       border-left: 4px solid #B8860B;
@@ -236,16 +244,52 @@
 
   
   <h2>🥄 Ingredienser</h2>
-  <ul class="ingredients">
-    <li>1 kg fullkornsbulgur (vit bulgur är bra att tillaga, inte till kebbe)</li><li>400 g mager nöt- eller kalvfärs</li><li>200 g mjöl</li><li>2 stora lökar (400 g)</li><li>1 tsk svartpeppar</li><li>0,5 tsk kanel</li><li>1 tsk sjukryddsmix</li><li>1 tsk malen spiskummin</li><li>1 tsk malen ingefära</li><li>1 Maggi-tärning</li><li>1 msk salt</li><li>Fyllning:</li><li>1,5 kg mager nötfärs (1,5 kg per 1 kg bulgur)</li><li>3 stora lökar (600 g)</li><li>100 g rostade pinjenötter (om sådana finns)</li><li>250 g valnötter</li><li>0,5 tsk svartpeppar</li><li>1 tsk salt</li><li>0,5 tsk malen kanel</li><li>1 Maggi-tärning</li><li>0,5 tsk sjukryddsmix</li>
-  </ul>
+  
+    
+      <ul class="ingredients">
+        <li>1 kg fullkornsbulgur (vit bulgur är bra att tillaga, inte till kebbe)</li><li>400 g mager nöt- eller kalvfärs</li><li>200 g mjöl</li><li>2 stora lökar (400 g)</li><li>1 tsk svartpeppar</li><li>0,5 tsk kanel</li><li>1 tsk sjukryddsmix</li><li>1 tsk malen spiskummin</li><li>1 tsk malen ingefära</li><li>1 Maggi-tärning</li><li>1 msk salt</li>
+      </ul>
+    
+  
+    
+      <h3 class="section-subheader">Fyllning</h3>
+    
+  
+    
+      <ul class="ingredients">
+        <li>1,5 kg mager nötfärs (1,5 kg per 1 kg bulgur)</li><li>3 stora lökar (600 g)</li><li>100 g rostade pinjenötter (om sådana finns)</li><li>250 g valnötter</li><li>0,5 tsk svartpeppar</li><li>1 tsk salt</li><li>0,5 tsk malen kanel</li><li>1 Maggi-tärning</li><li>0,5 tsk sjukryddsmix</li>
+      </ul>
+    
+  
   
 
   
   <h2>👩‍🍳 Instruktioner</h2>
-  <ol class="steps">
-    <li>Förberedelse av kibbehdegen:</li><li>Häll 7,5 dl kallt kranvatten över bulgurn. Skiva löken i klyftor och lägg den i bulgurn. Tillsätt resterande ingredienser i bulgurn, förutom det magra köttet och mjölet, som tillsätts i det andra steget. Låt bulgurn dra i sjukryddsblandningen och den skivade löken i minst 2 timmar, eller längre om det behövs.</li><li>Mal bulgurn för första gången i en köttkvarn, utan det magra köttet. Efter den första malningen är klar, blanda det malda magra köttet med den malda bulgurn. Tillsätt mjölet i detta skede. Om degen känns torr, tillsätt gradvis lite vatten. Mal sedan bulgur, det magra köttet och mjölet tillsammans i köttkvarnen igen tills kibbehn har en jämn färg. Knåda blandningen på en arbetsyta tills den är helt slät. Degen ska vara fast, varken för mjuk eller för stel, och lätt att forma.</li><li>Det finns olika typer av bulgur, och vissa kräver mer vatten än andra. Tillsätt vattnet genom att försiktigt strö och knåda det efter behov.</li><li>Förberedelse av fyllningen: Hacka löken fint och värm lite olja i en djup kastrull. Fräs tills den är gyllenbrun. Tillsätt den magra köttfärsen, bryt den isär så mycket som möjligt och blanda den med löken. Täck över och tillaga på låg värme i 1.30 timme, eller tills köttet är genomstekt. Om det fortfarande finns vätska kvar, täck över och fortsätt tillaga på mycket låg värme tills vätskan har avdunstat. Tillsätt sedan salt, kryddblandning och nötter. Kom ihåg att nötter också absorberar vätska, men inte för mycket. Låt den svalna i kylskåpet, eller till och med över natten.</li><li>Forma och fylla kibbehn: Skär degen i bitar ungefär lika stora som din knytnäve, halvt stängda, som väger cirka 70 gram. Fukta händerna med lite vatten, men använd inte för mycket, då fastnar kibbehn. Börja från mitten av cirkeln och urholka kibbehn. Tryck på kanterna på cirkeln för att platta till den, rulla biten i handen tills den är ungefär en halv centimeter tjock, eller mindre om möjligt. Fyll den sedan med fyllningen.</li>
-  </ol>
+  
+    
+      <h3 class="section-subheader">Förberedelse av kibbehdegen</h3>
+    
+  
+    
+      <p class="recipe-paragraph">Häll 7,5 dl kallt kranvatten över bulgurn. Skiva löken i klyftor och lägg den i bulgurn. Tillsätt resterande ingredienser i bulgurn, förutom det magra köttet och mjölet, som tillsätts i det andra steget. Låt bulgurn dra i sjukryddsblandningen och den skivade löken i minst 2 timmar, eller längre om det behövs.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Mal bulgurn för första gången i en köttkvarn, utan det magra köttet. Efter den första malningen är klar, blanda det malda magra köttet med den malda bulgurn. Tillsätt mjölet i detta skede. Om degen känns torr, tillsätt gradvis lite vatten. Mal sedan bulgur, det magra köttet och mjölet tillsammans i köttkvarnen igen tills kibbehn har en jämn färg. Knåda blandningen på en arbetsyta tills den är helt slät. Degen ska vara fast, varken för mjuk eller för stel, och lätt att forma.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Det finns olika typer av bulgur, och vissa kräver mer vatten än andra. Tillsätt vattnet genom att försiktigt strö och knåda det efter behov.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Förberedelse av fyllningen: Hacka löken fint och värm lite olja i en djup kastrull. Fräs tills den är gyllenbrun. Tillsätt den magra köttfärsen, bryt den isär så mycket som möjligt och blanda den med löken. Täck över och tillaga på låg värme i 1.30 timme, eller tills köttet är genomstekt. Om det fortfarande finns vätska kvar, täck över och fortsätt tillaga på mycket låg värme tills vätskan har avdunstat. Tillsätt sedan salt, kryddblandning och nötter. Kom ihåg att nötter också absorberar vätska, men inte för mycket. Låt den svalna i kylskåpet, eller till och med över natten.</p>
+    
+  
+    
+      <p class="recipe-paragraph">Forma och fylla kibbehn: Skär degen i bitar ungefär lika stora som din knytnäve, halvt stängda, som väger cirka 70 gram. Fukta händerna med lite vatten, men använd inte för mycket, då fastnar kibbehn. Börja från mitten av cirkeln och urholka kibbehn. Tryck på kanterna på cirkeln för att platta till den, rulla biten i handen tills den är ungefär en halv centimeter tjock, eller mindre om möjligt. Fyll den sedan med fyllningen.</p>
+    
+  
   
 
   

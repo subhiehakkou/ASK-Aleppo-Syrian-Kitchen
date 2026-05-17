@@ -100,15 +100,50 @@ def _path_for_category(cat: dict, lang: str) -> str:
 
 
 def _split_lines(text: Optional[str]) -> list[str]:
-    """Split a multi-line string into clean list items."""
+    """Split a multi-line string into clean list items (flat, for JSON-LD)."""
     if not text:
         return []
     parts = []
     for raw in re.split(r'[\r\n]+', text):
         line = raw.strip().lstrip('•').lstrip('-').lstrip('*').strip()
-        if line:
+        # Skip section headers (lines ending in : or ：) when building the flat list
+        if line and not (line.endswith(':') or line.endswith('：')):
             parts.append(line)
     return parts
+
+
+def _split_blocks(text: Optional[str]) -> list[dict]:
+    """Parse text into structured blocks:
+       - {'type': 'header', 'text': '...'}     → lines ending with ':' (section title)
+       - {'type': 'list',   'entries': [...]}  → consecutive bullet lines (•, -, *)
+       - {'type': 'para',   'text': '...'}     → other prose lines (notes, paragraphs)
+    """
+    if not text:
+        return []
+    blocks: list[dict] = []
+    current_list: Optional[dict] = None
+    for raw in re.split(r'[\r\n]+', text):
+        line = raw.strip()
+        if not line:
+            current_list = None
+            continue
+        # Bullet item
+        if line.startswith(('•', '-', '*', '–', '—')):
+            item = line.lstrip('•-*–— ').strip()
+            if not item:
+                continue
+            if current_list is None:
+                current_list = {'type': 'list', 'entries': []}
+                blocks.append(current_list)
+            current_list['entries'].append(item)
+        # Section header (ends with colon)
+        elif line.endswith(':') or line.endswith('：'):
+            current_list = None
+            blocks.append({'type': 'header', 'text': line.rstrip(':：').strip()})
+        else:
+            current_list = None
+            blocks.append({'type': 'para', 'text': line})
+    return blocks
 
 
 def _base_ctx(request: Request, lang: str, canonical_path: str, hreflang_paths: Optional[dict] = None) -> dict:
@@ -184,6 +219,8 @@ def _render_recipe(request: Request, slug: str, lang: str) -> HTMLResponse:
     }
     t['ingredients_list'] = _split_lines(t['ingredients'])
     t['instructions_list'] = _split_lines(t['instructions'])
+    t['ingredients_blocks'] = _split_blocks(t['ingredients'])
+    t['instructions_blocks'] = _split_blocks(t['instructions'])
 
     name = _recipe_title(recipe, lang)
     description = recipe.get(f'description_{lang}') or recipe.get('description_en') or ''
