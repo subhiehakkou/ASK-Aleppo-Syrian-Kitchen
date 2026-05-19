@@ -20,6 +20,7 @@ const imageMap: Record<string, any> = {
   'Fawaregh.jpg': require('../../assets/recipe-images/Fawaregh.jpg'),
   'Foul_Bezeit.jpg': require('../../assets/recipe-images/Foul_Bezeit.jpg'),
   'Foul_Mdammas_Bethaineh.jpg': require('../../assets/recipe-images/Foul_Mdammas_Bethaineh.jpg'),
+  'Foul_Mdamas_Shami.jpg': require('../../assets/recipe-images/Foul_Mdamas_Shami.jpg'),
   'Freekeh.jpg': require('../../assets/recipe-images/Freekeh.jpg'),
   'Hummus_Bethineh.jpg': require('../../assets/recipe-images/Hummus_Bethineh.jpg'),
   'Harra_Esaboo.jpg': require('../../assets/recipe-images/Harra_Esaboo.jpg'),

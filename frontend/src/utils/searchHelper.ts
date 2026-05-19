@@ -69,7 +69,45 @@ function normalize(text: string): string {
 function fieldContains(fieldValue: string, normQuery: string): boolean {
   if (!fieldValue) return false;
   const normField = normalize(fieldValue);
-  return normField.includes(normQuery);
+  return wordMatch(normField, normQuery);
+}
+
+/**
+ * Word-boundary aware match (per Ms Sabah's strong request).
+ *
+ * Why this matters: a naive substring search for "لبن" (yogurt) would also
+ * match "البندورة" (tomato) because the characters ل-ب-ن appear contiguously
+ * inside it (ا-ل-ب-ن-د-و-ر-ة). That gives dangerously wrong results.
+ *
+ * This function tokenizes the field on whitespace/punctuation and only
+ * accepts a match when the query appears at the START of a word — optionally
+ * after a common Arabic single-letter prefix (ال, و, ف, ب, ل, ك, س, لل, بال,
+ * وال, فال, كال). This way:
+ *   "لبن" ✅ matches "لبن", "اللبن", "باللبن", "لبنية", "لبني"
+ *   "لبن" ❌ does NOT match "البندورة", "ألبان" (because لبن is in the middle)
+ */
+function wordMatch(haystack: string, needle: string): boolean {
+  if (!haystack || !needle) return false;
+  // Quick reject — if the substring doesn't exist at all, no point tokenizing.
+  if (!haystack.includes(needle)) return false;
+  // Split on whitespace and common punctuation (both Arabic and Latin).
+  const tokens = haystack.split(/[\s,.()،؛؟!\-\/\\:"'`\[\]{}|<>+=*&%$#@^~?؟]+/);
+  // Common Arabic word-prefixes that don't change the root meaning much.
+  const prefixes = ['وبال', 'فبال', 'بال', 'وال', 'فال', 'كال', 'لل', 'ال', 'و', 'ف', 'ب', 'ل', 'ك', 'س'];
+  for (const token of tokens) {
+    if (!token) continue;
+    if (token === needle) return true;
+    if (token.startsWith(needle)) return true;
+    // Try stripping a known prefix and check again
+    for (const p of prefixes) {
+      if (token.length > p.length + 1 && token.startsWith(p)) {
+        const stripped = token.slice(p.length);
+        if (stripped === needle || stripped.startsWith(needle)) return true;
+        break; // only strip one prefix layer
+      }
+    }
+  }
+  return false;
 }
 
 /**
